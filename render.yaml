@@ -19,6 +19,8 @@ services:
         value: 30
       - key: REFRESH_TOKEN_EXPIRE_DAYS
         value: 7
+      - key: CORS_ORIGINS
+        value: '["https://ai-chrms.vercel.app"]'
       - key: ADMIN_EMAIL
         sync: false
       - key: ADMIN_PASSWORD
@@ -27,19 +29,6 @@ services:
         sync: false
       - key: DEMO_PASSWORD
         sync: false
-
-  # Next.js Frontend
-  - type: web
-    name: ai-chrms-frontend
-    runtime: docker
-    dockerfilePath: ./frontend/Dockerfile
-    dockerContext: ./frontend
-    envVars:
-      - key: BACKEND_URL
-        fromService:
-          name: ai-chrms-backend
-          type: web
-          property: url
 
 databases:
   - name: ai-chrms-db
