@@ -1,11 +1,12 @@
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { 
-  Activity, 
-  Shield, 
-  Users, 
-  FileText, 
+import { HomeNav } from '@/components/home-nav'
+import {
+  Activity,
+  Shield,
+  Users,
+  FileText,
   Heart,
   ClipboardList,
   Lock,
@@ -22,14 +23,7 @@ export default function HomePage() {
             <Heart className="h-8 w-8 text-primary" />
             <span className="text-xl font-semibold">Health Project</span>
           </div>
-          <nav className="flex items-center gap-4">
-            <Link href="/login">
-              <Button variant="ghost">Sign In</Button>
-            </Link>
-            <Link href="/register">
-              <Button>Get Started</Button>
-            </Link>
-          </nav>
+          <HomeNav />
         </div>
       </header>
 
