@@ -8,9 +8,7 @@ services:
     healthCheckPath: /health
     envVars:
       - key: DATABASE_URL
-        fromDatabase:
-          name: ai-chrms-db
-          property: connectionString
+        sync: false
       - key: JWT_SECRET_KEY
         generateValue: true
       - key: JWT_ALGORITHM
@@ -29,9 +27,3 @@ services:
         sync: false
       - key: DEMO_PASSWORD
         sync: false
-
-databases:
-  - name: ai-chrms-db
-    plan: free
-    databaseName: healthdb
-    user: healthadmin

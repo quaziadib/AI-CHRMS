@@ -87,7 +87,15 @@ class ApiClient {
         return { status }
       }
 
-      const data = await response.json()
+      let data: unknown
+      try {
+        data = await response.json()
+      } catch {
+        return {
+          error: response.ok ? 'Invalid response from server' : `Server error (${status})`,
+          status,
+        }
+      }
 
       if (!response.ok) {
         const detail = data.detail

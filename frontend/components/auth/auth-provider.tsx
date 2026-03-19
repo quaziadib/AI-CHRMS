@@ -47,53 +47,38 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   const refreshUser = useCallback(async () => {
-    const { data, error } = await authApi.me()
+    const { data, error, status } = await authApi.me()
     if (data && !error) {
       setUser(data)
-    } else {
+    } else if (status === 401) {
       setUser(null)
       clearTokens()
     }
   }, [])
 
-  const refreshAccessToken = useCallback(async (): Promise<boolean> => {
-    const refreshToken = localStorage.getItem(REFRESH_TOKEN_KEY)
-    if (!refreshToken) return false
-
-    const { data, error } = await authApi.refresh(refreshToken)
-    if (data && !error) {
-      saveTokens(data.access_token, data.refresh_token)
-      return true
-    }
-    return false
-  }, [])
-
   useEffect(() => {
     const initAuth = async () => {
       const accessToken = localStorage.getItem(ACCESS_TOKEN_KEY)
-      
+
       if (accessToken) {
         api.setAccessToken(accessToken)
-        const { data, error } = await authApi.me()
-        
+        const { data, error, status } = await authApi.me()
+
         if (data && !error) {
           setUser(data)
-        } else if (error) {
-          // Try to refresh the token
-          const refreshed = await refreshAccessToken()
-          if (refreshed) {
-            await refreshUser()
-          } else {
-            clearTokens()
-          }
+        } else if (status === 401) {
+          // Token truly expired and refresh failed (client interceptor already tried)
+          clearTokens()
         }
+        // For network errors (status 0) or server errors, keep tokens intact
+        // so the session survives a transient backend issue
       }
-      
+
       setIsLoading(false)
     }
 
     initAuth()
-  }, [refreshAccessToken, refreshUser])
+  }, [])
 
   const login = async (
     email: string,

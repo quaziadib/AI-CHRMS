@@ -52,6 +52,7 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+
 app.add_middleware(BodySizeLimitMiddleware)
 
 app.add_middleware(
@@ -64,6 +65,9 @@ app.add_middleware(
 
 app.include_router(v1_router)
 
+@app.get("/")
+def root():
+    return {"message": "API is running"}
 
 @app.get("/health", tags=["Health"])
 def health_check():

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
@@ -25,9 +25,15 @@ type LoginFormData = z.infer<typeof loginSchema>
 
 export default function LoginPage() {
   const router = useRouter()
-  const { login } = useAuth()
+  const { login, isAuthenticated, isLoading: authLoading } = useAuth()
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+
+  useEffect(() => {
+    if (!authLoading && isAuthenticated) {
+      router.replace('/records')
+    }
+  }, [authLoading, isAuthenticated, router])
 
   const {
     register,
