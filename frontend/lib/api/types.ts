@@ -118,3 +118,64 @@ export interface AdminStats {
   records_this_week: number
   records_this_month: number
 }
+
+// ── New types for v2 ──────────────────────────────────────────────────────────
+
+export interface Patient {
+  id: string
+  user_id: string | null
+  created_by: string
+  full_name: string
+  phone?: string
+  date_of_birth?: string
+  district?: string
+  address?: string
+  created_at?: string
+  updated_at?: string
+}
+
+export interface PatientCreate {
+  full_name: string
+  phone?: string
+  date_of_birth?: string
+  district?: string
+  address?: string
+  nid?: string
+  create_account?: boolean
+  account_email?: string
+}
+
+export interface ConsentRequest {
+  id: string
+  patient_id: string
+  requester_id: string
+  requester_role: string
+  purpose: string
+  status: 'pending' | 'approved' | 'rejected' | 'revoked'
+  reviewed_at?: string
+  reviewed_by?: string
+  expires_at?: string
+  notes?: string
+  created_at: string
+}
+
+export interface DatasetSubmission {
+  id: string
+  submitted_by: string
+  title: string
+  description: string
+  status: 'pending' | 'approved' | 'rejected' | 'processing' | 'published'
+  file_url?: string
+  record_count?: number
+  reviewed_at?: string
+  reviewed_by?: string
+  admin_notes?: string
+  created_at: string
+  updated_at: string
+}
+
+export interface ChatMessage {
+  role: 'user' | 'assistant'
+  content: string
+  disclaimer?: string
+}

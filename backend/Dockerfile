@@ -15,6 +15,7 @@ RUN pip install --no-cache-dir uv && \
 
 # Copy application
 COPY app/ ./app/
+COPY workers/ ./workers/
 
 # Non-root user
 RUN adduser --disabled-password --gecos '' appuser && \

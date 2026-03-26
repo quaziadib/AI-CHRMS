@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { useAuth } from '@/components/auth/auth-provider'
+import { useAuth, homeRouteFor } from '@/components/auth/auth-provider'
 import { Spinner } from '@/components/ui/spinner'
 
 export default function DashboardPage() {
@@ -11,7 +11,7 @@ export default function DashboardPage() {
 
   useEffect(() => {
     if (!isLoading && user) {
-      router.replace(user.roles.includes('admin') ? '/admin' : '/records')
+      router.replace(homeRouteFor(user))
     }
   }, [user, isLoading, router])
 

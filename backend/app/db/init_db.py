@@ -15,14 +15,13 @@ def create_tables() -> None:
     """Create all tables if they don't exist.
 
     Adding a new model: define it, add it to app/models/__init__.py — done.
-    No changes needed here.
     """
     Base.metadata.create_all(bind=engine)
     logger.info("Database tables created/verified")
 
 
-# Add new seed users here. Each dict maps directly to User model fields.
-# Credentials for admin/demo are read from environment via settings.
+# Seed one account per system role for development/testing.
+# Credentials come from environment — never hard-code secrets here.
 _SEED_USERS = [
     {
         "email": settings.ADMIN_EMAIL,
@@ -33,10 +32,34 @@ _SEED_USERS = [
         "is_verified": True,
     },
     {
+        "email": settings.COPI_EMAIL,
+        "password": settings.COPI_PASSWORD,
+        "full_name": "Co-Principal Investigator",
+        "roles": ["co_pi"],
+        "is_active": True,
+        "is_verified": True,
+    },
+    {
+        "email": settings.COLLECTOR_EMAIL,
+        "password": settings.COLLECTOR_PASSWORD,
+        "full_name": "Demo Data Collector",
+        "roles": ["data_collector"],
+        "is_active": True,
+        "is_verified": True,
+    },
+    {
+        "email": settings.ML_EMAIL,
+        "password": settings.ML_PASSWORD,
+        "full_name": "Demo ML Engineer",
+        "roles": ["ml_engineer"],
+        "is_active": True,
+        "is_verified": True,
+    },
+    {
         "email": settings.DEMO_EMAIL,
         "password": settings.DEMO_PASSWORD,
-        "full_name": "Demo User",
-        "phone": "+1234567890",
+        "full_name": "Demo General User",
+        "phone": "+8801700000000",
         "roles": ["user"],
         "is_active": True,
         "is_verified": True,
@@ -45,7 +68,7 @@ _SEED_USERS = [
 
 
 def seed_default_users(db: Session) -> None:
-    """Seed default users if they don't exist."""
+    """Seed default users if they don't exist (idempotent)."""
     for spec in _SEED_USERS:
         email = spec["email"]
         if db.query(User).filter(User.email == email).first():
@@ -60,6 +83,6 @@ def seed_default_users(db: Session) -> None:
             is_verified=spec.get("is_verified", False),
         )
         db.add(user)
-        logger.info("Seeded user: %s", email)
+        logger.info("Seeded user: %s (%s)", email, spec["roles"])
 
     db.commit()

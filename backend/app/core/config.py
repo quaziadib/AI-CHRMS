@@ -10,11 +10,21 @@ _WEAK_SECRETS = {
     "password",
 }
 
+# All system roles
+ROLES = {
+    "admin",
+    "co_pi",
+    "data_collector",
+    "ml_engineer",
+    "patient",
+    "user",
+}
+
 
 class Settings(BaseSettings):
     # Application
-    APP_NAME: str = "Health Project API"
-    APP_VERSION: str = "1.0.0"
+    APP_NAME: str = "AI-CHRMS API"
+    APP_VERSION: str = "2.0.0"
     DEBUG: bool = False
 
     # Database
@@ -26,14 +36,30 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 15
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7
 
+    # Redis + Celery
+    REDIS_URL: str = "redis://localhost:6379/0"
+
+    # OpenAI (optional — chatbot disabled if not set)
+    OPENAI_API_KEY: str = ""
+    OPENAI_MODEL: str = "gpt-4o-mini"
+
+    # Field-level encryption key (Fernet — 32-byte base64; generated if empty → dev only)
+    FIELD_ENCRYPTION_KEY: str = ""
+
     # CORS
     CORS_ORIGINS: list[str] = ["http://localhost:3001", "http://localhost:3000"]
 
-    # Seed credentials (used only on first startup)
-    ADMIN_EMAIL: str = "admin@health.local"
-    ADMIN_PASSWORD: str = "admin123"
-    DEMO_EMAIL: str = "demo@health.local"
-    DEMO_PASSWORD: str = "demo123"
+    # Seed credentials
+    ADMIN_EMAIL: str = "admin@chrms.local"
+    ADMIN_PASSWORD: str = "Admin@123!"
+    COPI_EMAIL: str = "copi@chrms.local"
+    COPI_PASSWORD: str = "CoPi@123!"
+    COLLECTOR_EMAIL: str = "collector@chrms.local"
+    COLLECTOR_PASSWORD: str = "Collector@123!"
+    ML_EMAIL: str = "ml@chrms.local"
+    ML_PASSWORD: str = "MlEng@123!"
+    DEMO_EMAIL: str = "demo@chrms.local"
+    DEMO_PASSWORD: str = "Demo@123!"
 
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
