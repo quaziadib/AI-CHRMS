@@ -8,6 +8,75 @@ import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
 import { Spinner } from '@/components/ui/spinner'
 
+// Lightweight markdown → JSX renderer for AI responses
+function MarkdownMessage({ content }: { content: string }) {
+  const lines = content.split('\n')
+  const elements: React.ReactNode[] = []
+  let listItems: string[] = []
+
+  const flushList = (key: string) => {
+    if (listItems.length > 0) {
+      elements.push(
+        <ul key={key} className="list-disc list-inside space-y-0.5 my-1">
+          {listItems.map((item, i) => (
+            <li key={i}>{renderInline(item)}</li>
+          ))}
+        </ul>
+      )
+      listItems = []
+    }
+  }
+
+  const renderInline = (text: string): React.ReactNode => {
+    // Split on **bold**, *italic*, `code`
+    const parts = text.split(/(\*\*.*?\*\*|\*.*?\*|`.*?`)/g)
+    return parts.map((part, i) => {
+      if (part.startsWith('**') && part.endsWith('**'))
+        return <strong key={i}>{part.slice(2, -2)}</strong>
+      if (part.startsWith('*') && part.endsWith('*'))
+        return <em key={i}>{part.slice(1, -1)}</em>
+      if (part.startsWith('`') && part.endsWith('`'))
+        return <code key={i} className="bg-black/10 dark:bg-white/10 rounded px-1 font-mono text-xs">{part.slice(1, -1)}</code>
+      return part
+    })
+  }
+
+  lines.forEach((line, i) => {
+    const isList = /^[-*•]\s+/.test(line)
+    const isHeader = /^#{1,3}\s+/.test(line)
+    const isEmpty = line.trim() === ''
+
+    if (isList) {
+      listItems.push(line.replace(/^[-*•]\s+/, ''))
+      return
+    }
+
+    flushList(`list-${i}`)
+
+    if (isEmpty) {
+      // skip double blank lines but add spacing via margin on paragraphs
+      return
+    }
+
+    if (isHeader) {
+      const text = line.replace(/^#{1,3}\s+/, '')
+      elements.push(
+        <p key={i} className="font-semibold mt-2 mb-0.5">{renderInline(text)}</p>
+      )
+      return
+    }
+
+    elements.push(
+      <p key={i} className="leading-relaxed">{renderInline(line)}</p>
+    )
+  })
+
+  // Flush any trailing list
+  flushList('list-end')
+
+  return <div className="space-y-1 text-sm">{elements}</div>
+}
+
 export default function ChatPage() {
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [input, setInput] = useState('')
@@ -86,22 +155,27 @@ export default function ChatPage() {
         )}
 
         {messages.map((m, i) => (
-          <div key={i} className={cn('flex gap-3', m.role === 'user' ? 'justify-end' : 'justify-start')}>
+          <div key={i} className={cn('flex gap-3 items-end', m.role === 'user' ? 'justify-end' : 'justify-start')}>
             {m.role === 'assistant' && (
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground self-start mt-1">
                 <Bot className="h-4 w-4" />
               </div>
             )}
+
             <div className={cn(
-              'max-w-[75%] rounded-2xl px-4 py-2.5 text-sm',
+              'max-w-[78%] rounded-2xl px-4 py-3',
               m.role === 'user'
-                ? 'bg-primary text-primary-foreground rounded-br-sm'
+                ? 'bg-primary text-primary-foreground rounded-br-sm text-sm'
                 : 'bg-muted rounded-bl-sm',
             )}>
-              {m.content}
+              {m.role === 'assistant'
+                ? <MarkdownMessage content={m.content} />
+                : m.content
+              }
             </div>
+
             {m.role === 'user' && (
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-secondary">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-secondary self-start mt-1">
                 <User className="h-4 w-4" />
               </div>
             )}
@@ -109,12 +183,14 @@ export default function ChatPage() {
         ))}
 
         {isLoading && (
-          <div className="flex gap-3 justify-start">
+          <div className="flex gap-3 justify-start items-end">
             <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
               <Bot className="h-4 w-4" />
             </div>
-            <div className="bg-muted rounded-2xl rounded-bl-sm px-4 py-3">
-              <Spinner size="sm" />
+            <div className="bg-muted rounded-2xl rounded-bl-sm px-4 py-3 flex gap-1 items-center">
+              <span className="h-2 w-2 rounded-full bg-muted-foreground/50 animate-bounce [animation-delay:0ms]" />
+              <span className="h-2 w-2 rounded-full bg-muted-foreground/50 animate-bounce [animation-delay:150ms]" />
+              <span className="h-2 w-2 rounded-full bg-muted-foreground/50 animate-bounce [animation-delay:300ms]" />
             </div>
           </div>
         )}
