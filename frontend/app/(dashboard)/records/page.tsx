@@ -7,6 +7,7 @@ import { useRecords } from '@/features/records/hooks/use-records'
 import { RecordCard } from '@/features/records/components/record-card'
 import { RecordDetail } from '@/features/records/components/record-detail'
 import { RecordEditForm } from '@/features/records/components/record-edit-form'
+import { RiskWidget } from '@/features/records/components/risk-widget'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Spinner } from '@/components/ui/spinner'
@@ -56,6 +57,10 @@ export default function RecordsPage() {
           </Button>
         )}
       </div>
+
+      {records.length > 0 && (
+        <RiskWidget record={records[0]} />
+      )}
 
       {isLoading ? (
         <div className="flex items-center justify-center py-12">

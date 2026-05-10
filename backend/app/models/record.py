@@ -1,7 +1,8 @@
 import uuid
+from datetime import datetime
 
-from sqlalchemy import Boolean, Float, Integer, String, Text
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import Boolean, DateTime, Float, Integer, String, Text
+from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.db.base import Base, TimestampMixin
@@ -60,3 +61,9 @@ class PatientRecord(TimestampMixin, Base):
     alcohol: Mapped[str] = mapped_column(String(50), nullable=False)
     sleep_hours: Mapped[float] = mapped_column(Float, nullable=False)
     sound_sleep: Mapped[bool] = mapped_column(Boolean, default=False)
+
+    # Risk Assessment (populated by LLM scoring endpoint)
+    risk_level: Mapped[str | None] = mapped_column(String(10), nullable=True)
+    risk_explanation: Mapped[str | None] = mapped_column(Text, nullable=True)
+    recommendations: Mapped[list | None] = mapped_column(JSONB, nullable=True)
+    risk_scored_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)

@@ -58,6 +58,11 @@ export interface PatientRecord {
   alcohol: string
   sleep_hours: number
   sound_sleep: boolean
+  // Risk Assessment
+  risk_level?: 'low' | 'moderate' | 'high'
+  risk_explanation?: string
+  recommendations?: string[]
+  risk_scored_at?: string
   // Timestamps
   created_at: string
   updated_at: string
