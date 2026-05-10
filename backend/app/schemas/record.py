@@ -113,5 +113,9 @@ class PatientRecordResponse(OrmSchema):
     alcohol: str
     sleep_hours: float
     sound_sleep: bool
+    risk_level: Optional[str] = None
+    risk_explanation: Optional[str] = None
+    recommendations: Optional[list[str]] = None
+    risk_scored_at: Optional[datetime] = None
     created_at: datetime
     updated_at: datetime

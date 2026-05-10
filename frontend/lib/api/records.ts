@@ -14,4 +14,5 @@ export const recordsApi = {
   update: (id: string, data: Partial<PatientRecordCreate>) =>
     api.patch<PatientRecord>(`/records/${id}`, data),
   delete: (id: string) => api.delete(`/records/${id}`),
+  scoreRisk: (id: string) => api.post<PatientRecord>(`/records/${id}/risk-score`, {}),
 }

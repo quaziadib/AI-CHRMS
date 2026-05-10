@@ -30,3 +30,8 @@ def update_record(record_id: str, data: PatientRecordUpdate, current_user: Curre
 @router.delete("/{record_id}", status_code=204)
 def delete_record(record_id: str, current_user: CurrentUser, db: DB):
     record_service.delete_record(db, record_id, current_user.id, current_user.roles)
+
+
+@router.post("/{record_id}/risk-score", response_model=PatientRecordResponse)
+def score_record(record_id: str, current_user: CurrentUser, db: DB):
+    return record_service.score_record(db, record_id, current_user.id, current_user.roles)

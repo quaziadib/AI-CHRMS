@@ -26,6 +26,13 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 15
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7
 
+    # LLM
+    LLM_PROVIDER: str = "anthropic"  # "openai" | "anthropic" | "google"
+    LLM_MODEL: str | None = None
+    OPENAI_API_KEY: str | None = None
+    ANTHROPIC_API_KEY: str | None = None
+    GOOGLE_API_KEY: str | None = None
+
     # CORS
     CORS_ORIGINS: list[str] = ["http://localhost:3001", "http://localhost:3000"]
 

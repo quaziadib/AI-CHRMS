@@ -12,6 +12,7 @@ import { StepLabResults } from '@/features/health-form/components/step-lab-resul
 import { StepClinical } from '@/features/health-form/components/step-clinical'
 import { StepLifestyle } from '@/features/health-form/components/step-lifestyle'
 import { FormReview } from '@/features/health-form/components/form-review'
+import { RiskResult } from '@/features/health-form/components/risk-result'
 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -31,6 +32,7 @@ export default function HealthFormPage() {
     isSubmitting,
     hasRecord,
     showDraftPrompt,
+    riskResult,
     handleNext,
     handlePrevious,
     handleSubmit,
@@ -38,6 +40,10 @@ export default function HealthFormPage() {
     discardDraft,
     handleSaveDraft,
   } = useHealthForm({ onSuccess: () => {} })
+
+  if (riskResult) {
+    return <RiskResult record={riskResult} onContinue={() => router.push('/records')} />
+  }
 
   if (hasRecord === null) {
     return (

@@ -1,6 +1,9 @@
+from datetime import datetime, timezone
+
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
+from app.ai.risk_chain import run_risk_chain
 from app.core.security import generate_pid
 from app.models.record import PatientRecord
 from app.schemas.record import PatientRecordCreate, PatientRecordUpdate, PatientRecordResponse
@@ -83,3 +86,24 @@ def delete_record(
     db.delete(record)
     db.commit()
     log_audit(db, user_id, "delete_record", "patient_record", record_id)
+
+
+def score_record(
+    db: Session, record_id: str, user_id: str, roles: list[str]
+) -> PatientRecordResponse:
+    record = _get_record_or_404(db, record_id)
+    _check_ownership(record, user_id, roles)
+    try:
+        assessment = run_risk_chain(record)
+    except RuntimeError as exc:
+        raise HTTPException(status_code=500, detail=str(exc))
+    except Exception:
+        raise HTTPException(status_code=502, detail="Risk scoring unavailable")
+    record.risk_level = assessment.risk_level
+    record.risk_explanation = assessment.explanation
+    record.recommendations = assessment.recommendations
+    record.risk_scored_at = datetime.now(timezone.utc)
+    db.commit()
+    db.refresh(record)
+    log_audit(db, user_id, "risk_scored", "patient_record", record_id)
+    return PatientRecordResponse.model_validate(record)

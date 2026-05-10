@@ -9,7 +9,7 @@ import { recordsApi } from '@/lib/api'
 import { useFormDraft } from '@/hooks/use-form-draft'
 import { healthFormSchema, stepSchemas, type HealthFormData } from '@/lib/health-form-schema'
 import { calculateBMI } from '@/lib/utils'
-import type { PatientRecordCreate } from '@/lib/api'
+import type { PatientRecord, PatientRecordCreate } from '@/lib/api'
 
 const TOTAL_STEPS = 8
 
@@ -20,6 +20,7 @@ export function useHealthForm({ onSuccess }: { onSuccess: () => void }) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showDraftPrompt, setShowDraftPrompt] = useState(false)
   const [hasRecord, setHasRecord] = useState<boolean | null>(null)
+  const [riskResult, setRiskResult] = useState<PatientRecord | null>(null)
 
   const form = useForm<HealthFormData>({
     resolver: zodResolver(healthFormSchema),
@@ -157,9 +158,10 @@ export function useHealthForm({ onSuccess }: { onSuccess: () => void }) {
         const { data: result, error } = await recordsApi.create(cleanData)
         if (result && !error) {
           clearDraft()
-          toast.success('Health record submitted successfully!')
+          toast.success('Health record submitted! Generating your risk assessment...')
+          const { data: scored } = await recordsApi.scoreRisk(result.id)
+          setRiskResult(scored ?? result)
           onSuccess()
-          router.push('/records')
         } else {
           toast.error(error || 'Failed to submit record')
         }
@@ -182,6 +184,7 @@ export function useHealthForm({ onSuccess }: { onSuccess: () => void }) {
     isSubmitting,
     hasRecord,
     showDraftPrompt,
+    riskResult,
     handleNext,
     handlePrevious,
     handleSubmit,
