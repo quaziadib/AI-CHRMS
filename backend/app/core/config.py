@@ -32,6 +32,7 @@ class Settings(BaseSettings):
     OPENAI_API_KEY: str | None = None
     ANTHROPIC_API_KEY: str | None = None
     GOOGLE_API_KEY: str | None = None
+    ENABLE_RECOMMENDATIONS: bool = True
 
     # CORS
     CORS_ORIGINS: list[str] = ["http://localhost:3001", "http://localhost:3000"]

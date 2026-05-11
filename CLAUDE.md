@@ -6,6 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 - **Frontend:** Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS 4, shadcn/ui, SWR, react-hook-form + Zod
 - **Backend:** FastAPI (Python 3.12), SQLAlchemy 2.0, Pydantic v2, PostgreSQL 16
+- **AI:** LangChain + LLM risk scoring (Anthropic Claude / OpenAI / Google) — provider-switchable via env
 - **Auth:** JWT (HS256) — 15m access tokens + 7d refresh tokens, bcrypt passwords
 - **Infra:** Docker Compose (dev), Nginx (prod profile), Render.com deployment
 
@@ -35,6 +36,12 @@ Create `backend/.env` with at minimum:
 ```
 JWT_SECRET_KEY=<32+ char secret>
 DATABASE_URL=postgresql://health_user:health_pass@localhost:5433/health_db
+
+# LLM risk scoring (pick one provider)
+LLM_PROVIDER=anthropic          # "openai" | "anthropic" | "google"
+LLM_MODEL=                      # optional override; defaults to claude-sonnet-4-6
+ANTHROPIC_API_KEY=<key>
+# OPENAI_API_KEY=<key>
 ```
 
 ## Architecture
@@ -49,19 +56,24 @@ Next.js proxies all API calls via `next.config.mjs` rewrites — frontend never 
 backend/app/
 ├── main.py          # FastAPI app factory, lifespan (table create + seed), CORS
 ├── core/
-│   ├── config.py    # Pydantic BaseSettings (reads .env)
+│   ├── config.py    # Pydantic BaseSettings (reads .env); LLM_PROVIDER/LLM_MODEL/API keys
 │   └── security.py  # JWT encode/decode, bcrypt helpers
 ├── db/
 │   ├── base.py      # SQLAlchemy engine, DeclarativeBase, TimestampMixin
 │   ├── session.py   # get_db() dependency
 │   └── init_db.py   # create tables + seed users on startup
-├── models/          # SQLAlchemy ORM: user.py, record.py, audit.py
-├── schemas/         # Pydantic request/response schemas (same domain split)
+├── models/          # SQLAlchemy ORM: user.py, record.py (has risk_level/risk_explanation/risk_scored_at), audit.py
+├── schemas/         # Pydantic request/response schemas; base.py has shared types
+├── services/        # Business logic layer: auth.py, user.py, record.py, audit.py, admin.py
+├── ai/
+│   ├── llm_factory.py   # get_llm() — returns LangChain BaseChatModel for configured provider
+│   └── risk_chain.py    # run_risk_chain(record) → RiskAssessment(risk_level, explanation, recommendations)
 └── api/v1/
     ├── router.py    # aggregates all routers under /v1
+    ├── deps.py      # FastAPI dependencies (get_current_user, require_admin, etc.)
     ├── auth.py      # login, register, refresh, logout, me
     ├── users.py     # profile get/update, change-password
-    ├── records.py   # CRUD patient health records
+    ├── records.py   # CRUD patient health records + POST /{id}/risk-score (triggers LLM scoring)
     └── admin.py     # stats, user mgmt, all-records, audit-logs
 ```
 
@@ -85,9 +97,9 @@ frontend/
 │   ├── auth/auth-provider.tsx   # React context: auth state, login/logout actions
 │   └── ui/                      # shadcn/ui components (don't hand-write these)
 ├── features/                    # Domain modules — each has components + hooks co-located
-│   ├── health-form/
-│   ├── records/
-│   └── admin/
+│   ├── health-form/             # step-*.tsx (8 steps), form-review.tsx, risk-result.tsx (shows LLM output post-submit)
+│   ├── records/                 # record-card, record-detail, record-edit-form, risk-widget.tsx (risk badge on record)
+│   └── admin/                   # stats-cards, users-tab, records-tab
 └── lib/
     └── api/                     # Typed ApiClient — never throws, returns { data?, error?, status }
 ```
@@ -102,7 +114,9 @@ frontend/
 
 **Forms:** react-hook-form + Zod schema validation. The 8-step health form uses localStorage for draft persistence between steps.
 
-**Audit log:** All record mutations auto-append to `audit_logs` (immutable). Never delete from this table.
+**Audit log:** All record mutations auto-append to `audit_logs` (immutable). Never delete from this table. `risk_scored` action also logged.
+
+**LLM risk scoring:** `POST /v1/records/{id}/risk-score` triggers `run_risk_chain()`. Returns `risk_level` ("low"/"moderate"/"high"), `risk_explanation`, and `recommendations`. Auto-runs on record create and update via `services/record.py`. Results stored on `PatientRecord` model.
 
 **DB pool:** `pool_size=10, max_overflow=20` — don't add a second engine instance.
 

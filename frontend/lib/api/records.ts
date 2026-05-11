@@ -15,4 +15,5 @@ export const recordsApi = {
     api.patch<PatientRecord>(`/records/${id}`, data),
   delete: (id: string) => api.delete(`/records/${id}`),
   scoreRisk: (id: string) => api.post<PatientRecord>(`/records/${id}/risk-score`, {}),
+  scoreRecommendations: (id: string) => api.post<PatientRecord>(`/records/${id}/recommendations`, {}),
 }
