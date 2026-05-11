@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Optional
+from typing import Any, Optional
 
 from pydantic import BaseModel, Field
 
@@ -115,7 +115,7 @@ class PatientRecordResponse(OrmSchema):
     sound_sleep: bool
     risk_level: Optional[str] = None
     risk_explanation: Optional[str] = None
-    recommendations: Optional[list[str]] = None
+    recommendations: Optional[Any] = None
     risk_scored_at: Optional[datetime] = None
     created_at: datetime
     updated_at: datetime

@@ -1,6 +1,7 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 
 from app.api.deps import CurrentUser, DB
+from app.core.config import settings
 from app.schemas.record import PatientRecordCreate, PatientRecordUpdate, PatientRecordResponse
 from app.services import record as record_service
 
@@ -35,3 +36,10 @@ def delete_record(record_id: str, current_user: CurrentUser, db: DB):
 @router.post("/{record_id}/risk-score", response_model=PatientRecordResponse)
 def score_record(record_id: str, current_user: CurrentUser, db: DB):
     return record_service.score_record(db, record_id, current_user.id, current_user.roles)
+
+
+@router.post("/{record_id}/recommendations", response_model=PatientRecordResponse)
+def generate_recommendations(record_id: str, current_user: CurrentUser, db: DB):
+    if not settings.ENABLE_RECOMMENDATIONS:
+        raise HTTPException(status_code=503, detail="Recommendations disabled")
+    return record_service.recommend_record(db, record_id, current_user.id, current_user.roles)

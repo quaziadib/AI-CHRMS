@@ -1,3 +1,15 @@
+export interface RecommendationCategories {
+  diet: string[]
+  exercise: string[]
+  lifestyle: string[]
+  monitoring: string[]
+}
+
+export interface RecommendationsOutput {
+  summary: string
+  categories: RecommendationCategories
+}
+
 export interface ApiResponse<T> {
   data?: T
   error?: string
@@ -61,7 +73,7 @@ export interface PatientRecord {
   // Risk Assessment
   risk_level?: 'low' | 'moderate' | 'high'
   risk_explanation?: string
-  recommendations?: string[]
+  recommendations?: RecommendationsOutput | string[]
   risk_scored_at?: string
   // Timestamps
   created_at: string

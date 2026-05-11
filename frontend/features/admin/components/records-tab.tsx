@@ -7,6 +7,9 @@ import {
   ChevronUp,
   Calendar,
   User as UserIcon,
+  CheckCircle,
+  AlertTriangle,
+  XCircle,
 } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import {
@@ -18,7 +21,11 @@ import {
   ClinicalNotesSection,
 } from '@/components/ui/record-sections'
 import { formatDate } from '@/lib/utils'
-import type { PatientRecord, User } from '@/lib/api'
+import type { PatientRecord, User, RecommendationsOutput } from '@/lib/api'
+
+function isStructuredRecs(recs: unknown): recs is RecommendationsOutput {
+  return typeof recs === 'object' && recs !== null && !Array.isArray(recs) && 'categories' in recs
+}
 
 interface Props {
   records: PatientRecord[]
@@ -29,6 +36,12 @@ interface Props {
 
 export function RecordsTab({ records, users, isLoading, searchQuery }: Props) {
   const [expandedRecord, setExpandedRecord] = useState<string | null>(null)
+
+  const RISK_BADGE = {
+    low: { label: 'Low Risk', icon: CheckCircle, cls: 'text-green-600 bg-green-50' },
+    moderate: { label: 'Moderate Risk', icon: AlertTriangle, cls: 'text-amber-600 bg-amber-50' },
+    high: { label: 'High Risk', icon: XCircle, cls: 'text-red-600 bg-red-50' },
+  }
 
   const filteredRecords = records.filter(r => {
     if (!searchQuery) return true
@@ -69,7 +82,19 @@ export function RecordsTab({ records, users, isLoading, searchQuery }: Props) {
                     <FileText className="h-5 w-5 text-primary" />
                   </div>
                   <div>
-                    <CardTitle className="text-base font-mono">{record.pid}</CardTitle>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <CardTitle className="text-base font-mono">{record.pid}</CardTitle>
+                      {record.risk_level && RISK_BADGE[record.risk_level as keyof typeof RISK_BADGE] && (() => {
+                        const badge = RISK_BADGE[record.risk_level as keyof typeof RISK_BADGE]
+                        const BadgeIcon = badge.icon
+                        return (
+                          <span className={`flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full ${badge.cls}`}>
+                            <BadgeIcon className="h-3 w-3" />
+                            {badge.label}
+                          </span>
+                        )
+                      })()}
+                    </div>
                     <CardDescription className="flex items-center gap-2 flex-wrap">
                       <UserIcon className="h-3 w-3" />
                       {recordUser?.full_name ?? 'Unknown User'}
@@ -101,6 +126,14 @@ export function RecordsTab({ records, users, isLoading, searchQuery }: Props) {
                   <LifestyleSection record={record} />
                   <LabResultsSection record={record} />
                   <ClinicalNotesSection record={record} />
+                  {record.recommendations && isStructuredRecs(record.recommendations) && (
+                    <section className="sm:col-span-2 lg:col-span-3">
+                      <h4 className="font-medium text-muted-foreground mb-1">AI Recommendations</h4>
+                      <p className="text-sm text-muted-foreground italic">
+                        {record.recommendations.summary}
+                      </p>
+                    </section>
+                  )}
                 </div>
               </CardContent>
             )}
