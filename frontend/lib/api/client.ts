@@ -52,9 +52,9 @@ class ApiClient {
     options: RequestInit = {},
     retry = true
   ): Promise<ApiResponse<T>> {
-    const headers: HeadersInit = {
+    const headers: Record<string, string> = {
       'Content-Type': 'application/json',
-      ...options.headers,
+      ...(options.headers as Record<string, string>),
     }
 
     if (this.accessToken) {
@@ -98,14 +98,15 @@ class ApiClient {
       }
 
       if (!response.ok) {
-        const detail = data.detail
+        const body = data as Record<string, unknown>
+        const detail = body.detail
         const errorMessage = Array.isArray(detail)
           ? detail.map((e: { msg: string }) => e.msg).join('; ')
-          : typeof detail === 'string' ? detail : data.message || 'An error occurred'
+          : typeof detail === 'string' ? detail : (body.message as string) || 'An error occurred'
         return { error: errorMessage, status }
       }
 
-      return { data, status }
+      return { data: data as T, status }
     } catch (error) {
       return {
         error: error instanceof Error ? error.message : 'Network error',

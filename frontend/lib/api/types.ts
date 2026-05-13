@@ -24,6 +24,7 @@ export interface User {
   is_active: boolean
   is_verified: boolean
   roles: string[]
+  role: string
   created_at: string
   updated_at: string
 }

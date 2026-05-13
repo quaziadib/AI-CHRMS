@@ -49,8 +49,7 @@ export function useRecords() {
   const saveEdit = async () => {
     if (!editingId) return
     setIsSaving(true)
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { id, user_id, pid, created_at, updated_at, ...updatePayload } = editData as PatientRecord
+    const { id: _id, user_id: _uid, pid: _pid, created_at: _ca, updated_at: _ua, ...updatePayload } = editData as PatientRecord
     const { error } = await recordsApi.update(editingId, updatePayload)
     if (!error) {
       setRecords(records.map(r => r.id === editingId ? { ...r, ...editData } : r))

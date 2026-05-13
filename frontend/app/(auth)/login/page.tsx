@@ -31,7 +31,7 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (!authLoading && isAuthenticated) {
-      router.replace('/records')
+      router.replace('/dashboard')
     }
   }, [authLoading, isAuthenticated, router])
 
@@ -49,7 +49,12 @@ export default function LoginPage() {
       const result = await login(data.email, data.password)
       if (result.success) {
         toast.success('Welcome back!')
-        router.push(result.user?.roles.includes('admin') ? '/admin' : '/records')
+        const roles = result.user?.roles ?? []
+        const home = roles.includes('admin') ? '/admin'
+          : roles.includes('doctor') ? '/doctor'
+          : roles.includes('national_admin') ? '/national'
+          : '/dashboard'
+        router.push(home)
       } else {
         toast.error(result.error || 'Login failed')
       }

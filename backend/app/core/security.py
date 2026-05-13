@@ -19,11 +19,25 @@ def hash_password(password: str) -> str:
     return pwd_context.hash(password)
 
 
+def _primary_role(roles: list[str]) -> str:
+    for r in ("admin", "doctor", "national_admin"):
+        if r in roles:
+            return r
+    return "user"
+
+
 def create_access_token(user_id: str, roles: list[str] | None = None) -> str:
     expire = datetime.now(timezone.utc) + timedelta(
         minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES
     )
-    payload = {"sub": user_id, "exp": expire, "type": "access", "roles": roles or []}
+    _roles = roles or []
+    payload = {
+        "sub": user_id,
+        "exp": expire,
+        "type": "access",
+        "roles": _roles,
+        "role": _primary_role(_roles),
+    }
     return jwt.encode(payload, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
 
 

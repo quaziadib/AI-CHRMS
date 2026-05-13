@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Optional
 
-from pydantic import BaseModel, EmailStr, Field, field_validator
+from pydantic import BaseModel, EmailStr, Field, computed_field, field_validator
 
 from app.schemas.base import OrmSchema
 
@@ -38,6 +38,14 @@ class UserResponse(OrmSchema):
     roles: list[str]
     created_at: datetime
     updated_at: datetime
+
+    @computed_field  # type: ignore[misc]
+    @property
+    def role(self) -> str:
+        for r in ("admin", "doctor", "national_admin"):
+            if r in self.roles:
+                return r
+        return "user"
 
 
 class UserUpdate(BaseModel):

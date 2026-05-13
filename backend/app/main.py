@@ -1,4 +1,6 @@
 import logging
+import os
+from logging.handlers import RotatingFileHandler
 
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request, status
@@ -12,7 +14,21 @@ from app.db.base import engine
 from app.db.init_db import create_tables, seed_default_users
 from app.db.session import SessionLocal
 
-logging.basicConfig(level=logging.INFO)
+_LOG_DIR = os.environ.get("LOG_DIR", "/app/logs")
+os.makedirs(_LOG_DIR, exist_ok=True)
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)s %(name)s %(message)s",
+    handlers=[
+        logging.StreamHandler(),
+        RotatingFileHandler(
+            os.path.join(_LOG_DIR, "backend.log"),
+            maxBytes=10 * 1024 * 1024,
+            backupCount=5,
+        ),
+    ],
+)
 logger = logging.getLogger(__name__)
 
 _MAX_BODY_BYTES = 10 * 1024 * 1024  # 10 MB

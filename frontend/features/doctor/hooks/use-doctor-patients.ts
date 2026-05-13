@@ -1,23 +1,20 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import useSWR from 'swr'
 import { doctorApi } from '@/lib/api'
 import type { PatientRecord } from '@/lib/api'
 
 export function useDoctorPatients(riskLevel?: string) {
-  const [patients, setPatients] = useState<PatientRecord[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const key = riskLevel ? `/doctor/patients?risk_level=${riskLevel}` : '/doctor/patients'
 
-  useEffect(() => {
-    setIsLoading(true)
+  const { data, error, isLoading } = useSWR<PatientRecord[]>(key, () =>
     doctorApi.getPatients(riskLevel ? { risk_level: riskLevel } : undefined)
-      .then(({ data, error: err }) => {
-        if (data) setPatients(data)
-        if (err) setError(err)
-      })
-      .finally(() => setIsLoading(false))
-  }, [riskLevel])
+      .then(res => res.data ?? [])
+  )
 
-  return { patients, isLoading, error }
+  return {
+    patients: data ?? [],
+    isLoading,
+    error: error instanceof Error ? error.message : null,
+  }
 }

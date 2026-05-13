@@ -22,6 +22,7 @@ import { useAuth } from "@/components/auth/auth-provider";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { cn } from "@/lib/utils";
+import { ChatWidget } from "@/features/chatbot/components/chat-widget";
 
 const NAV_PATIENT = [
   { name: "Dashboard", href: "/dashboard", icon: Heart },
@@ -72,6 +73,8 @@ const ROLE_GUARDS: Array<{ prefix: string; requiredRole: string }> = [
   { prefix: "/national", requiredRole: "national_admin" },
 ];
 
+const PATIENT_ONLY_PREFIXES = ["/dashboard", "/health-form", "/records"];
+
 export default function DashboardLayout({
   children,
 }: {
@@ -93,6 +96,11 @@ export default function DashboardLayout({
           router.replace(getRoleHome(user.roles));
           return;
         }
+      }
+      const isNonPatient = user.roles.some(r => ["admin", "doctor", "national_admin"].includes(r));
+      if (isNonPatient && PATIENT_ONLY_PREFIXES.some(p => pathname.startsWith(p))) {
+        router.replace(getRoleHome(user.roles));
+        return;
       }
     }
   }, [isLoading, isAuthenticated, user, pathname, router]);
@@ -217,6 +225,8 @@ export default function DashboardLayout({
           </div>
         </main>
       </div>
+
+      {roles.includes("user") && !roles.includes("admin") && <ChatWidget />}
     </div>
   );
 }

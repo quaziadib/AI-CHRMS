@@ -63,7 +63,7 @@ class PatientRecord(TimestampMixin, Base):
     sound_sleep: Mapped[bool] = mapped_column(Boolean, default=False)
 
     # Doctor assignment (set by admin)
-    doctor_id: Mapped[str | None] = mapped_column(String(36), nullable=True, index=True)
+    doctor_id: Mapped[str | None] = mapped_column(UUID(as_uuid=False), nullable=True, index=True)
 
     # Risk Assessment (populated by LLM scoring endpoint)
     risk_level: Mapped[str | None] = mapped_column(String(10), nullable=True)

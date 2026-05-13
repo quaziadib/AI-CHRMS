@@ -14,13 +14,48 @@ logger = logging.getLogger(__name__)
 
 def _run_migrations() -> None:
     with engine.connect() as conn:
-        conn.execute(text(
-            "ALTER TABLE patient_records ADD COLUMN IF NOT EXISTS doctor_id VARCHAR(36)"
-        ))
+        # Ensure doctor_id column exists as UUID (convert VARCHAR→UUID if needed)
+        conn.execute(text("""
+            DO $$
+            BEGIN
+                IF NOT EXISTS (
+                    SELECT 1 FROM information_schema.columns
+                    WHERE table_name = 'patient_records' AND column_name = 'doctor_id'
+                ) THEN
+                    ALTER TABLE patient_records ADD COLUMN doctor_id UUID;
+                ELSIF EXISTS (
+                    SELECT 1 FROM information_schema.columns
+                    WHERE table_name = 'patient_records' AND column_name = 'doctor_id'
+                      AND data_type = 'character varying'
+                ) THEN
+                    ALTER TABLE patient_records
+                        ALTER COLUMN doctor_id TYPE UUID
+                        USING NULLIF(doctor_id, '')::UUID;
+                END IF;
+            END
+            $$;
+        """))
         conn.execute(text(
             "CREATE INDEX IF NOT EXISTS ix_patient_records_doctor_id "
             "ON patient_records (doctor_id)"
         ))
+        conn.execute(text("""
+            DO $$
+            BEGIN
+                IF NOT EXISTS (
+                    SELECT 1 FROM pg_constraint
+                    WHERE conname = 'fk_patient_records_doctor_id'
+                ) THEN
+                    ALTER TABLE patient_records
+                        ADD CONSTRAINT fk_patient_records_doctor_id
+                        FOREIGN KEY (doctor_id)
+                        REFERENCES users(id)
+                        ON DELETE SET NULL
+                        NOT VALID;
+                END IF;
+            END
+            $$;
+        """))
         conn.commit()
     logger.info("Migrations applied")
 
@@ -61,6 +96,14 @@ _SEED_USERS = [
         "password": "doctor123",
         "full_name": "Dr. Demo Doctor",
         "roles": ["doctor"],
+        "is_active": True,
+        "is_verified": True,
+    },
+    {
+        "email": "national@health.local",
+        "password": "national123",
+        "full_name": "National Admin",
+        "roles": ["national_admin"],
         "is_active": True,
         "is_verified": True,
     },
