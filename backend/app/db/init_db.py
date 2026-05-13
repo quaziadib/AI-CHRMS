@@ -56,6 +56,12 @@ def _run_migrations() -> None:
             END
             $$;
         """))
+        conn.execute(text(
+            "ALTER TABLE patient_records ADD COLUMN IF NOT EXISTS ehr_summary TEXT"
+        ))
+        conn.execute(text(
+            "ALTER TABLE patient_records ADD COLUMN IF NOT EXISTS ehr_summary_at TIMESTAMPTZ"
+        ))
         conn.commit()
     logger.info("Migrations applied")
 

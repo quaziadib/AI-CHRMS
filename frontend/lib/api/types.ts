@@ -80,6 +80,8 @@ export interface PatientRecord {
   doctor_id?: string
   doctor_name?: string
   patient_name?: string
+  ehr_summary?: string
+  ehr_summary_at?: string
   // Timestamps
   created_at: string
   updated_at: string
