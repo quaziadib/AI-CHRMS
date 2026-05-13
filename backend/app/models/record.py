@@ -70,3 +70,7 @@ class PatientRecord(TimestampMixin, Base):
     risk_explanation: Mapped[str | None] = mapped_column(Text, nullable=True)
     recommendations: Mapped[list | None] = mapped_column(JSONB, nullable=True)
     risk_scored_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+
+    # EHR Summary (generated on-demand by assigned doctor)
+    ehr_summary: Mapped[str | None] = mapped_column(Text, nullable=True)
+    ehr_summary_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)

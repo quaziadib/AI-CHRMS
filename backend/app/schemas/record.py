@@ -124,5 +124,7 @@ class PatientRecordResponse(OrmSchema):
     doctor_id: Optional[str] = None
     doctor_name: Optional[str] = None
     patient_name: Optional[str] = None
+    ehr_summary: Optional[str] = None
+    ehr_summary_at: Optional[datetime] = None
     created_at: datetime
     updated_at: datetime

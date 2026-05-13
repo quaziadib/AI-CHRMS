@@ -10,4 +10,6 @@ export const doctorApi = {
   },
   getPatient: (recordId: string) =>
     api.get<PatientRecord>(`/doctor/patients/${recordId}`),
+  summarize: (recordId: string) =>
+    api.post<PatientRecord>(`/doctor/patients/${recordId}/summarize`),
 }
