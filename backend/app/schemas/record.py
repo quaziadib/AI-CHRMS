@@ -78,6 +78,10 @@ class PatientRecordUpdate(PatientRecordBase):
     pass
 
 
+class AssignDoctorRequest(BaseModel):
+    doctor_id: Optional[str] = None
+
+
 class PatientRecordResponse(OrmSchema):
     id: str
     user_id: str
@@ -117,5 +121,8 @@ class PatientRecordResponse(OrmSchema):
     risk_explanation: Optional[str] = None
     recommendations: Optional[Any] = None
     risk_scored_at: Optional[datetime] = None
+    doctor_id: Optional[str] = None
+    doctor_name: Optional[str] = None
+    patient_name: Optional[str] = None
     created_at: datetime
     updated_at: datetime

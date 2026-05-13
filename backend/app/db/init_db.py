@@ -1,5 +1,6 @@
 import logging
 
+from sqlalchemy import text
 from sqlalchemy.orm import Session
 
 import app.models  # noqa: F401 — registers all models with Base so create_all sees them
@@ -11,6 +12,19 @@ from app.models.user import User
 logger = logging.getLogger(__name__)
 
 
+def _run_migrations() -> None:
+    with engine.connect() as conn:
+        conn.execute(text(
+            "ALTER TABLE patient_records ADD COLUMN IF NOT EXISTS doctor_id VARCHAR(36)"
+        ))
+        conn.execute(text(
+            "CREATE INDEX IF NOT EXISTS ix_patient_records_doctor_id "
+            "ON patient_records (doctor_id)"
+        ))
+        conn.commit()
+    logger.info("Migrations applied")
+
+
 def create_tables() -> None:
     """Create all tables if they don't exist.
 
@@ -18,6 +32,7 @@ def create_tables() -> None:
     No changes needed here.
     """
     Base.metadata.create_all(bind=engine)
+    _run_migrations()
     logger.info("Database tables created/verified")
 
 
@@ -38,6 +53,14 @@ _SEED_USERS = [
         "full_name": "Demo User",
         "phone": "+1234567890",
         "roles": ["user"],
+        "is_active": True,
+        "is_verified": True,
+    },
+    {
+        "email": "doctor@health.local",
+        "password": "doctor123",
+        "full_name": "Dr. Demo Doctor",
+        "roles": ["doctor"],
         "is_active": True,
         "is_verified": True,
     },

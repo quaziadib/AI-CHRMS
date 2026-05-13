@@ -13,6 +13,8 @@ import {
   Shield,
   Menu,
   X,
+  Stethoscope,
+  Globe,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -21,14 +23,53 @@ import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { cn } from "@/lib/utils";
 
-const navigation = [
+const NAV_PATIENT = [
+  { name: "Dashboard", href: "/dashboard", icon: Heart },
   { name: "Health Form", href: "/health-form", icon: ClipboardList },
   { name: "My Records", href: "/records", icon: FileText },
   { name: "Profile", href: "/profile", icon: User },
 ];
 
-const adminNavigation = [
+const NAV_DOCTOR = [
+  { name: "Doctor Dashboard", href: "/doctor", icon: Stethoscope },
+  { name: "Profile", href: "/profile", icon: User },
+];
+
+const NAV_NATIONAL = [
+  { name: "National Dashboard", href: "/national", icon: Globe },
+  { name: "Profile", href: "/profile", icon: User },
+];
+
+const NAV_ADMIN = [
   { name: "Admin Dashboard", href: "/admin", icon: Shield },
+  { name: "Profile", href: "/profile", icon: User },
+];
+
+const ROLE_HOMES: Record<string, string> = {
+  admin: "/admin",
+  doctor: "/doctor",
+  national_admin: "/national",
+  user: "/dashboard",
+};
+
+function getNavItems(roles: string[]) {
+  if (roles.includes("admin")) return NAV_ADMIN;
+  if (roles.includes("doctor")) return NAV_DOCTOR;
+  if (roles.includes("national_admin")) return NAV_NATIONAL;
+  return NAV_PATIENT;
+}
+
+function getRoleHome(roles: string[]): string {
+  for (const role of ["admin", "doctor", "national_admin"]) {
+    if (roles.includes(role)) return ROLE_HOMES[role];
+  }
+  return ROLE_HOMES.user;
+}
+
+const ROLE_GUARDS: Array<{ prefix: string; requiredRole: string }> = [
+  { prefix: "/admin", requiredRole: "admin" },
+  { prefix: "/doctor", requiredRole: "doctor" },
+  { prefix: "/national", requiredRole: "national_admin" },
 ];
 
 export default function DashboardLayout({
@@ -44,8 +85,17 @@ export default function DashboardLayout({
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
       router.push("/login");
+      return;
     }
-  }, [isLoading, isAuthenticated, router]);
+    if (!isLoading && isAuthenticated && user) {
+      for (const guard of ROLE_GUARDS) {
+        if (pathname.startsWith(guard.prefix) && !user.roles.includes(guard.requiredRole)) {
+          router.replace(getRoleHome(user.roles));
+          return;
+        }
+      }
+    }
+  }, [isLoading, isAuthenticated, user, pathname, router]);
 
   const handleLogout = async () => {
     await logout();
@@ -64,16 +114,11 @@ export default function DashboardLayout({
     return null;
   }
 
-  const isAdmin = user?.roles.includes("admin");
-
-  // Admins only get Profile from the regular nav; everything else is in adminNavigation
-  const visibleNavigation = isAdmin
-    ? navigation.filter((item) => item.href === "/profile")
-    : navigation;
+  const roles = user?.roles ?? [];
+  const navItems = getNavItems(roles);
 
   return (
     <div className="min-h-screen flex">
-      {/* Mobile sidebar backdrop */}
       {sidebarOpen && (
         <div
           className="fixed inset-0 z-40 bg-black/50 lg:hidden"
@@ -81,7 +126,6 @@ export default function DashboardLayout({
         />
       )}
 
-      {/* Sidebar */}
       <aside
         className={cn(
           "fixed inset-y-0 left-0 z-50 w-64 bg-card border-r transform transition-transform lg:translate-x-0 lg:static lg:z-auto",
@@ -89,7 +133,6 @@ export default function DashboardLayout({
         )}
       >
         <div className="flex h-full flex-col">
-          {/* Logo */}
           <div className="flex h-16 items-center gap-2 px-6 border-b">
             <Heart className="h-8 w-8 text-primary" />
             <span className="text-lg font-semibold">Health Project</span>
@@ -101,10 +144,13 @@ export default function DashboardLayout({
             </button>
           </div>
 
-          {/* Navigation */}
           <nav className="flex-1 px-4 py-6 space-y-1">
-            {visibleNavigation.map((item) => {
-              const isActive = pathname === item.href;
+            {navItems.map((item) => {
+              const isActive = item.href === "/admin"
+                ? pathname.startsWith(item.href)
+                : item.href === "/doctor"
+                  ? pathname.startsWith(item.href)
+                  : pathname === item.href;
               return (
                 <Link
                   key={item.name}
@@ -122,50 +168,16 @@ export default function DashboardLayout({
                 </Link>
               );
             })}
-
-            {isAdmin && (
-              <>
-                <div className="pt-4 pb-2">
-                  <p className="px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                    Admin
-                  </p>
-                </div>
-                {adminNavigation.map((item) => {
-                  const isActive = pathname.startsWith(item.href);
-                  return (
-                    <Link
-                      key={item.name}
-                      href={item.href}
-                      onClick={() => setSidebarOpen(false)}
-                      className={cn(
-                        "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
-                        isActive
-                          ? "bg-primary text-primary-foreground"
-                          : "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
-                      )}
-                    >
-                      <item.icon className="h-5 w-5" />
-                      {item.name}
-                    </Link>
-                  );
-                })}
-              </>
-            )}
           </nav>
 
-          {/* User section */}
           <div className="border-t p-4">
             <div className="flex items-center gap-3 px-3 py-2">
               <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-primary-foreground font-medium">
                 {user?.full_name?.charAt(0).toUpperCase()}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium truncate">
-                  {user?.full_name}
-                </p>
-                <p className="text-xs text-muted-foreground truncate">
-                  {user?.email}
-                </p>
+                <p className="text-sm font-medium truncate">{user?.full_name}</p>
+                <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
               </div>
             </div>
             <Button
@@ -180,9 +192,7 @@ export default function DashboardLayout({
         </div>
       </aside>
 
-      {/* Main content */}
       <div className="flex-1 flex flex-col min-h-screen">
-        {/* Top bar */}
         <header className="h-16 border-b bg-card flex items-center px-4 lg:px-6">
           <button
             className="lg:hidden p-2 -ml-2"
@@ -198,7 +208,6 @@ export default function DashboardLayout({
           </Link>
         </header>
 
-        {/* Page content */}
         <main className="flex-1 p-4 lg:p-6 bg-background">
           <div
             key={pathname}

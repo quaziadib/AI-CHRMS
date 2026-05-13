@@ -49,6 +49,18 @@ def get_admin_user(
     return current_user
 
 
+def get_doctor_user(
+    current_user: Annotated[User, Depends(get_current_user)],
+) -> User:
+    if "doctor" not in current_user.roles:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Doctor access required",
+        )
+    return current_user
+
+
 CurrentUser = Annotated[User, Depends(get_current_user)]
 AdminUser = Annotated[User, Depends(get_admin_user)]
+DoctorUser = Annotated[User, Depends(get_doctor_user)]
 DB = Annotated[Session, Depends(get_db)]

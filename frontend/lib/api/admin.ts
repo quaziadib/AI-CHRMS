@@ -2,11 +2,12 @@ import { api } from './client'
 import type { User, PatientRecord, AuditLog, AdminStats } from './types'
 
 export const adminApi = {
-  getUsers: (params?: { skip?: number; limit?: number; search?: string }) => {
+  getUsers: (params?: { skip?: number; limit?: number; search?: string; role?: string }) => {
     const searchParams = new URLSearchParams()
     if (params?.skip) searchParams.set('skip', String(params.skip))
     if (params?.limit) searchParams.set('limit', String(params.limit))
     if (params?.search) searchParams.set('search', params.search)
+    if (params?.role) searchParams.set('role', params.role)
     const query = searchParams.toString()
     return api.get<User[]>(`/admin/users${query ? `?${query}` : ''}`)
   },
@@ -21,6 +22,8 @@ export const adminApi = {
     const query = searchParams.toString()
     return api.get<PatientRecord[]>(`/admin/records${query ? `?${query}` : ''}`)
   },
+  assignDoctor: (recordId: string, doctorId: string | null) =>
+    api.patch<PatientRecord>(`/admin/records/${recordId}/assign-doctor`, { doctor_id: doctorId }),
   getAuditLogs: (params?: {
     skip?: number
     limit?: number

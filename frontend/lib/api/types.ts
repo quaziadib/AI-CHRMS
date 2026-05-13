@@ -75,6 +75,10 @@ export interface PatientRecord {
   risk_explanation?: string
   recommendations?: RecommendationsOutput | string[]
   risk_scored_at?: string
+  // Doctor assignment
+  doctor_id?: string
+  doctor_name?: string
+  patient_name?: string
   // Timestamps
   created_at: string
   updated_at: string

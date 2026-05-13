@@ -7,15 +7,18 @@ import type { User, PatientRecord } from '@/lib/api'
 
 export function useAdmin() {
   const [users, setUsers] = useState<User[]>([])
+  const [doctors, setDoctors] = useState<User[]>([])
   const [records, setRecords] = useState<PatientRecord[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     Promise.all([
       adminApi.getUsers(),
+      adminApi.getUsers({ role: 'doctor' }),
       adminApi.getAllRecords(),
-    ]).then(([usersRes, recordsRes]) => {
+    ]).then(([usersRes, doctorsRes, recordsRes]) => {
       if (usersRes.data) setUsers(usersRes.data)
+      if (doctorsRes.data) setDoctors(doctorsRes.data)
       if (recordsRes.data) setRecords(recordsRes.data)
     }).catch(() => {
       toast.error('Failed to load admin data')
@@ -41,6 +44,16 @@ export function useAdmin() {
       toast.success(`User ${isActive ? 'activated' : 'deactivated'}`)
     } else {
       toast.error('Failed to update status')
+    }
+  }
+
+  const handleAssignDoctor = async (recordId: string, doctorId: string | null) => {
+    const { data, error } = await adminApi.assignDoctor(recordId, doctorId)
+    if (!error && data) {
+      setRecords(records.map(r => r.id === recordId ? { ...r, doctor_id: data.doctor_id, doctor_name: data.doctor_name } : r))
+      toast.success(doctorId ? 'Doctor assigned' : 'Doctor unassigned')
+    } else {
+      toast.error('Failed to assign doctor')
     }
   }
 
@@ -89,11 +102,13 @@ export function useAdmin() {
 
   return {
     users,
+    doctors,
     records,
     isLoading,
     stats,
     handleRoleChange,
     handleStatusChange,
+    handleAssignDoctor,
     downloadCSV,
   }
 }

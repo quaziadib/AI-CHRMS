@@ -18,7 +18,7 @@ from jose import JWTError
 
 
 def _make_token_response(user: User, db: Session) -> TokenResponse:
-    access_token = create_access_token(user.id)
+    access_token = create_access_token(user.id, roles=user.roles)
     refresh_token_str, jti, expires_at = create_refresh_token(user.id)
 
     db_token = RefreshToken(
