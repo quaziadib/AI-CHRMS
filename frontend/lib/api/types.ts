@@ -1,3 +1,12 @@
+export interface AbnormalityFlag {
+  field: string
+  label: string
+  value: number
+  unit: string
+  severity: 'warning' | 'critical'
+  reference: string
+}
+
 export interface RecommendationCategories {
   diet: string[]
   exercise: string[]
@@ -82,6 +91,7 @@ export interface PatientRecord {
   patient_name?: string
   ehr_summary?: string
   ehr_summary_at?: string
+  flags?: AbnormalityFlag[]
   // Timestamps
   created_at: string
   updated_at: string
