@@ -24,13 +24,19 @@ function isStructuredRecs(recs: unknown): recs is RecommendationsOutput {
 
 interface Props {
   record: PatientRecord
+  readOnly?: boolean
 }
 
-export function RecordDetail({ record }: Props) {
+export function RecordDetail({ record, readOnly = false }: Props) {
   const recs = record.recommendations
 
   return (
     <CardContent className="border-t bg-muted/20 pt-4">
+      {readOnly && (
+        <div className="mb-4 flex items-center gap-2 rounded-md border border-blue-200 bg-blue-50 px-3 py-2 text-sm text-blue-700">
+          Read-only — assigned patient record
+        </div>
+      )}
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 text-sm">
         <VitalSignsSection record={record} />
         <MedicalHistorySection record={record} />

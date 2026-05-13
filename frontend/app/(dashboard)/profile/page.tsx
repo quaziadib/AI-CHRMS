@@ -1,7 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { useAuth } from "@/components/auth/auth-provider";
 import { usersApi } from "@/lib/api";
 import { formatDate } from "@/lib/utils";
@@ -18,41 +17,19 @@ import { Label } from "@/components/ui/label";
 import { Spinner } from "@/components/ui/spinner";
 import { User, Mail, Calendar, Shield, Save, Lock } from "lucide-react";
 import { toast } from "sonner";
+import type { User as UserType } from "@/lib/api";
 
-export default function ProfilePage() {
-  const { user, isLoading: authLoading, refreshUser } = useAuth();
-  const router = useRouter();
+function ProfileContent({ user, refreshUser }: { user: UserType; refreshUser: () => Promise<void> }) {
   const [isUpdating, setIsUpdating] = useState(false);
   const [isChangingPassword, setIsChangingPassword] = useState(false);
-  const [fullName, setFullName] = useState("");
+  const [fullName, setFullName] = useState(user.full_name);
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  useEffect(() => {
-    if (!authLoading && !user) {
-      router.push("/login");
-    }
-  }, [user, authLoading, router]);
-
-  useEffect(() => {
-    if (user) {
-      setFullName(user.full_name);
-    }
-  }, [user]);
-
-  if (authLoading || !user) {
-    return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <Spinner size="lg" />
-      </div>
-    );
-  }
-
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsUpdating(true);
-
     try {
       await usersApi.updateProfile({ full_name: fullName });
       await refreshUser();
@@ -67,19 +44,15 @@ export default function ProfilePage() {
 
   const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault();
-
     if (newPassword !== confirmPassword) {
       toast.error("New passwords do not match");
       return;
     }
-
     if (newPassword.length < 8) {
       toast.error("Password must be at least 8 characters");
       return;
     }
-
     setIsChangingPassword(true);
-
     try {
       await usersApi.changePassword({
         current_password: currentPassword,
@@ -98,7 +71,6 @@ export default function ProfilePage() {
   };
 
   return (
-    // <div className="space-y-6 max-w-2xl" align=center>
     <div className="flex items-center justify-center min-h-[60vh]">
       <div>
         <h1 className="text-2xl font-bold text-foreground">Profile Settings</h1>
@@ -107,7 +79,6 @@ export default function ProfilePage() {
         </p>
       </div>
 
-      {/* Account Info Card */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -161,7 +132,6 @@ export default function ProfilePage() {
         </CardContent>
       </Card>
 
-      {/* Edit Profile Card */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -201,7 +171,6 @@ export default function ProfilePage() {
         </CardContent>
       </Card>
 
-      {/* Change Password Card */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -268,4 +237,18 @@ export default function ProfilePage() {
       </Card>
     </div>
   );
+}
+
+export default function ProfilePage() {
+  const { user, isLoading: authLoading, refreshUser } = useAuth();
+
+  if (authLoading || !user) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <Spinner size="lg" />
+      </div>
+    );
+  }
+
+  return <ProfileContent user={user} refreshUser={refreshUser} />;
 }

@@ -15,8 +15,9 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 ENV NEXT_TELEMETRY_DISABLED=1
+ENV CI=true
 
-RUN corepack enable pnpm && pnpm run build
+RUN ./node_modules/.bin/next build
 
 # Production image, copy all the files and run next
 FROM base AS runner

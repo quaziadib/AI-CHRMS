@@ -4,7 +4,7 @@ from fastapi import APIRouter
 
 from app.api.deps import AdminUser, DB
 from app.schemas.audit import AdminStatsResponse, AuditLogResponse
-from app.schemas.record import PatientRecordResponse
+from app.schemas.record import AssignDoctorRequest, PatientRecordResponse
 from app.schemas.user import AdminUserUpdate, UserResponse
 from app.services import admin as admin_service
 
@@ -18,9 +18,14 @@ def get_stats(admin: AdminUser, db: DB):
 
 @router.get("/users", response_model=list[UserResponse])
 def get_all_users(
-    admin: AdminUser, db: DB, skip: int = 0, limit: int = 100, search: Optional[str] = None
+    admin: AdminUser,
+    db: DB,
+    skip: int = 0,
+    limit: int = 100,
+    search: Optional[str] = None,
+    role: Optional[str] = None,
 ):
-    return admin_service.list_users(db, skip=skip, limit=limit, search=search)
+    return admin_service.list_users(db, skip=skip, limit=limit, search=search, role=role)
 
 
 @router.get("/users/{user_id}", response_model=UserResponse)
@@ -38,6 +43,11 @@ def get_all_records(
     admin: AdminUser, db: DB, skip: int = 0, limit: int = 100, user_id: Optional[str] = None
 ):
     return admin_service.list_all_records(db, skip=skip, limit=limit, user_id=user_id)
+
+
+@router.patch("/records/{record_id}/assign-doctor", response_model=PatientRecordResponse)
+def assign_doctor(record_id: str, body: AssignDoctorRequest, admin: AdminUser, db: DB):
+    return admin_service.assign_doctor(db, admin.id, record_id, body.doctor_id)
 
 
 @router.get("/audit-logs", response_model=list[AuditLogResponse])

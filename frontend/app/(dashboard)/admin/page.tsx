@@ -34,11 +34,13 @@ export default function AdminPage() {
 
   const {
     users,
+    doctors,
     records,
     isLoading,
     stats,
     handleRoleChange,
     handleStatusChange,
+    handleAssignDoctor,
     downloadCSV,
   } = useAdmin()
 
@@ -57,10 +59,8 @@ export default function AdminPage() {
         <p className="text-muted-foreground">Manage users and view all health records</p>
       </div>
 
-      {/* Stats */}
       <StatsCards stats={stats} isLoading={isLoading} />
 
-      {/* Tabs */}
       <div className="flex gap-2 border-b">
         <Button
           variant={activeTab === 'users' ? 'default' : 'ghost'}
@@ -80,7 +80,6 @@ export default function AdminPage() {
         </Button>
       </div>
 
-      {/* Search + CSV */}
       <div className="flex gap-3">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -114,8 +113,10 @@ export default function AdminPage() {
         <RecordsTab
           records={records}
           users={users}
+          doctors={doctors}
           isLoading={isLoading}
           searchQuery={searchTerm}
+          onAssignDoctor={handleAssignDoctor}
         />
       )}
     </div>

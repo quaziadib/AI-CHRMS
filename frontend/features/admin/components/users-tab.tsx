@@ -1,9 +1,12 @@
 'use client'
 
 import { useState } from 'react'
+import type { ElementType } from 'react'
 import {
   Users,
   Shield,
+  Stethoscope,
+  Globe,
   ChevronDown,
   ChevronUp,
   Calendar,
@@ -22,6 +25,20 @@ import {
 } from '@/components/ui/select'
 import { formatDate } from '@/lib/utils'
 import type { User } from '@/lib/api'
+
+const ROLE_CONFIG: Record<string, { label: string; icon: ElementType; cls: string }> = {
+  admin: { label: 'Admin', icon: Shield, cls: 'bg-primary/10 text-primary' },
+  doctor: { label: 'Doctor', icon: Stethoscope, cls: 'bg-blue-50 text-blue-600' },
+  national_admin: { label: 'National Admin', icon: Globe, cls: 'bg-purple-50 text-purple-600' },
+  user: { label: 'Patient', icon: UserIcon, cls: 'bg-muted text-muted-foreground' },
+}
+
+function getPrimaryRole(roles: string[]): string {
+  if (roles.includes('admin')) return 'admin'
+  if (roles.includes('doctor')) return 'doctor'
+  if (roles.includes('national_admin')) return 'national_admin'
+  return 'user'
+}
 
 interface Props {
   users: User[]
@@ -62,99 +79,100 @@ export function UsersTab({
 
   return (
     <div className="space-y-3">
-      {filteredUsers.map((u) => (
-        <Card key={u.id} className="overflow-hidden">
-          <CardHeader
-            className="cursor-pointer hover:bg-muted/50 transition-colors py-4"
-            onClick={() => setExpandedUser(expandedUser === u.id ? null : u.id)}
-          >
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <div className={`p-2 rounded-full ${u.roles.includes('admin') ? 'bg-primary/10' : 'bg-muted'}`}>
-                  {u.roles.includes('admin') ? (
-                    <Shield className="h-5 w-5 text-primary" />
-                  ) : (
-                    <UserIcon className="h-5 w-5 text-muted-foreground" />
-                  )}
-                </div>
-                <div>
-                  <CardTitle className="text-base flex items-center gap-2">
-                    {u.full_name}
-                    {!u.is_active && (
-                      <span className="text-xs bg-destructive/10 text-destructive px-2 py-0.5 rounded">Inactive</span>
-                    )}
-                  </CardTitle>
-                  <CardDescription className="flex items-center gap-1">
-                    <Mail className="h-3 w-3" />
-                    {u.email}
-                  </CardDescription>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className={`text-xs px-2 py-1 rounded ${
-                  u.roles.includes('admin') ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'
-                }`}>
-                  {u.roles.includes('admin') ? 'admin' : 'user'}
-                </span>
-                {expandedUser === u.id
-                  ? <ChevronUp className="h-4 w-4 text-muted-foreground" />
-                  : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
-              </div>
-            </div>
-          </CardHeader>
+      {filteredUsers.map((u) => {
+        const primaryRole = getPrimaryRole(u.roles)
+        const roleConf = ROLE_CONFIG[primaryRole]
+        const RoleIcon = roleConf.icon
 
-          {expandedUser === u.id && (
-            <CardContent className="border-t bg-muted/20 pt-4">
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div className="space-y-1">
-                  <p className="text-sm text-muted-foreground">User ID</p>
-                  <p className="text-sm font-mono">{u.id}</p>
+        return (
+          <Card key={u.id} className="overflow-hidden">
+            <CardHeader
+              className="cursor-pointer hover:bg-muted/50 transition-colors py-4"
+              onClick={() => setExpandedUser(expandedUser === u.id ? null : u.id)}
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className={`p-2 rounded-full ${roleConf.cls}`}>
+                    <RoleIcon className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-base flex items-center gap-2">
+                      {u.full_name}
+                      {!u.is_active && (
+                        <span className="text-xs bg-destructive/10 text-destructive px-2 py-0.5 rounded">Inactive</span>
+                      )}
+                    </CardTitle>
+                    <CardDescription className="flex items-center gap-1">
+                      <Mail className="h-3 w-3" />
+                      {u.email}
+                    </CardDescription>
+                  </div>
                 </div>
-                <div className="space-y-1">
-                  <p className="text-sm text-muted-foreground">Joined</p>
-                  <p className="text-sm flex items-center gap-1">
-                    <Calendar className="h-3 w-3" />
-                    {formatDate(u.created_at)}
-                  </p>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-sm text-muted-foreground">Role</p>
-                  <Select
-                    value={u.roles.includes('admin') ? 'admin' : 'user'}
-                    onValueChange={(value) => onRoleChange(u.id, value as 'user' | 'admin')}
-                    disabled={u.id === currentUserId}
-                  >
-                    <SelectTrigger className="w-32">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="user">User</SelectItem>
-                      <SelectItem value="admin">Admin</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-sm text-muted-foreground">Status</p>
-                  <Button
-                    variant={u.is_active ? 'outline' : 'default'}
-                    size="sm"
-                    onClick={() => onStatusChange(u.id, !u.is_active)}
-                    disabled={u.id === currentUserId}
-                  >
-                    {u.is_active ? 'Deactivate' : 'Activate'}
-                  </Button>
+                <div className="flex items-center gap-2">
+                  <span className={`text-xs px-2 py-1 rounded flex items-center gap-1 ${roleConf.cls}`}>
+                    <RoleIcon className="h-3 w-3" />
+                    {roleConf.label}
+                  </span>
+                  {expandedUser === u.id
+                    ? <ChevronUp className="h-4 w-4 text-muted-foreground" />
+                    : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
                 </div>
               </div>
-              {u.id === currentUserId && (
-                <p className="text-xs text-muted-foreground mt-4 flex items-center gap-1">
-                  <AlertCircle className="h-3 w-3" />
-                  You cannot modify your own account from here
-                </p>
-              )}
-            </CardContent>
-          )}
-        </Card>
-      ))}
+            </CardHeader>
+
+            {expandedUser === u.id && (
+              <CardContent className="border-t bg-muted/20 pt-4">
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div className="space-y-1">
+                    <p className="text-sm text-muted-foreground">User ID</p>
+                    <p className="text-sm font-mono">{u.id}</p>
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-sm text-muted-foreground">Joined</p>
+                    <p className="text-sm flex items-center gap-1">
+                      <Calendar className="h-3 w-3" />
+                      {formatDate(u.created_at)}
+                    </p>
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-sm text-muted-foreground">Role</p>
+                    <Select
+                      value={u.roles.includes('admin') ? 'admin' : 'user'}
+                      onValueChange={(value) => onRoleChange(u.id, value as 'user' | 'admin')}
+                      disabled={u.id === currentUserId}
+                    >
+                      <SelectTrigger className="w-32">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="user">Patient</SelectItem>
+                        <SelectItem value="admin">Admin</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-sm text-muted-foreground">Status</p>
+                    <Button
+                      variant={u.is_active ? 'outline' : 'default'}
+                      size="sm"
+                      onClick={() => onStatusChange(u.id, !u.is_active)}
+                      disabled={u.id === currentUserId}
+                    >
+                      {u.is_active ? 'Deactivate' : 'Activate'}
+                    </Button>
+                  </div>
+                </div>
+                {u.id === currentUserId && (
+                  <p className="text-xs text-muted-foreground mt-4 flex items-center gap-1">
+                    <AlertCircle className="h-3 w-3" />
+                    You cannot modify your own account from here
+                  </p>
+                )}
+              </CardContent>
+            )}
+          </Card>
+        )
+      })}
     </div>
   )
 }

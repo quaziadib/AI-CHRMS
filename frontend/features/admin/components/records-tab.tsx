@@ -10,8 +10,16 @@ import {
   CheckCircle,
   AlertTriangle,
   XCircle,
+  Stethoscope,
 } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import {
   VitalSignsSection,
   MedicalHistorySection,
@@ -30,11 +38,13 @@ function isStructuredRecs(recs: unknown): recs is RecommendationsOutput {
 interface Props {
   records: PatientRecord[]
   users: User[]
+  doctors: User[]
   isLoading: boolean
   searchQuery: string
+  onAssignDoctor: (recordId: string, doctorId: string | null) => void
 }
 
-export function RecordsTab({ records, users, isLoading, searchQuery }: Props) {
+export function RecordsTab({ records, users, doctors, isLoading, searchQuery, onAssignDoctor }: Props) {
   const [expandedRecord, setExpandedRecord] = useState<string | null>(null)
 
   const RISK_BADGE = {
@@ -120,6 +130,28 @@ export function RecordsTab({ records, users, isLoading, searchQuery }: Props) {
                     <p>{recordUser?.full_name}</p>
                     <p className="text-muted-foreground">{recordUser?.email}</p>
                   </section>
+
+                  <section>
+                    <h4 className="font-medium text-muted-foreground mb-2 flex items-center gap-1.5">
+                      <Stethoscope className="h-3.5 w-3.5" />
+                      Assigned Doctor
+                    </h4>
+                    <Select
+                      value={record.doctor_id ?? 'unassigned'}
+                      onValueChange={(val) => onAssignDoctor(record.id, val === 'unassigned' ? null : val)}
+                    >
+                      <SelectTrigger className="w-48" onClick={(e) => e.stopPropagation()}>
+                        <SelectValue placeholder="Unassigned" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="unassigned">Unassigned</SelectItem>
+                        {doctors.map(d => (
+                          <SelectItem key={d.id} value={d.id}>{d.full_name}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </section>
+
                   <VitalSignsSection record={record} showBMICategory={false} />
                   <MedicalHistorySection record={record} />
                   <FamilyHistorySection record={record} />

@@ -62,6 +62,9 @@ class PatientRecord(TimestampMixin, Base):
     sleep_hours: Mapped[float] = mapped_column(Float, nullable=False)
     sound_sleep: Mapped[bool] = mapped_column(Boolean, default=False)
 
+    # Doctor assignment (set by admin)
+    doctor_id: Mapped[str | None] = mapped_column(UUID(as_uuid=False), nullable=True, index=True)
+
     # Risk Assessment (populated by LLM scoring endpoint)
     risk_level: Mapped[str | None] = mapped_column(String(10), nullable=True)
     risk_explanation: Mapped[str | None] = mapped_column(Text, nullable=True)

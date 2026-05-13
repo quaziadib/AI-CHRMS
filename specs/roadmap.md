@@ -13,9 +13,9 @@ Timeline is phase-gated, not date-fixed. Phases unlock when their success criter
 - [x] **LLM risk model** — LangChain chain serializes health form data → LLM returns structured risk level + explanation; served via `POST /v1/records/{id}/risk-score`
 - [x] **Risk dashboard widget** — visual risk level (Low / Moderate / High) + confidence score on patient dashboard
 - [x] **LLM recommendations** — post-risk-score call to GPT/Claude API generates personalized diet/lifestyle advice; stored with the record
-- [ ] **Doctor role UI** — doctor dashboard listing assigned patients with risk flags; read-only EHR view per patient
-- [ ] **Role-gated nav** — all four roles (patient, doctor, national admin, maintainer) have distinct nav and landing views
-- [ ] **Chatbot (basic)** — FAQ-style LangChain chain answering common diabetes questions; no memory yet
+- [x] **Doctor role UI** — doctor dashboard listing assigned patients with risk flags; read-only EHR view per patient
+- [x] **Role-gated nav** — all four roles (patient, doctor, national admin, maintainer) have distinct nav and landing views
+- [x] **Chatbot (basic)** — FAQ-style LangChain chain answering common diabetes questions; no memory yet
 
 ### Success Criteria
 - Patient completes form → sees risk score + recommendations within 5 seconds
