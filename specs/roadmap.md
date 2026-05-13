@@ -31,7 +31,7 @@ Timeline is phase-gated, not date-fixed. Phases unlock when their success criter
 ### Deliverables
 
 - [x] **EHR summarization** — LLM generates a clinical summary of a patient's full record history; surfaced on doctor dashboard
-- [ ] **Abnormality flagging** — rule-based + ML flags out-of-range lab values (HbA1c > 6.5%, fasting glucose > 126 mg/dL, etc.)
+- [x] **Abnormality flagging** — rule-based + ML flags out-of-range lab values (HbA1c > 6.5%, fasting glucose > 126 mg/dL, etc.)
 - [ ] **Chatbot with RAG** — patient chatbot retrieves from their own record history (vector store: pgvector or Chroma)
 - [ ] **Personalized plans** — LLM-generated meal plan and exercise routine based on user profile + risk score
 - [ ] **Async job runner** — Celery + Redis for time-series forecasting jobs (LSTM/ARIMA on longitudinal data)

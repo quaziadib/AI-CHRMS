@@ -10,6 +10,7 @@ from app.core.security import generate_pid
 from app.models.record import PatientRecord
 from app.schemas.record import PatientRecordCreate, PatientRecordUpdate, PatientRecordResponse
 from app.services.audit import log_audit
+from app.services.flagging import compute_flags
 
 
 def _get_record_or_404(db: Session, record_id: str) -> PatientRecord:
@@ -59,6 +60,8 @@ def create_record(
     db.add(record)
     db.commit()
     db.refresh(record)
+    record.flags = compute_flags(record)
+    db.commit()
     log_audit(db, user_id, "create_record", "patient_record", record.id)
     return PatientRecordResponse.model_validate(record)
 
@@ -74,6 +77,7 @@ def update_record(
     _check_ownership(record, user_id, roles)
     for field, value in data.model_dump(exclude_none=True).items():
         setattr(record, field, value)
+    record.flags = compute_flags(record)
     db.commit()
     db.refresh(record)
     log_audit(db, user_id, "update_record", "patient_record", record_id)
@@ -125,6 +129,7 @@ def score_record(
     record.risk_level = assessment.risk_level
     record.risk_explanation = assessment.explanation
     record.risk_scored_at = datetime.now(timezone.utc)
+    record.flags = compute_flags(record)
     db.commit()
     db.refresh(record)
     log_audit(db, user_id, "risk_scored", "patient_record", record_id)

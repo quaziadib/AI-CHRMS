@@ -10,6 +10,7 @@ import {
   ClinicalNotesSection,
 } from '@/components/ui/record-sections'
 import type { PatientRecord, RecommendationsOutput } from '@/lib/api'
+import { FlagsPanel } from './flags-panel'
 
 const CATEGORY_CONFIG = [
   { key: 'diet' as const, label: 'Diet & Nutrition', icon: Salad },
@@ -35,6 +36,11 @@ export function RecordDetail({ record, readOnly = false }: Props) {
       {readOnly && (
         <div className="mb-4 flex items-center gap-2 rounded-md border border-blue-200 bg-blue-50 px-3 py-2 text-sm text-blue-700">
           Read-only — assigned patient record
+        </div>
+      )}
+      {record.flags !== undefined && (
+        <div className="mb-4">
+          <FlagsPanel flags={record.flags} />
         </div>
       )}
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 text-sm">

@@ -62,6 +62,9 @@ def _run_migrations() -> None:
         conn.execute(text(
             "ALTER TABLE patient_records ADD COLUMN IF NOT EXISTS ehr_summary_at TIMESTAMPTZ"
         ))
+        conn.execute(text(
+            "ALTER TABLE patient_records ADD COLUMN IF NOT EXISTS flags JSONB"
+        ))
         conn.commit()
     logger.info("Migrations applied")
 

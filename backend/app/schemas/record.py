@@ -1,9 +1,18 @@
 from datetime import datetime
-from typing import Any, Optional
+from typing import Any, Literal, Optional
 
 from pydantic import BaseModel, Field
 
 from app.schemas.base import OrmSchema
+
+
+class AbnormalityFlag(BaseModel):
+    field: str
+    label: str
+    value: float
+    unit: str
+    severity: Literal["warning", "critical"]
+    reference: str
 
 
 class PatientRecordBase(BaseModel):
@@ -126,5 +135,6 @@ class PatientRecordResponse(OrmSchema):
     patient_name: Optional[str] = None
     ehr_summary: Optional[str] = None
     ehr_summary_at: Optional[datetime] = None
+    flags: Optional[list[AbnormalityFlag]] = None
     created_at: datetime
     updated_at: datetime
