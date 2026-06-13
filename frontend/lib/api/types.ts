@@ -19,6 +19,51 @@ export interface RecommendationsOutput {
   categories: RecommendationCategories
 }
 
+export interface MealDay {
+  day: string
+  breakfast: string
+  lunch: string
+  dinner: string
+  snack: string
+}
+
+export interface ExerciseDay {
+  day: string
+  activity: string
+  duration_minutes: number
+  notes: string
+}
+
+export interface PersonalizedPlan {
+  meal_plan_summary: string
+  meals: MealDay[]
+  exercise_summary: string
+  exercises: ExerciseDay[]
+}
+
+export interface ForecastPoint {
+  date: string
+  glucose_mg_dl: number
+  kind: 'actual' | 'forecast'
+}
+
+export interface ForecastResult {
+  model: string
+  summary: string
+  points: ForecastPoint[]
+}
+
+export interface ForecastJob {
+  id: string
+  record_id: string
+  user_id: string
+  status: 'pending' | 'running' | 'completed' | 'failed'
+  result?: ForecastResult
+  error_message?: string
+  created_at: string
+  completed_at?: string
+}
+
 export interface ApiResponse<T> {
   data?: T
   error?: string
@@ -92,6 +137,8 @@ export interface PatientRecord {
   ehr_summary?: string
   ehr_summary_at?: string
   flags?: AbnormalityFlag[]
+  personalized_plan?: PersonalizedPlan
+  personalized_plan_at?: string
   // Timestamps
   created_at: string
   updated_at: string
@@ -151,4 +198,37 @@ export interface AdminStats {
   records_today: number
   records_this_week: number
   records_this_month: number
+}
+
+export interface SystemSettings {
+  resubmit_interval_months: number
+  updated_at: string
+  updated_by?: string
+}
+
+export interface ResubmitStatus {
+  interval_months: number
+  latest_submission_at?: string
+  next_due_at?: string
+  is_due: boolean
+  days_until_due?: number
+  submission_count: number
+  can_submit_new: boolean
+  status: 'initial' | 'current' | 'upcoming' | 'due'
+}
+
+export interface HealthTrendPoint {
+  record_id: string
+  pid: string
+  submitted_at: string
+  blood_glucose?: number
+  bmi: number
+  bp_systolic: number
+  bp_diastolic: number
+  risk_level?: string
+  risk_score?: number
+}
+
+export interface HealthTrends {
+  submissions: HealthTrendPoint[]
 }

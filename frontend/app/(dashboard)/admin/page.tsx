@@ -7,17 +7,21 @@ import { useAdmin } from '@/features/admin/hooks/use-admin'
 import { StatsCards } from '@/features/admin/components/stats-cards'
 import { UsersTab } from '@/features/admin/components/users-tab'
 import { RecordsTab } from '@/features/admin/components/records-tab'
+import { SettingsTab } from '@/features/admin/components/settings-tab'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Spinner } from '@/components/ui/spinner'
-import { Users, FileText, Search, Download } from 'lucide-react'
+import { Users, FileText, Search, Download, Settings } from 'lucide-react'
 import { toast } from 'sonner'
+import { adminApi } from '@/lib/api'
+import type { SystemSettings } from '@/lib/api'
 
 export default function AdminPage() {
   const { user, isLoading: authLoading } = useAuth()
   const router = useRouter()
-  const [activeTab, setActiveTab] = useState<'users' | 'records'>('users')
+  const [activeTab, setActiveTab] = useState<'users' | 'records' | 'settings'>('users')
   const [searchTerm, setSearchTerm] = useState('')
+  const [systemSettings, setSystemSettings] = useState<SystemSettings | null>(null)
 
   const isAdmin = user?.roles.includes('admin')
 
@@ -43,6 +47,14 @@ export default function AdminPage() {
     handleAssignDoctor,
     downloadCSV,
   } = useAdmin()
+
+  useEffect(() => {
+    if (isAdmin) {
+      adminApi.getSettings().then(({ data }) => {
+        if (data) setSystemSettings(data)
+      })
+    }
+  }, [isAdmin])
 
   if (authLoading || !user || !isAdmin) {
     return (
@@ -78,8 +90,17 @@ export default function AdminPage() {
           <FileText className="h-4 w-4 mr-2" />
           Records ({records.length})
         </Button>
+        <Button
+          variant={activeTab === 'settings' ? 'default' : 'ghost'}
+          onClick={() => setActiveTab('settings')}
+          className="rounded-b-none"
+        >
+          <Settings className="h-4 w-4 mr-2" />
+          Settings
+        </Button>
       </div>
 
+      {activeTab !== 'settings' && (
       <div className="flex gap-3">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -97,9 +118,12 @@ export default function AdminPage() {
           </Button>
         )}
       </div>
+      )}
 
       {isLoading ? (
         <div className="flex items-center justify-center py-12"><Spinner size="lg" /></div>
+      ) : activeTab === 'settings' ? (
+        <SettingsTab settings={systemSettings} onUpdated={setSystemSettings} />
       ) : activeTab === 'users' ? (
         <UsersTab
           users={users}

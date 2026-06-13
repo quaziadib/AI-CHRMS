@@ -34,7 +34,13 @@ class Settings(BaseSettings):
     GOOGLE_API_KEY: str | None = None
     ENABLE_RECOMMENDATIONS: bool = True
     ENABLE_CHATBOT: bool = True
+    ENABLE_RAG: bool = True
     ENABLE_EHR_SUMMARY: bool = True
+    ENABLE_PERSONALIZED_PLANS: bool = True
+    ENABLE_FORECASTING: bool = True
+    EMBEDDING_MODEL: str = "text-embedding-3-small"
+    REDIS_URL: str = "redis://localhost:6379/0"
+    RESUBMIT_INTERVAL_MONTHS_DEFAULT: int = 6
 
     # CORS
     CORS_ORIGINS: list[str] = ["http://localhost:3001", "http://localhost:3000"]

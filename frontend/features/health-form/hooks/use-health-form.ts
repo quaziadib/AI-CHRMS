@@ -9,7 +9,7 @@ import { recordsApi } from '@/lib/api'
 import { useFormDraft } from '@/hooks/use-form-draft'
 import { healthFormSchema, stepSchemas, type HealthFormData } from '@/lib/health-form-schema'
 import { calculateBMI } from '@/lib/utils'
-import type { PatientRecord, PatientRecordCreate } from '@/lib/api'
+import type { PatientRecord, PatientRecordCreate, ResubmitStatus } from '@/lib/api'
 
 const TOTAL_STEPS = 8
 
@@ -19,7 +19,7 @@ export function useHealthForm({ onSuccess }: { onSuccess: () => void }) {
   const [currentStep, setCurrentStep] = useState(1)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showDraftPrompt, setShowDraftPrompt] = useState(false)
-  const [hasRecord, setHasRecord] = useState<boolean | null>(null)
+  const [resubmitStatus, setResubmitStatus] = useState<ResubmitStatus | null>(null)
   const [riskResult, setRiskResult] = useState<PatientRecord | null>(null)
 
   const form = useForm<HealthFormData>({
@@ -73,14 +73,10 @@ export function useHealthForm({ onSuccess }: { onSuccess: () => void }) {
     }
   }, [height, weight, setValue])
 
-  // Check if user already has a record
+  // Load resubmit eligibility
   useEffect(() => {
-    recordsApi.list({ limit: 1 }).then(({ data }) => {
-      if (data && data.length > 0) {
-        setHasRecord(true)
-      } else {
-        setHasRecord(false)
-      }
+    recordsApi.getResubmitStatus().then(({ data }) => {
+      if (data) setResubmitStatus(data)
     })
   }, [])
 
@@ -182,7 +178,7 @@ export function useHealthForm({ onSuccess }: { onSuccess: () => void }) {
     totalSteps: TOTAL_STEPS,
     progress,
     isSubmitting,
-    hasRecord,
+    resubmitStatus,
     showDraftPrompt,
     riskResult,
     handleNext,

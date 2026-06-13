@@ -9,14 +9,13 @@ You are a diabetes health coach. Given a patient's health profile and their asse
 generate specific, personalised recommendations organised into four categories.
 
 Return:
-- summary: one sentence of overall tailored guidance for this patient
-- diet: 2-3 specific nutrition tips (reference actual lab values where available, \
-  e.g. "Your fasting glucose of 7.2 mmol/L suggests reducing refined carbohydrates")
-- exercise: 2-3 physical activity recommendations suited to their conditions and fitness level
-- lifestyle: 2-3 sleep, stress, and habit recommendations based on their profile
-- monitoring: 1-2 specific measurement or check-up reminders based on their risk and labs
+- summary: one sentence of overall tailored guidance for this patient (max 20 words)
+- diet: 2-3 nutrition tips — each tip is action-first, max 12 words (e.g. "Limit white rice to half-cup portions")
+- exercise: 2-3 activity tips — action-first, max 12 words each
+- lifestyle: 2-3 habit tips — action-first, max 12 words each
+- monitoring: 1-2 check-up reminders — action-first, max 12 words each
 
-Be precise. Reference actual patient values. No generic disclaimers. \
+Do NOT repeat lab values in every tip. Put context in summary only; tips must be short imperative actions.
 Do not suggest consulting a doctor as a recommendation item.
 """
 
@@ -59,22 +58,22 @@ Generate personalised recommendations for this patient.
 
 class RecommendationCategories(BaseModel):
     diet: list[str] = Field(
-        description="2-3 specific nutrition and dietary tips",
+        description="2-3 short action-first nutrition tips (max 12 words each)",
         min_length=1,
         max_length=3,
     )
     exercise: list[str] = Field(
-        description="2-3 physical activity recommendations",
+        description="2-3 short action-first activity tips (max 12 words each)",
         min_length=1,
         max_length=3,
     )
     lifestyle: list[str] = Field(
-        description="2-3 sleep, stress, and habit recommendations",
+        description="2-3 short action-first habit tips (max 12 words each)",
         min_length=1,
         max_length=3,
     )
     monitoring: list[str] = Field(
-        description="1-2 measurement or check-up reminders",
+        description="1-2 short action-first check-up reminders (max 12 words each)",
         min_length=1,
         max_length=2,
     )

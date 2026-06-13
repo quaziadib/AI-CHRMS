@@ -1,44 +1,9 @@
 'use client'
 
-import { CheckCircle, AlertTriangle, XCircle, ArrowRight, Salad, Dumbbell, Moon, Activity } from 'lucide-react'
+import { ArrowRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import type { PatientRecord, RecommendationsOutput } from '@/lib/api'
-
-const RISK_CONFIG = {
-  low: {
-    label: 'Low Risk',
-    icon: CheckCircle,
-    color: 'text-green-600',
-    bg: 'bg-green-50 border-green-200',
-    badge: 'bg-green-100 text-green-800',
-  },
-  moderate: {
-    label: 'Moderate Risk',
-    icon: AlertTriangle,
-    color: 'text-amber-600',
-    bg: 'bg-amber-50 border-amber-200',
-    badge: 'bg-amber-100 text-amber-800',
-  },
-  high: {
-    label: 'High Risk',
-    icon: XCircle,
-    color: 'text-red-600',
-    bg: 'bg-red-50 border-red-200',
-    badge: 'bg-red-100 text-red-800',
-  },
-}
-
-const CATEGORY_CONFIG = [
-  { key: 'diet' as const, label: 'Diet & Nutrition', icon: Salad },
-  { key: 'exercise' as const, label: 'Exercise', icon: Dumbbell },
-  { key: 'lifestyle' as const, label: 'Lifestyle', icon: Moon },
-  { key: 'monitoring' as const, label: 'Monitoring', icon: Activity },
-]
-
-function isStructuredRecs(recs: unknown): recs is RecommendationsOutput {
-  return typeof recs === 'object' && recs !== null && !Array.isArray(recs) && 'categories' in recs
-}
+import { HealthAssessmentReport } from '@/features/records/components/health-assessment-report'
+import type { PatientRecord } from '@/lib/api'
 
 interface RiskResultProps {
   record: PatientRecord
@@ -46,90 +11,14 @@ interface RiskResultProps {
 }
 
 export function RiskResult({ record, onContinue }: RiskResultProps) {
-  const level = record.risk_level as keyof typeof RISK_CONFIG | undefined
-  const config = level ? RISK_CONFIG[level] : null
-  const Icon = config?.icon
-  const recs = record.recommendations
-
   return (
-    <div className="max-w-2xl mx-auto space-y-6">
+    <div className="max-w-4xl mx-auto space-y-6">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Your Risk Assessment</h1>
-        <p className="text-muted-foreground">AI-powered analysis of your health data</p>
+        <h1 className="text-2xl font-bold tracking-tight">Your Health Assessment</h1>
+        <p className="text-muted-foreground">AI summary of your risk and next steps</p>
       </div>
 
-      {config && Icon && (
-        <Card className={`border-2 ${config.bg}`}>
-          <CardHeader className="pb-3">
-            <CardTitle className={`flex items-center gap-3 ${config.color}`}>
-              <Icon className="h-7 w-7" />
-              <span className="text-2xl">{config.label}</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {record.risk_explanation && (
-              <p className="text-sm leading-relaxed text-foreground">
-                {record.risk_explanation}
-              </p>
-            )}
-          </CardContent>
-        </Card>
-      )}
-
-      {recs && isStructuredRecs(recs) ? (
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base">Personalised Recommendations</CardTitle>
-            {recs.summary && (
-              <p className="text-sm text-muted-foreground">{recs.summary}</p>
-            )}
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {CATEGORY_CONFIG.map(({ key, label, icon: CatIcon }) => {
-              const items = recs.categories[key]
-              if (!items?.length) return null
-              return (
-                <div key={key}>
-                  <div className="flex items-center gap-2 mb-2">
-                    <CatIcon className="h-4 w-4 text-muted-foreground" />
-                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                      {label}
-                    </p>
-                  </div>
-                  <ul className="space-y-1.5">
-                    {items.map((item, i) => (
-                      <li key={i} className="flex items-start gap-2 text-sm">
-                        <span className="mt-0.5 flex-shrink-0 w-5 h-5 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-medium">
-                          {i + 1}
-                        </span>
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )
-            })}
-          </CardContent>
-        </Card>
-      ) : Array.isArray(recs) && recs.length > 0 ? (
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base">Personalised Recommendations</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ul className="space-y-2">
-              {(recs as string[]).map((rec, i) => (
-                <li key={i} className="flex items-start gap-2 text-sm">
-                  <span className="mt-0.5 flex-shrink-0 w-5 h-5 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-medium">
-                    {i + 1}
-                  </span>
-                  {rec}
-                </li>
-              ))}
-            </ul>
-          </CardContent>
-        </Card>
-      ) : null}
+      <HealthAssessmentReport record={record} showTitle={false} />
 
       <div className="flex justify-end">
         <Button onClick={onContinue} className="gap-2">

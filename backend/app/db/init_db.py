@@ -12,6 +12,13 @@ from app.models.user import User
 logger = logging.getLogger(__name__)
 
 
+def _ensure_pgvector() -> None:
+    with engine.connect() as conn:
+        conn.execute(text("CREATE EXTENSION IF NOT EXISTS vector"))
+        conn.commit()
+    logger.info("pgvector extension verified")
+
+
 def _run_migrations() -> None:
     with engine.connect() as conn:
         # Ensure doctor_id column exists as UUID (convert VARCHAR→UUID if needed)
@@ -65,8 +72,38 @@ def _run_migrations() -> None:
         conn.execute(text(
             "ALTER TABLE patient_records ADD COLUMN IF NOT EXISTS flags JSONB"
         ))
+        conn.execute(text(
+            "ALTER TABLE patient_records ADD COLUMN IF NOT EXISTS personalized_plan JSONB"
+        ))
+        conn.execute(text(
+            "ALTER TABLE patient_records ADD COLUMN IF NOT EXISTS personalized_plan_at TIMESTAMPTZ"
+        ))
+        conn.execute(text("""
+            DO $$
+            BEGIN
+                IF EXISTS (
+                    SELECT 1 FROM information_schema.tables
+                    WHERE table_name = 'record_embeddings'
+                ) THEN
+                    CREATE INDEX IF NOT EXISTS ix_record_embeddings_embedding_ivfflat
+                    ON record_embeddings USING ivfflat (embedding vector_cosine_ops)
+                    WITH (lists = 100);
+                END IF;
+            END
+            $$;
+        """))
         conn.commit()
     logger.info("Migrations applied")
+
+
+def seed_system_settings(db: Session) -> None:
+    from app.models.system_setting import SystemSetting
+
+    if db.query(SystemSetting).filter(SystemSetting.id == 1).first():
+        return
+    db.add(SystemSetting(id=1, resubmit_interval_months=settings.RESUBMIT_INTERVAL_MONTHS_DEFAULT))
+    db.commit()
+    logger.info("Seeded system settings")
 
 
 def create_tables() -> None:
@@ -75,6 +112,7 @@ def create_tables() -> None:
     Adding a new model: define it, add it to app/models/__init__.py — done.
     No changes needed here.
     """
+    _ensure_pgvector()
     Base.metadata.create_all(bind=engine)
     _run_migrations()
     logger.info("Database tables created/verified")

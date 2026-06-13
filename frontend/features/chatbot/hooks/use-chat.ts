@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { api } from '@/lib/api/client'
 
 export interface ChatMessage {
@@ -9,9 +9,43 @@ export interface ChatMessage {
   content: string
 }
 
+interface HistoryMessage {
+  id: number
+  role: 'user' | 'assistant'
+  content: string
+  created_at: string
+}
+
 export function useChat() {
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [isLoading, setIsLoading] = useState(false)
+  const [isLoadingHistory, setIsLoadingHistory] = useState(true)
+
+  useEffect(() => {
+    let cancelled = false
+
+    async function loadHistory() {
+      setIsLoadingHistory(true)
+      const result = await api.get<{ messages: HistoryMessage[] }>('/chat/history')
+      if (cancelled) return
+
+      if (result.data?.messages) {
+        setMessages(
+          result.data.messages.map(m => ({
+            id: String(m.id),
+            role: m.role,
+            content: m.content,
+          }))
+        )
+      }
+      setIsLoadingHistory(false)
+    }
+
+    loadHistory()
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
   const sendMessage = useCallback(async (content: string) => {
     const userMsg: ChatMessage = {
@@ -33,7 +67,12 @@ export function useChat() {
     setIsLoading(false)
   }, [])
 
-  const clearMessages = useCallback(() => setMessages([]), [])
+  const clearHistory = useCallback(async () => {
+    const result = await api.delete<{ deleted: number }>('/chat/history')
+    if (result.data !== undefined && !result.error) {
+      setMessages([])
+    }
+  }, [])
 
-  return { messages, isLoading, sendMessage, clearMessages }
+  return { messages, isLoading, isLoadingHistory, sendMessage, clearHistory }
 }

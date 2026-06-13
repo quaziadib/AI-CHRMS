@@ -32,15 +32,27 @@ Timeline is phase-gated, not date-fixed. Phases unlock when their success criter
 
 - [x] **EHR summarization** — LLM generates a clinical summary of a patient's full record history; surfaced on doctor dashboard
 - [x] **Abnormality flagging** — rule-based + ML flags out-of-range lab values (HbA1c > 6.5%, fasting glucose > 126 mg/dL, etc.)
-- [ ] **Chatbot with RAG** — patient chatbot retrieves from their own record history (vector store: pgvector or Chroma)
-- [ ] **Personalized plans** — LLM-generated meal plan and exercise routine based on user profile + risk score
-- [ ] **Async job runner** — Celery + Redis for time-series forecasting jobs (LSTM/ARIMA on longitudinal data)
-- [ ] **Health progression chart** — time-series forecast of blood sugar trajectory displayed in patient dashboard
+- [x] **Chatbot with RAG** — patient chatbot retrieves from their own record history (vector store: pgvector or Chroma)
+- [x] **Personalized plans** — LLM-generated meal plan and exercise routine based on user profile + risk score
+- [x] **Async job runner** — Celery + Redis for time-series forecasting jobs (LSTM/ARIMA on longitudinal data)
+- [x] **Health progression chart** — time-series forecast of blood sugar trajectory displayed in patient dashboard
+- [x] **Periodic resubmit** — admin-configurable N-month reassessment; multi-record history retained; trend charts on dashboard (`specs/2026-06-13-periodic-resubmit/`)
+- [x] **Health assessment report UI** — visual condensed report: risk gauge, vital highlights, truncated LLM insight, action cards (`specs/2026-06-13-health-assessment-report/`)
+
+**Spec folders (Phase 2 branch):**
+
+| Feature | Spec |
+|---------|------|
+| Chatbot RAG | `specs/2026-05-15-chatbot-rag/` |
+| Personalized plans | `specs/2026-06-13-personalized-plans/` |
+| Async forecasting | `specs/2026-06-13-async-forecasting/` |
+| Periodic resubmit | `specs/2026-06-13-periodic-resubmit/` |
+| Health assessment report UI | `specs/2026-06-13-health-assessment-report/` |
 
 ### Success Criteria
 - Doctor can read a one-paragraph AI summary of any patient in under 3 seconds
-- Chatbot answers reference patient's actual record data
-- Forecasting job completes in background; result appears in dashboard without page refresh
+- Chatbot answers reference patient's actual record data — ✅ implemented (vector RAG + text fallback on `feature/chatbot-rag`)
+- Forecasting job completes in background; result appears in dashboard without page refresh — ✅ implemented (Celery + Redis + progression chart on `feature/chatbot-rag`)
 
 ---
 

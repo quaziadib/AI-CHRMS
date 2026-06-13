@@ -77,3 +77,7 @@ class PatientRecord(TimestampMixin, Base):
 
     # Abnormality flags (auto-computed on every save)
     flags: Mapped[list | None] = mapped_column(JSONB, nullable=True)
+
+    # Personalized meal + exercise plan (LLM-generated)
+    personalized_plan: Mapped[dict | None] = mapped_column(JSONB, nullable=True)
+    personalized_plan_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)

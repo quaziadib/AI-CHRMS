@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState, KeyboardEvent } from 'react'
-import { MessageCircle, X, Send, Bot } from 'lucide-react'
+import { MessageCircle, X, Send, Bot, Trash2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useChat } from '../hooks/use-chat'
 
@@ -10,28 +10,28 @@ const WELCOME = "Hi! I'm your diabetes health assistant. Ask me anything about d
 export function ChatWidget() {
   const [open, setOpen] = useState(false)
   const [input, setInput] = useState('')
-  const [welcomed, setWelcomed] = useState(false)
-  const { messages, isLoading, sendMessage } = useChat()
+  const { messages, isLoading, isLoadingHistory, sendMessage, clearHistory } = useChat()
   const bottomRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLTextAreaElement>(null)
 
-  useEffect(() => {
-    if (open && !welcomed) {
-      setWelcomed(true)
-    }
-  }, [open, welcomed])
+  const showWelcome = !isLoadingHistory && messages.length === 0
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [messages, isLoading])
+  }, [messages, isLoading, isLoadingHistory])
 
   useEffect(() => {
     if (open) inputRef.current?.focus()
   }, [open])
 
+  const handleClearHistory = async () => {
+    if (!window.confirm('Clear all chat history? This cannot be undone.')) return
+    await clearHistory()
+  }
+
   const handleSend = async () => {
     const trimmed = input.trim()
-    if (!trimmed || isLoading) return
+    if (!trimmed || isLoading || isLoadingHistory) return
     setInput('')
     await sendMessage(trimmed)
   }
@@ -52,6 +52,15 @@ export function ChatWidget() {
             <Bot className="h-5 w-5" />
             <span className="font-semibold text-sm">Health Assistant</span>
             <button
+              className="rounded-full p-1 hover:bg-white/20 transition-colors"
+              onClick={handleClearHistory}
+              disabled={isLoadingHistory || messages.length === 0}
+              aria-label="Clear chat history"
+              title="Clear history"
+            >
+              <Trash2 className="h-4 w-4" />
+            </button>
+            <button
               className="ml-auto rounded-full p-1 hover:bg-white/20 transition-colors"
               onClick={() => setOpen(false)}
               aria-label="Close chat"
@@ -62,17 +71,21 @@ export function ChatWidget() {
 
           {/* Messages */}
           <div className="flex-1 overflow-y-auto p-4 space-y-3">
-            {welcomed && (
-              <AssistantBubble content={WELCOME} />
+            {isLoadingHistory ? (
+              <HistorySkeleton />
+            ) : (
+              <>
+                {showWelcome && <AssistantBubble content={WELCOME} />}
+                {messages.map(msg =>
+                  msg.role === 'user' ? (
+                    <UserBubble key={msg.id} content={msg.content} />
+                  ) : (
+                    <AssistantBubble key={msg.id} content={msg.content} />
+                  )
+                )}
+                {isLoading && <LoadingBubble />}
+              </>
             )}
-            {messages.map(msg =>
-              msg.role === 'user' ? (
-                <UserBubble key={msg.id} content={msg.content} />
-              ) : (
-                <AssistantBubble key={msg.id} content={msg.content} />
-              )
-            )}
-            {isLoading && <LoadingBubble />}
             <div ref={bottomRef} />
           </div>
 
@@ -86,15 +99,16 @@ export function ChatWidget() {
               placeholder="Ask about diabetes, diet, lifestyle..."
               rows={1}
               maxLength={500}
-              className="flex-1 resize-none rounded-lg border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary min-h-[38px] max-h-[100px]"
+              disabled={isLoadingHistory}
+              className="flex-1 resize-none rounded-lg border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary min-h-[38px] max-h-[100px] disabled:opacity-50"
               style={{ overflowY: input.split('\n').length > 2 ? 'auto' : 'hidden' }}
             />
             <button
               onClick={handleSend}
-              disabled={!input.trim() || isLoading}
+              disabled={!input.trim() || isLoading || isLoadingHistory}
               className={cn(
                 "flex items-center justify-center h-[38px] w-[38px] rounded-lg transition-colors shrink-0",
-                input.trim() && !isLoading
+                input.trim() && !isLoading && !isLoadingHistory
                   ? "bg-primary text-primary-foreground hover:bg-primary/90"
                   : "bg-muted text-muted-foreground cursor-not-allowed"
               )}
@@ -119,6 +133,22 @@ export function ChatWidget() {
       >
         {open ? <X className="h-6 w-6" /> : <MessageCircle className="h-6 w-6" />}
       </button>
+    </div>
+  )
+}
+
+function HistorySkeleton() {
+  return (
+    <div className="space-y-3 animate-pulse">
+      <div className="flex justify-start">
+        <div className="h-12 w-3/4 rounded-2xl bg-muted" />
+      </div>
+      <div className="flex justify-end">
+        <div className="h-10 w-1/2 rounded-2xl bg-muted" />
+      </div>
+      <div className="flex justify-start">
+        <div className="h-14 w-4/5 rounded-2xl bg-muted" />
+      </div>
     </div>
   )
 }

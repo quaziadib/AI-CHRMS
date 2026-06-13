@@ -4,4 +4,8 @@ export { usersApi } from './users'
 export { recordsApi } from './records'
 export { adminApi } from './admin'
 export { doctorApi } from './doctor'
-export type { User, PatientRecord, PatientRecordCreate, AuditLog, AdminStats, ApiResponse, RecommendationsOutput, RecommendationCategories } from './types'
+export type {
+  User, PatientRecord, PatientRecordCreate, AuditLog, AdminStats, ApiResponse,
+  RecommendationsOutput, RecommendationCategories, ResubmitStatus, HealthTrends,
+  SystemSettings,
+} from './types'

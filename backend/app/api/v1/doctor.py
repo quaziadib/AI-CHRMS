@@ -5,6 +5,7 @@ from typing import Optional
 from fastapi import APIRouter, HTTPException
 
 from app.ai.ehr_summary_chain import run_ehr_summary_chain
+from app.ai.embedding_service import embed_record
 from app.api.deps import DB, DoctorUser
 from app.core.config import settings
 from app.models.record import PatientRecord
@@ -74,5 +75,10 @@ def summarize_patient_ehr(record_id: str, doctor: DoctorUser, db: DB):
     db.refresh(record)
 
     log_audit(db, doctor.id, "ehr_summary_generated", "patient_record", record_id)
+
+    try:
+        embed_record(record, db)
+    except Exception:
+        logger.exception("Failed to embed record %s after EHR summary", record_id)
 
     return _enrich(record, db)

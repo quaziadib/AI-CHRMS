@@ -50,9 +50,9 @@ export function useRecords() {
     if (!editingId) return
     setIsSaving(true)
     const { id: _id, user_id: _uid, pid: _pid, created_at: _ca, updated_at: _ua, ...updatePayload } = editData as PatientRecord
-    const { error } = await recordsApi.update(editingId, updatePayload)
-    if (!error) {
-      setRecords(records.map(r => r.id === editingId ? { ...r, ...editData } : r))
+    const { data, error } = await recordsApi.update(editingId, updatePayload)
+    if (data && !error) {
+      setRecords(records.map(r => r.id === editingId ? data : r))
       toast.success('Record updated successfully')
       cancelEdit()
     } else {
@@ -63,6 +63,10 @@ export function useRecords() {
 
   const toggleExpand = (recordId: string) => {
     setExpandedRecord(prev => prev === recordId ? null : recordId)
+  }
+
+  const refreshRecord = (updated: PatientRecord) => {
+    setRecords(prev => prev.map(r => (r.id === updated.id ? updated : r)))
   }
 
   return {
@@ -77,5 +81,6 @@ export function useRecords() {
     setField,
     saveEdit,
     toggleExpand,
+    refreshRecord,
   }
 }

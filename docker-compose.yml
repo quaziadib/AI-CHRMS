@@ -1,7 +1,7 @@
 services:
   # PostgreSQL Database
   db:
-    image: postgres:16-alpine
+    image: pgvector/pgvector:pg16
     container_name: health_db
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-healthadmin}
@@ -36,6 +36,10 @@ services:
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
       OPENAI_API_KEY: ${OPENAI_API_KEY:-}
       GOOGLE_API_KEY: ${GOOGLE_API_KEY:-}
+      ENABLE_RAG: ${ENABLE_RAG:-true}
+      ENABLE_PERSONALIZED_PLANS: ${ENABLE_PERSONALIZED_PLANS:-true}
+      ENABLE_FORECASTING: ${ENABLE_FORECASTING:-true}
+      REDIS_URL: redis://redis:6379/0
     volumes:
       - ./logs/backend:/app/logs
     ports:
@@ -43,6 +47,40 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      redis:
+        condition: service_started
+    networks:
+      - health_network
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    container_name: health_redis
+    ports:
+      - "6379:6379"
+    networks:
+      - health_network
+    restart: unless-stopped
+
+  celery_worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: health_celery
+    command: celery -A app.celery_app worker --loglevel=info
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-healthadmin}:${POSTGRES_PASSWORD:-healthpass123}@db:5432/${POSTGRES_DB:-healthdb}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY:?JWT_SECRET_KEY must be set in .env}
+      LLM_PROVIDER: ${LLM_PROVIDER:-anthropic}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      REDIS_URL: redis://redis:6379/0
+      ENABLE_FORECASTING: ${ENABLE_FORECASTING:-true}
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
     networks:
       - health_network
     restart: unless-stopped

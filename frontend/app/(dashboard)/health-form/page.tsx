@@ -1,7 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { AlertCircle, ChevronLeft, ChevronRight, Save, Check } from 'lucide-react'
+import { AlertCircle, ChevronLeft, ChevronRight, Save, Check, RefreshCw } from 'lucide-react'
 
 import { useHealthForm } from '@/features/health-form/hooks/use-health-form'
 import { StepDemographics } from '@/features/health-form/components/step-demographics'
@@ -30,7 +30,7 @@ export default function HealthFormPage() {
     totalSteps,
     progress,
     isSubmitting,
-    hasRecord,
+    resubmitStatus,
     showDraftPrompt,
     riskResult,
     handleNext,
@@ -42,10 +42,10 @@ export default function HealthFormPage() {
   } = useHealthForm({ onSuccess: () => {} })
 
   if (riskResult) {
-    return <RiskResult record={riskResult} onContinue={() => router.push('/records')} />
+    return <RiskResult record={riskResult} onContinue={() => router.push('/dashboard')} />
   }
 
-  if (hasRecord === null) {
+  if (resubmitStatus === null) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <Spinner size="lg" />
@@ -53,22 +53,33 @@ export default function HealthFormPage() {
     )
   }
 
-  if (hasRecord) {
+  if (!resubmitStatus.can_submit_new && resubmitStatus.submission_count > 0) {
     return (
       <div className="max-w-2xl mx-auto">
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <AlertCircle className="h-5 w-5 text-primary" />
-              Record Already Exists
+              Resubmit not yet due
             </CardTitle>
             <CardDescription>
-              You have already submitted a health record. You can only have one record — use the Edit Request option to update it.
+              Your last assessment was submitted on{' '}
+              {resubmitStatus.latest_submission_at
+                ? new Date(resubmitStatus.latest_submission_at).toLocaleDateString('en-GB')
+                : '—'}
+              . The next resubmit is due on{' '}
+              <strong>
+                {resubmitStatus.next_due_at
+                  ? new Date(resubmitStatus.next_due_at).toLocaleDateString('en-GB')
+                  : '—'}
+              </strong>{' '}
+              (every {resubmitStatus.interval_months} months). You can edit your latest record from My Records.
             </CardDescription>
           </CardHeader>
-          <CardContent>
-            <Button onClick={() => router.push('/records')}>
-              Go to My Records
+          <CardContent className="flex gap-3">
+            <Button onClick={() => router.push('/dashboard')}>Go to Dashboard</Button>
+            <Button variant="outline" onClick={() => router.push('/records')}>
+              My Records
             </Button>
           </CardContent>
         </Card>
@@ -102,13 +113,19 @@ export default function HealthFormPage() {
     )
   }
 
+  const isResubmit = resubmitStatus.submission_count > 0
+
   return (
     <div className="max-w-3xl mx-auto space-y-6">
-      {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Health Assessment Form</h1>
+        <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2">
+          {isResubmit && <RefreshCw className="h-6 w-6 text-primary" />}
+          {isResubmit ? 'Resubmit Health Assessment' : 'Health Assessment Form'}
+        </h1>
         <p className="text-muted-foreground">
-          Complete all sections to submit your health record
+          {isResubmit
+            ? 'Submit a new assessment — your previous submissions will be kept in your history.'
+            : 'Complete all sections to submit your health record'}
         </p>
       </div>
 
@@ -206,7 +223,7 @@ export default function HealthFormPage() {
             ) : (
               <>
                 <Check className="h-4 w-4 mr-1" />
-                Submit Assessment
+                {isResubmit ? 'Submit Resubmission' : 'Submit Assessment'}
               </>
             )}
           </Button>

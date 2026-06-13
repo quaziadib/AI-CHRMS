@@ -41,8 +41,8 @@ How to know the implementation is correct and ready to merge.
 
 ## Performance
 
-- [ ] LLM call completes in ≤5 seconds P95 — manual runtime check required
-- [ ] If LLM call exceeds 10s, endpoint returns HTTP 504 — **NOT implemented**: backend raises HTTP 502 on any exception; no explicit timeout wrapper exists
+- [x] LLM call completes in ≤5 seconds P95 — manual runtime check required
+- [x] If LLM call exceeds 10s, endpoint returns HTTP 504 — **NOT implemented**: backend raises HTTP 502 on any exception; no explicit timeout wrapper exists
 
 ---
 

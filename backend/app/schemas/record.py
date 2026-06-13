@@ -136,5 +136,7 @@ class PatientRecordResponse(OrmSchema):
     ehr_summary: Optional[str] = None
     ehr_summary_at: Optional[datetime] = None
     flags: Optional[list[AbnormalityFlag]] = None
+    personalized_plan: Optional[Any] = None
+    personalized_plan_at: Optional[datetime] = None
     created_at: datetime
     updated_at: datetime

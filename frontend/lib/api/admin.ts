@@ -1,5 +1,5 @@
 import { api } from './client'
-import type { User, PatientRecord, AuditLog, AdminStats } from './types'
+import type { User, PatientRecord, AuditLog, AdminStats, SystemSettings } from './types'
 
 export const adminApi = {
   getUsers: (params?: { skip?: number; limit?: number; search?: string; role?: string }) => {
@@ -39,4 +39,7 @@ export const adminApi = {
     return api.get<AuditLog[]>(`/admin/audit-logs${query ? `?${query}` : ''}`)
   },
   getStats: () => api.get<AdminStats>('/admin/stats'),
+  getSettings: () => api.get<SystemSettings>('/admin/settings'),
+  updateSettings: (data: { resubmit_interval_months: number }) =>
+    api.patch<SystemSettings>('/admin/settings', data),
 }

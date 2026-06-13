@@ -1,21 +1,28 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { useAuth } from '@/components/auth/auth-provider'
 import { useRecords } from '@/features/records/hooks/use-records'
 import { RecordCard } from '@/features/records/components/record-card'
 import { RecordDetail } from '@/features/records/components/record-detail'
 import { RecordEditForm } from '@/features/records/components/record-edit-form'
-import { RiskWidget } from '@/features/records/components/risk-widget'
+import { HealthAssessmentReport } from '@/features/records/components/health-assessment-report'
+import { PersonalizedPlanWidget } from '@/features/records/components/personalized-plan-widget'
+import { ProgressionChart } from '@/features/records/components/progression-chart'
+import { ResubmitBanner } from '@/features/dashboard/components/resubmit-banner'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Spinner } from '@/components/ui/spinner'
-import { FileText, Plus } from 'lucide-react'
+import { FileText, Plus, RefreshCw } from 'lucide-react'
+import { recordsApi } from '@/lib/api'
+import type { ResubmitStatus } from '@/lib/api'
 
 export default function RecordsPage() {
   const { user, isLoading: authLoading } = useAuth()
   const router = useRouter()
+  const [resubmitStatus, setResubmitStatus] = useState<ResubmitStatus | null>(null)
 
   const {
     records,
@@ -29,11 +36,20 @@ export default function RecordsPage() {
     setField,
     saveEdit,
     toggleExpand,
+    refreshRecord,
   } = useRecords()
 
   useEffect(() => {
     if (!authLoading && !user) router.push('/login')
   }, [user, authLoading, router])
+
+  useEffect(() => {
+    if (user) {
+      recordsApi.getResubmitStatus().then(({ data }) => {
+        if (data) setResubmitStatus(data)
+      })
+    }
+  }, [user])
 
   if (authLoading || !user) {
     return (
@@ -48,8 +64,18 @@ export default function RecordsPage() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-foreground">My Health Records</h1>
-          <p className="text-muted-foreground">Your submitted health assessments</p>
+          <p className="text-muted-foreground">
+            All submitted assessments — {records.length} on file
+          </p>
         </div>
+        {resubmitStatus?.can_submit_new && records.length > 0 && (
+          <Button asChild className="gap-2">
+            <Link href="/health-form">
+              <RefreshCw className="h-4 w-4" />
+              Resubmit Assessment
+            </Link>
+          </Button>
+        )}
         {records.length === 0 && !isLoading && (
           <Button onClick={() => router.push('/health-form')} className="gap-2">
             <Plus className="h-4 w-4" />
@@ -58,8 +84,14 @@ export default function RecordsPage() {
         )}
       </div>
 
+      {resubmitStatus && <ResubmitBanner status={resubmitStatus} />}
+
       {records.length > 0 && (
-        <RiskWidget record={records[0]} />
+        <>
+          <HealthAssessmentReport record={records[0]} />
+          <PersonalizedPlanWidget record={records[0]} onUpdated={refreshRecord} />
+          <ProgressionChart record={records[0]} />
+        </>
       )}
 
       {isLoading ? (

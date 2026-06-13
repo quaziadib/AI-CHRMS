@@ -9,10 +9,10 @@ How to know the implementation is correct and ready to merge.
 - [x] `POST /v1/doctor/patients/{id}/summarize` with valid doctor token for assigned patient → 200, `ehr_summary` non-empty string, `ehr_summary_at` populated
 - [x] Same endpoint with admin token → 403 (admin is not a doctor)
 - [x] Same endpoint with unauthenticated request → 401
-- [ ] Same endpoint with patient token → 403
-- [ ] Doctor token but record not assigned to this doctor → 404
-- [ ] `ENABLE_EHR_SUMMARY=false` → 503 `{"detail": "EHR summarization is currently disabled"}`
-- [ ] Calling twice → second call overwrites `ehr_summary` and updates `ehr_summary_at`
+- [x] Same endpoint with patient token → 403
+- [x] Doctor token but record not assigned to this doctor → 404
+- [x] `ENABLE_EHR_SUMMARY=false` → 503 `{"detail": "EHR summarization is currently disabled"}`
+- [x] Calling twice → second call overwrites `ehr_summary` and updates `ehr_summary_at`
 - [x] Audit log: `ehr_summary_generated` action row appears after call
 
 ---
@@ -36,38 +36,38 @@ How to know the implementation is correct and ready to merge.
 
 ## Frontend
 
-- [ ] Doctor opens `/doctor/patients/{id}` → "Generate Summary" button visible (no existing summary)
-- [ ] Clicking button → spinner shows on button, panel absent during load
-- [ ] On success → summary panel appears with text and "Generated on [date]" timestamp
-- [ ] "Regenerate" control visible when summary already exists
-- [ ] Clicking "Regenerate" → new summary replaces old, timestamp updates
-- [ ] Error state: LLM down → toast error shown, no crash
+- [x] Doctor opens `/doctor/patients/{id}` → "Generate Summary" button visible (no existing summary)
+- [x] Clicking button → spinner shows on button, panel absent during load
+- [x] On success → summary panel appears with text and "Generated on [date]" timestamp
+- [x] "Regenerate" control visible when summary already exists
+- [x] Clicking "Regenerate" → new summary replaces old, timestamp updates
+- [x] Error state: LLM down → toast error shown, no crash
 
 ---
 
 ## Access Control
 
-- [ ] Patient navigating to `/doctor/patients/{id}` manually → redirected (layout guard)
-- [ ] Doctor can only summarize their assigned patients — unassigned → 404
-- [ ] Summary text NOT visible to patients on their own record pages
+- [x] Patient navigating to `/doctor/patients/{id}` manually → redirected (layout guard)
+- [x] Doctor can only summarize their assigned patients — unassigned → 404
+- [x] Summary text NOT visible to patients on their own record pages
 
 ---
 
 ## Feature Flag
 
-- [ ] `ENABLE_EHR_SUMMARY=true` (default) → summarize endpoint and button functional
-- [ ] `ENABLE_EHR_SUMMARY=false` → button sends request → shows error toast "EHR summarization is currently disabled"
+- [x] `ENABLE_EHR_SUMMARY=true` (default) → summarize endpoint and button functional
+- [x] `ENABLE_EHR_SUMMARY=false` → button sends request → shows error toast "EHR summarization is currently disabled"
 
 ---
 
 ## Non-Regression
 
-- [ ] Doctor patient list still loads
-- [ ] Doctor EHR read-only view still shows all fields
-- [ ] Patient risk score and recommendations flow unchanged
-- [ ] Admin panel unchanged
-- [ ] `npm run build` — zero TypeScript errors
-- [ ] `npm run lint` — zero ESLint errors
+- [x] Doctor patient list still loads
+- [x] Doctor EHR read-only view still shows all fields
+- [x] Patient risk score and recommendations flow unchanged
+- [x] Admin panel unchanged
+- [x] `npm run build` — zero TypeScript errors
+- [x] `npm run lint` — zero ESLint errors
 
 ---
 

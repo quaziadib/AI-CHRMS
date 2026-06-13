@@ -6,7 +6,9 @@ from app.api.deps import AdminUser, DB
 from app.schemas.audit import AdminStatsResponse, AuditLogResponse
 from app.schemas.record import AssignDoctorRequest, PatientRecordResponse
 from app.schemas.user import AdminUserUpdate, UserResponse
+from app.schemas.resubmit import SystemSettingsResponse, SystemSettingsUpdate
 from app.services import admin as admin_service
+from app.services.settings import get_or_create_settings, update_resubmit_interval_months
 
 router = APIRouter()
 
@@ -60,3 +62,23 @@ def get_audit_logs(
     action: Optional[str] = None,
 ):
     return admin_service.list_audit_logs(db, skip=skip, limit=limit, user_id=user_id, action=action)
+
+
+@router.get("/settings", response_model=SystemSettingsResponse)
+def get_settings(admin: AdminUser, db: DB):
+    row = get_or_create_settings(db)
+    return SystemSettingsResponse(
+        resubmit_interval_months=row.resubmit_interval_months,
+        updated_at=row.updated_at,
+        updated_by=row.updated_by,
+    )
+
+
+@router.patch("/settings", response_model=SystemSettingsResponse)
+def update_settings(body: SystemSettingsUpdate, admin: AdminUser, db: DB):
+    row = update_resubmit_interval_months(db, body.resubmit_interval_months, admin.id)
+    return SystemSettingsResponse(
+        resubmit_interval_months=row.resubmit_interval_months,
+        updated_at=row.updated_at,
+        updated_by=row.updated_by,
+    )

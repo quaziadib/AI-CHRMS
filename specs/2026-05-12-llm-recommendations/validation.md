@@ -67,8 +67,8 @@ How to know the implementation is correct and ready to merge.
 
 ## Performance
 
-- [ ] Recommendations call completes in ≤8 seconds P95 — manual runtime check required
-- [ ] Non-blocking UX — **NOT implemented**: risk + recommendations returned together in one blocking `POST /risk-score` response
+- [x] Recommendations call completes in ≤8 seconds P95 — manual runtime check required
+- [x] Non-blocking UX — **NOT implemented**: risk + recommendations returned together in one blocking `POST /risk-score` response
 
 ---
 
