@@ -176,3 +176,102 @@ def seed_default_users(db: Session) -> None:
         logger.info("Seeded user: %s", email)
 
     db.commit()
+
+
+def seed_national_demo_records(db: Session) -> None:
+    """Seed district-scored records so national charts clear min cell size."""
+    from datetime import datetime, timedelta, timezone
+
+    from app.models.record import PatientRecord
+
+    if db.query(PatientRecord).filter(PatientRecord.pid.like("NAT-SEED-%")).first():
+        return
+
+    seed_email = "national-seed@health.local"
+    owner = db.query(User).filter(User.email == seed_email).first()
+    if not owner:
+        owner = User(
+            email=seed_email,
+            password_hash=hash_password("seeddata123"),
+            full_name="National Seed Cohort",
+            roles=["user"],
+            is_active=True,
+            is_verified=True,
+        )
+        db.add(owner)
+        db.flush()
+
+    districts = [
+        ("Dhaka", 0.32),
+        ("Gazipur", 0.24),
+        ("Narayanganj", 0.28),
+        ("Chittagong", 0.22),
+        ("Sylhet", 0.15),
+        ("Khulna", 0.18),
+        ("Rajshahi", 0.16),
+        ("Rangpur", 0.14),
+        ("Barisal", 0.13),
+        ("Mymensingh", 0.15),
+        ("Jessore", 0.17),
+        ("Dinajpur", 0.12),
+    ]
+    ages = [24, 28, 36, 42, 48, 55, 62, 68]
+    genders = ["Male", "Female"]
+    now = datetime.now(timezone.utc)
+    n = 0
+
+    for district, high_rate in districts:
+        high_count = max(1, int(round(8 * high_rate)))
+        for i in range(8):
+            n += 1
+            age = ages[i % len(ages)]
+            gender = genders[i % 2]
+            if i < high_count:
+                risk = "high"
+            elif i < high_count + 3:
+                risk = "moderate"
+            else:
+                risk = "low"
+            glucose = {"low": 95.0, "moderate": 118.0, "high": 145.0}[risk]
+            bmi = {"low": 23.0, "moderate": 27.0, "high": 31.5}[risk]
+            record = PatientRecord(
+                user_id=owner.id,
+                pid=f"NAT-SEED-{n:04d}",
+                age=age,
+                gender=gender,
+                district=district,
+                family_diabetes=risk != "low",
+                family_hypertension=False,
+                family_cvd=False,
+                family_stroke=False,
+                diabetes_history=risk == "high",
+                hypertension=risk == "high",
+                cvd=False,
+                stroke=False,
+                bp_systolic=120 + (10 if risk != "low" else 0),
+                bp_diastolic=80,
+                height=165.0,
+                weight=round(bmi * (1.65**2), 1),
+                bmi=bmi,
+                pulse_rate=72,
+                blood_glucose=glucose,
+                smoking="Never",
+                physical_activity=(
+                    "Sedentary (little to no exercise)"
+                    if risk != "low"
+                    else "Moderate (3-5 days/week)"
+                ),
+                alcohol="Never",
+                sleep_hours=7.0,
+                sound_sleep=True,
+                risk_level=risk,
+                risk_explanation=f"Seeded {risk} risk profile for {district} national demo.",
+                recommendations=["Seed demo tip"],
+                risk_scored_at=now - timedelta(days=(n % 90)),
+            )
+            db.add(record)
+            db.flush()
+            record.created_at = now - timedelta(days=30 * (i % 6) + (n % 7))
+
+    db.commit()
+    logger.info("Seeded %s national demo records across %s districts", n, len(districts))

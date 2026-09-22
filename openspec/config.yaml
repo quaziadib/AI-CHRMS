@@ -1,0 +1,53 @@
+schema: spec-driven
+
+context: |
+  Project: AI-CHRMS — AI-powered chronic disease (diabetes) management for Bangladesh.
+  Mission: Give patients insight into their health, clinicians faster EHR analysis, and
+  national health systems population-level data to act at scale.
+
+  Stack:
+  - Frontend: Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS 4, shadcn/ui, SWR
+  - Backend: FastAPI (Python 3.12), SQLAlchemy 2.0, Pydantic v2, PostgreSQL 16 + pgvector
+  - Auth: JWT HS256 (15m access + 7d refresh), bcrypt
+  - AI: LangChain; LLM providers OpenAI / Anthropic / Google via LLM_PROVIDER env
+  - Jobs: Celery + Redis for async forecasting
+  - Infra: Docker Compose (dev), Nginx (prod), Render.com
+
+  Roles (all present from day one): patient, doctor, national_admin, maintainer/admin.
+
+  Phases:
+  - Phase 1–2: DONE (risk scoring, recommendations, role nav, chatbot+RAG, EHR summary,
+    abnormality flags, personalized plans, forecasting, periodic resubmit, assessment report)
+  - Phase 3: DONE (national map, population forecasting, resource allocation, anonymization,
+    pattern discovery)
+  - Phase ∞: NOT STARTED (SFT Gemma, vLLM, MLflow, K8s)
+
+  Conventions:
+  - Specs live under openspec/specs/ (source of truth). Use /opsx-propose for new work.
+  - Legacy feature folders under specs/ are historical reference only — do not extend them.
+  - Feature flags: ENABLE_RECOMMENDATIONS, ENABLE_CHATBOT, ENABLE_PERSONALIZED_PLANS,
+    ENABLE_FORECASTING, ENABLE_RAG (and similar). Prefer flags over hard deletes.
+  - Privacy: never expose PII in aggregate/national analytics; anonymize before Phase 3 exports.
+  - Prefer behavior-first requirements; keep implementation detail in design.md/tasks.md.
+
+rules:
+  proposal:
+    - Keep proposals under 500 words
+    - Always include a Non-goals section
+    - Reference the Phase (1/2/3/∞) and stakeholder need when relevant
+  specs:
+    - Use RFC 2119 keywords (SHALL/MUST/SHOULD/MAY)
+    - Prefer WHEN/THEN scenarios; include failure paths for API and auth
+    - Do not embed library/class names unless they are external contracts
+  tasks:
+    - Break tasks into chunks of max 2 hours
+    - Separate backend, frontend, and validation tasks
+
+operations:
+  apply:
+    guidance:
+      - Prefer existing patterns in backend/app/ai/ and frontend/features/
+      - Keep feature flags for new LLM/ML capabilities
+  archive:
+    guidance:
+      - Sync delta specs into openspec/specs/ before archive when behavior shipped
