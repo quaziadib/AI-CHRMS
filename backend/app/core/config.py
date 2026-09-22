@@ -38,6 +38,15 @@ class Settings(BaseSettings):
     ENABLE_EHR_SUMMARY: bool = True
     ENABLE_PERSONALIZED_PLANS: bool = True
     ENABLE_FORECASTING: bool = True
+    ENABLE_NATIONAL_ANALYTICS: bool = True
+    ENABLE_POPULATION_FORECASTING: bool = True
+    ENABLE_PATTERN_DISCOVERY: bool = True
+    ENABLE_NATIONAL_INDIVIDUAL_PREDICTOR: bool = True
+    NATIONAL_MIN_CELL_SIZE: int = 5
+    # Resource conversion: units per projected high-risk case
+    NATIONAL_KITS_PER_HIGH_RISK: float = 2.0
+    NATIONAL_MEDICINE_PACKS_PER_HIGH_RISK: float = 1.0
+    NATIONAL_CLINIC_CAPACITY_PER_SITE: int = 500
     EMBEDDING_MODEL: str = "text-embedding-3-small"
     REDIS_URL: str = "redis://localhost:6379/0"
     RESUBMIT_INTERVAL_MONTHS_DEFAULT: int = 6

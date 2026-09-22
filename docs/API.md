@@ -313,6 +313,75 @@ The frontend API client normalises these into a single joined string automatical
 
 ---
 
+## National Analytics 🌐
+
+Requires `national_admin` or `admin` role. Master flag: `ENABLE_NATIONAL_ANALYTICS` (default `true`). Related flags: `ENABLE_POPULATION_FORECASTING`, `ENABLE_PATTERN_DISCOVERY`, `ENABLE_NATIONAL_INDIVIDUAL_PREDICTOR`. Cell suppression: `NATIONAL_MIN_CELL_SIZE` (default `5`).
+
+All aggregate responses are **anonymized** — never include patient name, email, or user id. The `/national` UI follows the RSGI flow (geo filters, LLM individual predictor, spatial matrix, charts, LLM epidemic forecast).
+
+### GET `/v1/national/geo/divisions`
+### GET `/v1/national/geo/districts?division_id=`
+### GET `/v1/national/geo/upazillas?district_id=`
+### GET `/v1/national/geo/thanas?upazilla_id=`
+Cascading Bangladesh admin hierarchy options.
+
+### GET `/v1/national/spatial?division_id=&district_id=`
+Spatial risk matrix hotspots + regional metrics for selected geography.
+
+### GET `/v1/national/charts/divisions`
+### GET `/v1/national/charts/demographics`
+Anonymized prevalence chart series (division; age×gender).
+
+### POST `/v1/national/predict-individual`
+LLM what-if individual risk prediction. Body: `age`, `gender`, `bmi`, `glucose`, `family_history`, `activity`. Returns probability, risk level, category, confidence, top factors. Does **not** persist EHR. Flag: `ENABLE_NATIONAL_INDIVIDUAL_PREDICTOR`. Engine is always LLM (not XGBoost).
+
+### POST `/v1/national/epidemic-forecast`
+### GET `/v1/national/epidemic-forecast/latest`
+LLM multi-year urban/rural epidemic forecast job (`forecast_kind: epidemic_llm`) + risk-group shares. Flag: `ENABLE_POPULATION_FORECASTING`.
+
+### GET `/v1/national/districts/summary`
+District risk distribution for map/table views.
+
+**Response `200`**
+```json
+{
+  "districts": [
+    {
+      "district": "Dhaka",
+      "suppressed": false,
+      "record_count": 42,
+      "low_risk": 10,
+      "moderate_risk": 20,
+      "high_risk": 12,
+      "unscored": 0,
+      "high_risk_rate": 0.2857,
+      "latest_record_at": "2026-09-01T12:00:00+00:00"
+    }
+  ],
+  "generated_at": "2026-09-22T06:00:00+00:00",
+  "min_cell_size": 5
+}
+```
+
+**Errors:** `403` wrong role · `503` analytics disabled
+
+### GET `/v1/national/resources`
+Resource allocation estimates (kits, medicines, clinic sites) from forecast or current high-risk burden.
+
+### GET `/v1/national/export.csv`
+CSV download of district summary. Audits `national_analytics_exported`.
+
+### POST `/v1/national/forecasts`
+Enqueue population forecast job (`202`). Sync fallback if Celery unavailable. Flag: `ENABLE_POPULATION_FORECASTING`.
+
+### GET `/v1/national/forecasts/latest`
+Latest population forecast job payload.
+
+### POST `/v1/national/patterns`
+On-demand LLM pattern insights over anonymized aggregates. Audits `national_pattern_discovery`. Flag: `ENABLE_PATTERN_DISCOVERY`. Returns `insufficient_data: true` without calling the LLM when no usable aggregates exist.
+
+---
+
 ## PatientRecord Schema
 
 | Field | Type | Required | Constraints |

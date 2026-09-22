@@ -11,7 +11,7 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from app.api.v1.router import router as v1_router
 from app.core.config import settings
 from app.db.base import engine
-from app.db.init_db import create_tables, seed_default_users, seed_system_settings
+from app.db.init_db import create_tables, seed_default_users, seed_system_settings, seed_national_demo_records
 from app.db.session import SessionLocal
 
 _LOG_DIR = os.environ.get("LOG_DIR", "/app/logs")
@@ -53,6 +53,7 @@ async def lifespan(app: FastAPI):
     try:
         seed_default_users(db)
         seed_system_settings(db)
+        seed_national_demo_records(db)
     finally:
         db.close()
     logger.info("Startup complete")

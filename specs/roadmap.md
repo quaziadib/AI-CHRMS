@@ -1,5 +1,7 @@
 # Roadmap
 
+**OpenSpec is now the source of truth** at `openspec/` (main specs under `openspec/specs/`). Phase 1–2 checklist items below map to those domains; dated folders under `specs/2026-*` are legacy reference only. Phase 3 is not yet specified in OpenSpec.
+
 Timeline is phase-gated, not date-fixed. Phases unlock when their success criteria are met.
 
 ---
