@@ -31,6 +31,7 @@ export default function HealthFormPage() {
     progress,
     isSubmitting,
     resubmitStatus,
+    resubmitError,
     showDraftPrompt,
     riskResult,
     handleNext,
@@ -117,6 +118,13 @@ export default function HealthFormPage() {
 
   return (
     <div className="max-w-3xl mx-auto space-y-6">
+      {resubmitError && (
+        <Card className="border-amber-300 bg-amber-50">
+          <CardContent className="pt-4 text-sm text-amber-900">
+            Resubmit check failed ({resubmitError}). Showing the form anyway — submission may still be rejected by the server.
+          </CardContent>
+        </Card>
+      )}
       <div>
         <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2">
           {isResubmit && <RefreshCw className="h-6 w-6 text-primary" />}

@@ -12,6 +12,7 @@ from app.api.v1.router import router as v1_router
 from app.core.config import settings
 from app.db.base import engine
 from app.db.init_db import create_tables, seed_default_users, seed_system_settings, seed_national_demo_records
+from app.db.seed_synthetic import seed_synthetic_data
 from app.db.session import SessionLocal
 
 _LOG_DIR = os.environ.get("LOG_DIR", "/app/logs")
@@ -54,6 +55,8 @@ async def lifespan(app: FastAPI):
         seed_default_users(db)
         seed_system_settings(db)
         seed_national_demo_records(db)
+        if settings.SEED_SYNTHETIC_DATA:
+            seed_synthetic_data(db)
     finally:
         db.close()
     logger.info("Startup complete")

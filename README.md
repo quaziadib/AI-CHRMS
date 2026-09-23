@@ -36,6 +36,8 @@ docker compose up --build
 | PostgreSQL     | `localhost:5433`        | Mapped from container port 5432            |
 | Redis          | `localhost:6379`        | Used by Celery workers                     |
 
+If 3000/8000/6379 are already in use, set `FRONTEND_PORT`, `BACKEND_PORT`, and `REDIS_PORT` in `.env`.
+
 Stop with `Ctrl+C`, or run detached with `docker compose up --build -d` and stop with `docker compose down`.
 
 Optional production reverse proxy (Nginx on ports 80/443):
@@ -54,6 +56,14 @@ Created automatically on first backend startup:
 | Patient (demo)  | `demo@health.local`     | `demo123`     |
 | Doctor          | `doctor@health.local`   | `doctor123`   |
 | National admin  | `national@health.local` | `national123` |
+
+With `SEED_SYNTHETIC_DATA=true` (default in Compose), **50 synthetic patients** are also seeded:
+
+| Role | Email pattern | Password |
+|------|---------------|----------|
+| Patients 001–050 | `patient001@health.local` … `patient050@health.local` | `patient123` |
+
+Each patient has 10 health assessments + chat history. Full roster: [docs/demo-users/README.md](docs/demo-users/README.md).
 
 ### Environment variables
 

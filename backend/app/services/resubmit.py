@@ -35,9 +35,12 @@ def get_resubmit_status(db: Session, user_id: str) -> ResubmitStatusResponse:
     latest_at = latest.created_at
     if latest_at.tzinfo is None:
         latest_at = latest_at.replace(tzinfo=timezone.utc)
+    now = datetime.now(timezone.utc)
+    # Guard against bad/future seed timestamps breaking due math
+    if latest_at > now:
+        latest_at = now
 
     next_due = _add_months(latest_at, interval)
-    now = datetime.now(timezone.utc)
     is_due = now >= next_due
     days_until_due = (next_due.date() - now.date()).days
 

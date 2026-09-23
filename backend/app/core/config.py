@@ -60,6 +60,9 @@ class Settings(BaseSettings):
     DEMO_EMAIL: str = "demo@health.local"
     DEMO_PASSWORD: str = "demo123"
 
+    # When true, seed 50 synthetic patients (patient001–050) on startup
+    SEED_SYNTHETIC_DATA: bool = False
+
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
     @field_validator("JWT_SECRET_KEY")

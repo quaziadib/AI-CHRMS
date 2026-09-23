@@ -43,11 +43,12 @@ services:
       ENABLE_POPULATION_FORECASTING: ${ENABLE_POPULATION_FORECASTING:-true}
       ENABLE_PATTERN_DISCOVERY: ${ENABLE_PATTERN_DISCOVERY:-true}
       ENABLE_NATIONAL_INDIVIDUAL_PREDICTOR: ${ENABLE_NATIONAL_INDIVIDUAL_PREDICTOR:-true}
+      SEED_SYNTHETIC_DATA: ${SEED_SYNTHETIC_DATA:-true}
       REDIS_URL: redis://redis:6379/0
     volumes:
       - ./logs/backend:/app/logs
     ports:
-      - "8000:8000"
+      - "${BACKEND_PORT:-8000}:8000"
     depends_on:
       db:
         condition: service_healthy
@@ -61,7 +62,7 @@ services:
     image: redis:7-alpine
     container_name: health_redis
     ports:
-      - "6379:6379"
+      - "${REDIS_PORT:-6379}:6379"
     networks:
       - health_network
     restart: unless-stopped
@@ -102,7 +103,7 @@ services:
     environment:
       NEXT_PUBLIC_API_URL: http://backend:8000
     ports:
-      - "3000:3000"
+      - "${FRONTEND_PORT:-3000}:3000"
     depends_on:
       - backend
     networks:
