@@ -16,20 +16,37 @@ interface HistoryMessage {
   created_at: string
 }
 
-export function useChat() {
+/** Load chat history only when the widget is opened — avoids serial /history on every page. */
+export function useChat({ enabled = true }: { enabled?: boolean } = {}) {
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [isLoading, setIsLoading] = useState(false)
-  const [isLoadingHistory, setIsLoadingHistory] = useState(true)
+  const [historyLoaded, setHistoryLoaded] = useState(false)
+  const [historyFailed, setHistoryFailed] = useState(false)
+  // Derive loading so the first open paint shows the skeleton (not the welcome bubble)
+  // before the effect runs. Clear failure on reopen so the next open can retry.
+  const isLoadingHistory = Boolean(enabled && !historyLoaded && !historyFailed)
 
   useEffect(() => {
+    if (!enabled) {
+      // Reset so the next open shows the skeleton immediately and retries on failure
+      setHistoryFailed(false)
+      return
+    }
+    if (historyLoaded) return
+
     let cancelled = false
 
     async function loadHistory() {
-      setIsLoadingHistory(true)
       const result = await api.get<{ messages: HistoryMessage[] }>('/chat/history')
       if (cancelled) return
 
-      if (result.data?.messages) {
+      if (result.error || result.data === undefined) {
+        // Leave historyLoaded false so the next open retries
+        setHistoryFailed(true)
+        return
+      }
+
+      if (result.data.messages) {
         setMessages(
           result.data.messages.map(m => ({
             id: String(m.id),
@@ -38,14 +55,14 @@ export function useChat() {
           }))
         )
       }
-      setIsLoadingHistory(false)
+      setHistoryLoaded(true)
     }
 
     loadHistory()
     return () => {
       cancelled = true
     }
-  }, [])
+  }, [enabled, historyLoaded])
 
   const sendMessage = useCallback(async (content: string) => {
     const userMsg: ChatMessage = {

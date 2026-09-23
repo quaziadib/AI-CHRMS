@@ -1,0 +1,602 @@
+[
+  {
+    "email": "patient001@health.local",
+    "password": "patient123",
+    "full_name": "Demo Patient 001",
+    "phone": "+880170000001",
+    "roles": [
+      "user"
+    ],
+    "district": "Dhaka",
+    "gender": "Female",
+    "submission_count": 10
+  },
+  {
+    "email": "patient002@health.local",
+    "password": "patient123",
+    "full_name": "Demo Patient 002",
+    "phone": "+880170000002",
+    "roles": [
+      "user"
+    ],
+    "district": "Rangpur",
+    "gender": "Female",
+    "submission_count": 10
+  },
+  {
+    "email": "patient003@health.local",
+    "password": "patient123",
+    "full_name": "Demo Patient 003",
+    "phone": "+880170000003",
+    "roles": [
+      "user"
+    ],
+    "district": "Rajshahi",
+    "gender": "Male",
+    "submission_count": 10
+  },
+  {
+    "email": "patient004@health.local",
+    "password": "patient123",
+    "full_name": "Demo Patient 004",
+    "phone": "+880170000004",
+    "roles": [
+      "user"
+    ],
+    "district": "Sylhet",
+    "gender": "Male",
+    "submission_count": 10
+  },
+  {
+    "email": "patient005@health.local",
+    "password": "patient123",
+    "full_name": "Demo Patient 005",
+    "phone": "+880170000005",
+    "roles": [
+      "user"
+    ],
+    "district": "Rajshahi",
+    "gender": "Female",
+    "submission_count": 10
+  },
+  {
+    "email": "patient006@health.local",
+    "password": "patient123",
+    "full_name": "Demo Patient 006",
+    "phone": "+880170000006",
+    "roles": [
+      "user"
+    ],
+    "district": "Dhaka",
+    "gender": "Male",
+    "submission_count": 10
+  },
+  {
+    "email": "patient007@health.local",
+    "password": "patient123",
+    "full_name": "Demo Patient 007",
+    "phone": "+880170000007",
+    "roles": [
+      "user"
+    ],
+    "district": "Bogura",
+    "gender": "Male",
+    "submission_count": 10
+  },
+  {
+    "email": "patient008@health.local",
+    "password": "patient123",
+    "full_name": "Demo Patient 008",
+    "phone": "+880170000008",
+    "roles": [
+      "user"
+    ],
+    "district": "Barishal",
+    "gender": "Female",
+    "submission_count": 10
+  },
+  {
+    "email": "patient009@health.local",
+    "password": "patient123",
+    "full_name": "Demo Patient 009",
+    "phone": "+880170000009",
+    "roles": [
+      "user"
+    ],
+    "district": "Rajshahi",
+    "gender": "Female",
+    "submission_count": 10
+  },
+  {
+    "email": "patient010@health.local",
+    "password": "patient123",
+    "full_name": "Demo Patient 010",
+    "phone": "+880170000010",
+    "roles": [
+      "user"
+    ],
+    "district": "Rajshahi",
+    "gender": "Male",
+    "submission_count": 10
+  },
+  {
+    "email": "patient011@health.local",
+    "password": "patient123",
+    "full_name": "Demo Patient 011",
+    "phone": "+880170000011",
+    "roles": [
+      "user"
+    ],
+    "district": "Cumilla",
+    "gender": "Female",
+    "submission_count": 10
+  },
+  {
+    "email": "patient012@health.local",
+    "password": "patient123",
+    "full_name": "Demo Patient 012",
+    "phone": "+880170000012",
+    "roles": [
+      "user"
+    ],
+    "district": "Sylhet",
+    "gender": "Male",
+    "submission_count": 10
+  },
+  {
+    "email": "patient013@health.local",
+    "password": "patient123",
+    "full_name": "Demo Patient 013",
+    "phone": "+880170000013",
+    "roles": [
+      "user"
+    ],
+    "district": "Gazipur",
+    "gender": "Male",
+    "submission_count": 10
+  },
+  {
+    "email": "patient014@health.local",
+    "password": "patient123",
+    "full_name": "Demo Patient 014",
+    "phone": "+880170000014",
+    "roles": [
+      "user"
+    ],
+    "district": "Dhaka",
+    "gender": "Male",
+    "submission_count": 10
+  },
+  {
+    "email": "patient015@health.local",
+    "password": "patient123",
+    "full_name": "Demo Patient 015",
+    "phone": "+880170000015",
+    "roles": [
+      "user"
+    ],
+    "district": "Rajshahi",
+    "gender": "Male",
+    "submission_count": 10
+  },
+  {
+    "email": "patient016@health.local",
+    "password": "patient123",
+    "full_name": "Demo Patient 016",
+    "phone": "+880170000016",
+    "roles": [
+      "user"
+    ],
+    "district": "Sylhet",
+    "gender": "Male",
+    "submission_count": 10
+  },
+  {
+    "email": "patient017@health.local",
+    "password": "patient123",
+    "full_name": "Demo Patient 017",
+    "phone": "+880170000017",
+    "roles": [
+      "user"
+    ],
+    "district": "Rajshahi",
+    "gender": "Male",
+    "submission_count": 10
+  },
+  {
+    "email": "patient018@health.local",
+    "password": "patient123",
+    "full_name": "Demo Patient 018",
+    "phone": "+880170000018",
+    "roles": [
+      "user"
+    ],
+    "district": "Narayanganj",
+    "gender": "Male",
+    "submission_count": 10
+  },
+  {
+    "email": "patient019@health.local",
+    "password": "patient123",
+    "full_name": "Demo Patient 019",
+    "phone": "+880170000019",
+    "roles": [
+      "user"
+    ],
+    "district": "Mymensingh",
+    "gender": "Female",
+    "submission_count": 10
+  },
+  {
+    "email": "patient020@health.local",
+    "password": "patient123",
+    "full_name": "Demo Patient 020",
+    "phone": "+880170000020",
+    "roles": [
+      "user"
+    ],
+    "district": "Mymensingh",
+    "gender": "Female",
+    "submission_count": 10
+  },
+  {
+    "email": "patient021@health.local",
+    "password": "patient123",
+    "full_name": "Demo Patient 021",
+    "phone": "+880170000021",
+    "roles": [
+      "user"
+    ],
+    "district": "Khulna",
+    "gender": "Male",
+    "submission_count": 10
+  },
+  {
+    "email": "patient022@health.local",
+    "password": "patient123",
+    "full_name": "Demo Patient 022",
+    "phone": "+880170000022",
+    "roles": [
+      "user"
+    ],
+    "district": "Bogura",
+    "gender": "Male",
+    "submission_count": 10
+  },
+  {
+    "email": "patient023@health.local",
+    "password": "patient123",
+    "full_name": "Demo Patient 023",
+    "phone": "+880170000023",
+    "roles": [
+      "user"
+    ],
+    "district": "Rangpur",
+    "gender": "Male",
+    "submission_count": 10
+  },
+  {
+    "email": "patient024@health.local",
+    "password": "patient123",
+    "full_name": "Demo Patient 024",
+    "phone": "+880170000024",
+    "roles": [
+      "user"
+    ],
+    "district": "Narayanganj",
+    "gender": "Male",
+    "submission_count": 10
+  },
+  {
+    "email": "patient025@health.local",
+    "password": "patient123",
+    "full_name": "Demo Patient 025",
+    "phone": "+880170000025",
+    "roles": [
+      "user"
+    ],
+    "district": "Sylhet",
+    "gender": "Female",
+    "submission_count": 10
+  },
+  {
+    "email": "patient026@health.local",
+    "password": "patient123",
+    "full_name": "Demo Patient 026",
+    "phone": "+880170000026",
+    "roles": [
+      "user"
+    ],
+    "district": "Narayanganj",
+    "gender": "Male",
+    "submission_count": 10
+  },
+  {
+    "email": "patient027@health.local",
+    "password": "patient123",
+    "full_name": "Demo Patient 027",
+    "phone": "+880170000027",
+    "roles": [
+      "user"
+    ],
+    "district": "Sylhet",
+    "gender": "Male",
+    "submission_count": 10
+  },
+  {
+    "email": "patient028@health.local",
+    "password": "patient123",
+    "full_name": "Demo Patient 028",
+    "phone": "+880170000028",
+    "roles": [
+      "user"
+    ],
+    "district": "Barishal",
+    "gender": "Male",
+    "submission_count": 10
+  },
+  {
+    "email": "patient029@health.local",
+    "password": "patient123",
+    "full_name": "Demo Patient 029",
+    "phone": "+880170000029",
+    "roles": [
+      "user"
+    ],
+    "district": "Rangpur",
+    "gender": "Female",
+    "submission_count": 10
+  },
+  {
+    "email": "patient030@health.local",
+    "password": "patient123",
+    "full_name": "Demo Patient 030",
+    "phone": "+880170000030",
+    "roles": [
+      "user"
+    ],
+    "district": "Rajshahi",
+    "gender": "Other",
+    "submission_count": 10
+  },
+  {
+    "email": "patient031@health.local",
+    "password": "patient123",
+    "full_name": "Demo Patient 031",
+    "phone": "+880170000031",
+    "roles": [
+      "user"
+    ],
+    "district": "Rajshahi",
+    "gender": "Male",
+    "submission_count": 10
+  },
+  {
+    "email": "patient032@health.local",
+    "password": "patient123",
+    "full_name": "Demo Patient 032",
+    "phone": "+880170000032",
+    "roles": [
+      "user"
+    ],
+    "district": "Dhaka",
+    "gender": "Male",
+    "submission_count": 10
+  },
+  {
+    "email": "patient033@health.local",
+    "password": "patient123",
+    "full_name": "Demo Patient 033",
+    "phone": "+880170000033",
+    "roles": [
+      "user"
+    ],
+    "district": "Gazipur",
+    "gender": "Female",
+    "submission_count": 10
+  },
+  {
+    "email": "patient034@health.local",
+    "password": "patient123",
+    "full_name": "Demo Patient 034",
+    "phone": "+880170000034",
+    "roles": [
+      "user"
+    ],
+    "district": "Cumilla",
+    "gender": "Male",
+    "submission_count": 10
+  },
+  {
+    "email": "patient035@health.local",
+    "password": "patient123",
+    "full_name": "Demo Patient 035",
+    "phone": "+880170000035",
+    "roles": [
+      "user"
+    ],
+    "district": "Chattogram",
+    "gender": "Male",
+    "submission_count": 10
+  },
+  {
+    "email": "patient036@health.local",
+    "password": "patient123",
+    "full_name": "Demo Patient 036",
+    "phone": "+880170000036",
+    "roles": [
+      "user"
+    ],
+    "district": "Gazipur",
+    "gender": "Female",
+    "submission_count": 10
+  },
+  {
+    "email": "patient037@health.local",
+    "password": "patient123",
+    "full_name": "Demo Patient 037",
+    "phone": "+880170000037",
+    "roles": [
+      "user"
+    ],
+    "district": "Barishal",
+    "gender": "Female",
+    "submission_count": 10
+  },
+  {
+    "email": "patient038@health.local",
+    "password": "patient123",
+    "full_name": "Demo Patient 038",
+    "phone": "+880170000038",
+    "roles": [
+      "user"
+    ],
+    "district": "Bogura",
+    "gender": "Female",
+    "submission_count": 10
+  },
+  {
+    "email": "patient039@health.local",
+    "password": "patient123",
+    "full_name": "Demo Patient 039",
+    "phone": "+880170000039",
+    "roles": [
+      "user"
+    ],
+    "district": "Sylhet",
+    "gender": "Male",
+    "submission_count": 10
+  },
+  {
+    "email": "patient040@health.local",
+    "password": "patient123",
+    "full_name": "Demo Patient 040",
+    "phone": "+880170000040",
+    "roles": [
+      "user"
+    ],
+    "district": "Khulna",
+    "gender": "Male",
+    "submission_count": 10
+  },
+  {
+    "email": "patient041@health.local",
+    "password": "patient123",
+    "full_name": "Demo Patient 041",
+    "phone": "+880170000041",
+    "roles": [
+      "user"
+    ],
+    "district": "Rajshahi",
+    "gender": "Female",
+    "submission_count": 10
+  },
+  {
+    "email": "patient042@health.local",
+    "password": "patient123",
+    "full_name": "Demo Patient 042",
+    "phone": "+880170000042",
+    "roles": [
+      "user"
+    ],
+    "district": "Bogura",
+    "gender": "Male",
+    "submission_count": 10
+  },
+  {
+    "email": "patient043@health.local",
+    "password": "patient123",
+    "full_name": "Demo Patient 043",
+    "phone": "+880170000043",
+    "roles": [
+      "user"
+    ],
+    "district": "Chattogram",
+    "gender": "Female",
+    "submission_count": 10
+  },
+  {
+    "email": "patient044@health.local",
+    "password": "patient123",
+    "full_name": "Demo Patient 044",
+    "phone": "+880170000044",
+    "roles": [
+      "user"
+    ],
+    "district": "Chattogram",
+    "gender": "Male",
+    "submission_count": 10
+  },
+  {
+    "email": "patient045@health.local",
+    "password": "patient123",
+    "full_name": "Demo Patient 045",
+    "phone": "+880170000045",
+    "roles": [
+      "user"
+    ],
+    "district": "Sylhet",
+    "gender": "Female",
+    "submission_count": 10
+  },
+  {
+    "email": "patient046@health.local",
+    "password": "patient123",
+    "full_name": "Demo Patient 046",
+    "phone": "+880170000046",
+    "roles": [
+      "user"
+    ],
+    "district": "Bogura",
+    "gender": "Male",
+    "submission_count": 10
+  },
+  {
+    "email": "patient047@health.local",
+    "password": "patient123",
+    "full_name": "Demo Patient 047",
+    "phone": "+880170000047",
+    "roles": [
+      "user"
+    ],
+    "district": "Rajshahi",
+    "gender": "Male",
+    "submission_count": 10
+  },
+  {
+    "email": "patient048@health.local",
+    "password": "patient123",
+    "full_name": "Demo Patient 048",
+    "phone": "+880170000048",
+    "roles": [
+      "user"
+    ],
+    "district": "Bogura",
+    "gender": "Male",
+    "submission_count": 10
+  },
+  {
+    "email": "patient049@health.local",
+    "password": "patient123",
+    "full_name": "Demo Patient 049",
+    "phone": "+880170000049",
+    "roles": [
+      "user"
+    ],
+    "district": "Bogura",
+    "gender": "Male",
+    "submission_count": 10
+  },
+  {
+    "email": "patient050@health.local",
+    "password": "patient123",
+    "full_name": "Demo Patient 050",
+    "phone": "+880170000050",
+    "roles": [
+      "user"
+    ],
+    "district": "Barishal",
+    "gender": "Female",
+    "submission_count": 10
+  }
+]

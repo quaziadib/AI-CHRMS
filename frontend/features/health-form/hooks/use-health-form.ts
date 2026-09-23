@@ -20,6 +20,7 @@ export function useHealthForm({ onSuccess }: { onSuccess: () => void }) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showDraftPrompt, setShowDraftPrompt] = useState(false)
   const [resubmitStatus, setResubmitStatus] = useState<ResubmitStatus | null>(null)
+  const [resubmitError, setResubmitError] = useState<string | null>(null)
   const [riskResult, setRiskResult] = useState<PatientRecord | null>(null)
 
   const form = useForm<HealthFormData>({
@@ -73,11 +74,30 @@ export function useHealthForm({ onSuccess }: { onSuccess: () => void }) {
     }
   }, [height, weight, setValue])
 
-  // Load resubmit eligibility
+  // Load resubmit eligibility (never leave the page spinning on API failure)
   useEffect(() => {
-    recordsApi.getResubmitStatus().then(({ data }) => {
-      if (data) setResubmitStatus(data)
+    let cancelled = false
+    recordsApi.getResubmitStatus().then(({ data, error }) => {
+      if (cancelled) return
+      if (data) {
+        setResubmitStatus(data)
+        setResubmitError(null)
+      } else {
+        setResubmitError(error || 'Could not check resubmit eligibility')
+        // Fail open for first-time / demo use so a 500 does not trap the user
+        setResubmitStatus({
+          interval_months: 6,
+          is_due: true,
+          days_until_due: 0,
+          submission_count: 0,
+          can_submit_new: true,
+          status: 'initial',
+        })
+      }
     })
+    return () => {
+      cancelled = true
+    }
   }, [])
 
   // Check for saved draft on mount
@@ -179,6 +199,7 @@ export function useHealthForm({ onSuccess }: { onSuccess: () => void }) {
     progress,
     isSubmitting,
     resubmitStatus,
+    resubmitError,
     showDraftPrompt,
     riskResult,
     handleNext,

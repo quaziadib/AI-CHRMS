@@ -6,7 +6,8 @@ const REFRESH_TOKEN_KEY = 'health_refresh_token'
 
 class ApiClient {
   private accessToken: string | null = null
-  private isRefreshing = false
+  /** In-flight refresh so parallel 401s share one attempt instead of failing each other. */
+  private refreshPromise: Promise<boolean> | null = null
 
   setAccessToken(token: string | null) {
     this.accessToken = token
@@ -18,33 +19,36 @@ class ApiClient {
 
   /** Try to get a new access token using the stored refresh token.
    *  Returns true if successful, false otherwise. */
-  private async tryRefresh(): Promise<boolean> {
-    if (this.isRefreshing) return false
-    this.isRefreshing = true
+  private tryRefresh(): Promise<boolean> {
+    if (this.refreshPromise) return this.refreshPromise
 
-    try {
-      const refreshToken = localStorage.getItem(REFRESH_TOKEN_KEY)
-      if (!refreshToken) return false
+    this.refreshPromise = (async () => {
+      try {
+        const refreshToken = localStorage.getItem(REFRESH_TOKEN_KEY)
+        if (!refreshToken) return false
 
-      // Use raw fetch to avoid going through the interceptor again
-      const res = await fetch(`${API_BASE}/auth/refresh`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ refresh_token: refreshToken }),
-      })
+        // Use raw fetch to avoid going through the interceptor again
+        const res = await fetch(`${API_BASE}/auth/refresh`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ refresh_token: refreshToken }),
+        })
 
-      if (!res.ok) return false
+        if (!res.ok) return false
 
-      const data = await res.json()
-      localStorage.setItem(ACCESS_TOKEN_KEY, data.access_token)
-      localStorage.setItem(REFRESH_TOKEN_KEY, data.refresh_token)
-      this.accessToken = data.access_token
-      return true
-    } catch {
-      return false
-    } finally {
-      this.isRefreshing = false
-    }
+        const data = await res.json()
+        localStorage.setItem(ACCESS_TOKEN_KEY, data.access_token)
+        localStorage.setItem(REFRESH_TOKEN_KEY, data.refresh_token)
+        this.accessToken = data.access_token
+        return true
+      } catch {
+        return false
+      } finally {
+        this.refreshPromise = null
+      }
+    })()
+
+    return this.refreshPromise
   }
 
   private async request<T>(

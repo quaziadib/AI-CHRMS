@@ -9,7 +9,7 @@ import { z } from 'zod'
 import { toast } from 'sonner'
 import { Heart, Eye, EyeOff } from 'lucide-react'
 
-import { useAuth } from '@/components/auth/auth-provider'
+import { getRoleHome, useAuth } from '@/components/auth/auth-provider'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -25,15 +25,15 @@ type LoginFormData = z.infer<typeof loginSchema>
 
 export default function LoginPage() {
   const router = useRouter()
-  const { login, isAuthenticated, isLoading: authLoading } = useAuth()
+  const { login, isAuthenticated, isLoading: authLoading, user } = useAuth()
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
     if (!authLoading && isAuthenticated) {
-      router.replace('/dashboard')
+      router.replace(getRoleHome(user?.roles))
     }
-  }, [authLoading, isAuthenticated, router])
+  }, [authLoading, isAuthenticated, user, router])
 
   const {
     register,
@@ -49,12 +49,7 @@ export default function LoginPage() {
       const result = await login(data.email, data.password)
       if (result.success) {
         toast.success('Welcome back!')
-        const roles = result.user?.roles ?? []
-        const home = roles.includes('admin') ? '/admin'
-          : roles.includes('doctor') ? '/doctor'
-          : roles.includes('national_admin') ? '/national'
-          : '/dashboard'
-        router.push(home)
+        router.push(getRoleHome(result.user?.roles))
       } else {
         toast.error(result.error || 'Login failed')
       }

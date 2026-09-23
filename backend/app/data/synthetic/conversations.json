@@ -1,0 +1,3252 @@
+[
+  {
+    "user_email": "patient001@health.local",
+    "messages": [
+      {
+        "role": "user",
+        "content": "What was my last glucose reading?",
+        "offset_minutes": 0
+      },
+      {
+        "role": "assistant",
+        "content": "Your most recent assessment shows fasting glucose at 162 mg/dL. That reading is from submission 10 of your health history.",
+        "offset_minutes": 3
+      },
+      {
+        "role": "user",
+        "content": "Am I at high risk for diabetes?",
+        "offset_minutes": 6
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest risk level is moderate. Synthetic assessment for Dhaka: fasting glucose 162 mg/dL, BMI 29.",
+        "offset_minutes": 9
+      },
+      {
+        "role": "user",
+        "content": "How has my BMI changed across my check-ups?",
+        "offset_minutes": 12
+      },
+      {
+        "role": "assistant",
+        "content": "Your BMI started around 28.8 and is now 29.3 across 10 stored submissions.",
+        "offset_minutes": 15
+      },
+      {
+        "role": "user",
+        "content": "What diet changes should I prioritize?",
+        "offset_minutes": 18
+      },
+      {
+        "role": "assistant",
+        "content": "Prioritize smaller rice portions, more fish and vegetables, and fewer sugary drinks. These match the diet tips in your latest assessment recommendations.",
+        "offset_minutes": 21
+      },
+      {
+        "role": "user",
+        "content": "What is my current blood pressure?",
+        "offset_minutes": 24
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest blood pressure is 90/76 mmHg from your most recent submission in Dhaka.",
+        "offset_minutes": 27
+      },
+      {
+        "role": "user",
+        "content": "What should I track before my next resubmit?",
+        "offset_minutes": 30
+      },
+      {
+        "role": "assistant",
+        "content": "Track weekly fasting glucose, blood pressure twice monthly, and note any new symptoms. Your history shows this helps spot trends between assessments.",
+        "offset_minutes": 33
+      }
+    ]
+  },
+  {
+    "user_email": "patient002@health.local",
+    "messages": [
+      {
+        "role": "user",
+        "content": "What was my last glucose reading?",
+        "offset_minutes": 0
+      },
+      {
+        "role": "assistant",
+        "content": "Your most recent assessment shows fasting glucose at 117 mg/dL. That reading is from submission 10 of your health history.",
+        "offset_minutes": 3
+      },
+      {
+        "role": "user",
+        "content": "Am I at high risk for diabetes?",
+        "offset_minutes": 6
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest risk level is high. Synthetic assessment for Rangpur: fasting glucose 117 mg/dL, BMI 45.",
+        "offset_minutes": 9
+      },
+      {
+        "role": "user",
+        "content": "How has my BMI changed across my check-ups?",
+        "offset_minutes": 12
+      },
+      {
+        "role": "assistant",
+        "content": "Your BMI started around 46.6 and is now 45.8 across 10 stored submissions.",
+        "offset_minutes": 15
+      },
+      {
+        "role": "user",
+        "content": "What diet changes should I prioritize?",
+        "offset_minutes": 18
+      },
+      {
+        "role": "assistant",
+        "content": "Prioritize smaller rice portions, more fish and vegetables, and fewer sugary drinks. These match the diet tips in your latest assessment recommendations.",
+        "offset_minutes": 21
+      },
+      {
+        "role": "user",
+        "content": "What is my current blood pressure?",
+        "offset_minutes": 24
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest blood pressure is 156/67 mmHg from your most recent submission in Rangpur.",
+        "offset_minutes": 27
+      },
+      {
+        "role": "user",
+        "content": "What should I track before my next resubmit?",
+        "offset_minutes": 30
+      },
+      {
+        "role": "assistant",
+        "content": "Track weekly fasting glucose, blood pressure twice monthly, and note any new symptoms. Your history shows this helps spot trends between assessments.",
+        "offset_minutes": 33
+      }
+    ]
+  },
+  {
+    "user_email": "patient003@health.local",
+    "messages": [
+      {
+        "role": "user",
+        "content": "What was my last glucose reading?",
+        "offset_minutes": 0
+      },
+      {
+        "role": "assistant",
+        "content": "Your most recent assessment shows fasting glucose at 115 mg/dL. That reading is from submission 10 of your health history.",
+        "offset_minutes": 3
+      },
+      {
+        "role": "user",
+        "content": "Am I at high risk for diabetes?",
+        "offset_minutes": 6
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest risk level is high. Synthetic assessment for Rajshahi: fasting glucose 115 mg/dL, BMI 41.",
+        "offset_minutes": 9
+      },
+      {
+        "role": "user",
+        "content": "How has my BMI changed across my check-ups?",
+        "offset_minutes": 12
+      },
+      {
+        "role": "assistant",
+        "content": "Your BMI started around 37.4 and is now 41.7 across 10 stored submissions.",
+        "offset_minutes": 15
+      },
+      {
+        "role": "user",
+        "content": "What diet changes should I prioritize?",
+        "offset_minutes": 18
+      },
+      {
+        "role": "assistant",
+        "content": "Prioritize smaller rice portions, more fish and vegetables, and fewer sugary drinks. These match the diet tips in your latest assessment recommendations.",
+        "offset_minutes": 21
+      },
+      {
+        "role": "user",
+        "content": "What is my current blood pressure?",
+        "offset_minutes": 24
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest blood pressure is 167/102 mmHg from your most recent submission in Rajshahi.",
+        "offset_minutes": 27
+      },
+      {
+        "role": "user",
+        "content": "What should I track before my next resubmit?",
+        "offset_minutes": 30
+      },
+      {
+        "role": "assistant",
+        "content": "Track weekly fasting glucose, blood pressure twice monthly, and note any new symptoms. Your history shows this helps spot trends between assessments.",
+        "offset_minutes": 33
+      }
+    ]
+  },
+  {
+    "user_email": "patient004@health.local",
+    "messages": [
+      {
+        "role": "user",
+        "content": "What was my last glucose reading?",
+        "offset_minutes": 0
+      },
+      {
+        "role": "assistant",
+        "content": "Your most recent assessment shows fasting glucose at 211 mg/dL. That reading is from submission 10 of your health history.",
+        "offset_minutes": 3
+      },
+      {
+        "role": "user",
+        "content": "Am I at high risk for diabetes?",
+        "offset_minutes": 6
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest risk level is moderate. Synthetic assessment for Sylhet: fasting glucose 211 mg/dL, BMI 23.",
+        "offset_minutes": 9
+      },
+      {
+        "role": "user",
+        "content": "How has my BMI changed across my check-ups?",
+        "offset_minutes": 12
+      },
+      {
+        "role": "assistant",
+        "content": "Your BMI started around 33.7 and is now 23.5 across 10 stored submissions.",
+        "offset_minutes": 15
+      },
+      {
+        "role": "user",
+        "content": "What diet changes should I prioritize?",
+        "offset_minutes": 18
+      },
+      {
+        "role": "assistant",
+        "content": "Prioritize smaller rice portions, more fish and vegetables, and fewer sugary drinks. These match the diet tips in your latest assessment recommendations.",
+        "offset_minutes": 21
+      },
+      {
+        "role": "user",
+        "content": "What is my current blood pressure?",
+        "offset_minutes": 24
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest blood pressure is 103/64 mmHg from your most recent submission in Sylhet.",
+        "offset_minutes": 27
+      },
+      {
+        "role": "user",
+        "content": "What should I track before my next resubmit?",
+        "offset_minutes": 30
+      },
+      {
+        "role": "assistant",
+        "content": "Track weekly fasting glucose, blood pressure twice monthly, and note any new symptoms. Your history shows this helps spot trends between assessments.",
+        "offset_minutes": 33
+      }
+    ]
+  },
+  {
+    "user_email": "patient005@health.local",
+    "messages": [
+      {
+        "role": "user",
+        "content": "What was my last glucose reading?",
+        "offset_minutes": 0
+      },
+      {
+        "role": "assistant",
+        "content": "Your most recent assessment shows fasting glucose at 265 mg/dL. That reading is from submission 10 of your health history.",
+        "offset_minutes": 3
+      },
+      {
+        "role": "user",
+        "content": "Am I at high risk for diabetes?",
+        "offset_minutes": 6
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest risk level is high. Synthetic assessment for Rajshahi: fasting glucose 265 mg/dL, BMI 23.",
+        "offset_minutes": 9
+      },
+      {
+        "role": "user",
+        "content": "How has my BMI changed across my check-ups?",
+        "offset_minutes": 12
+      },
+      {
+        "role": "assistant",
+        "content": "Your BMI started around 28.2 and is now 23.1 across 10 stored submissions.",
+        "offset_minutes": 15
+      },
+      {
+        "role": "user",
+        "content": "What diet changes should I prioritize?",
+        "offset_minutes": 18
+      },
+      {
+        "role": "assistant",
+        "content": "Prioritize smaller rice portions, more fish and vegetables, and fewer sugary drinks. These match the diet tips in your latest assessment recommendations.",
+        "offset_minutes": 21
+      },
+      {
+        "role": "user",
+        "content": "What is my current blood pressure?",
+        "offset_minutes": 24
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest blood pressure is 178/86 mmHg from your most recent submission in Rajshahi.",
+        "offset_minutes": 27
+      },
+      {
+        "role": "user",
+        "content": "What should I track before my next resubmit?",
+        "offset_minutes": 30
+      },
+      {
+        "role": "assistant",
+        "content": "Track weekly fasting glucose, blood pressure twice monthly, and note any new symptoms. Your history shows this helps spot trends between assessments.",
+        "offset_minutes": 33
+      }
+    ]
+  },
+  {
+    "user_email": "patient006@health.local",
+    "messages": [
+      {
+        "role": "user",
+        "content": "What was my last glucose reading?",
+        "offset_minutes": 0
+      },
+      {
+        "role": "assistant",
+        "content": "Your most recent assessment shows fasting glucose at 209 mg/dL. That reading is from submission 10 of your health history.",
+        "offset_minutes": 3
+      },
+      {
+        "role": "user",
+        "content": "Am I at high risk for diabetes?",
+        "offset_minutes": 6
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest risk level is moderate. Synthetic assessment for Dhaka: fasting glucose 209 mg/dL, BMI 22.",
+        "offset_minutes": 9
+      },
+      {
+        "role": "user",
+        "content": "How has my BMI changed across my check-ups?",
+        "offset_minutes": 12
+      },
+      {
+        "role": "assistant",
+        "content": "Your BMI started around 32.8 and is now 22.3 across 10 stored submissions.",
+        "offset_minutes": 15
+      },
+      {
+        "role": "user",
+        "content": "What diet changes should I prioritize?",
+        "offset_minutes": 18
+      },
+      {
+        "role": "assistant",
+        "content": "Prioritize smaller rice portions, more fish and vegetables, and fewer sugary drinks. These match the diet tips in your latest assessment recommendations.",
+        "offset_minutes": 21
+      },
+      {
+        "role": "user",
+        "content": "What is my current blood pressure?",
+        "offset_minutes": 24
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest blood pressure is 149/72 mmHg from your most recent submission in Dhaka.",
+        "offset_minutes": 27
+      },
+      {
+        "role": "user",
+        "content": "What should I track before my next resubmit?",
+        "offset_minutes": 30
+      },
+      {
+        "role": "assistant",
+        "content": "Track weekly fasting glucose, blood pressure twice monthly, and note any new symptoms. Your history shows this helps spot trends between assessments.",
+        "offset_minutes": 33
+      }
+    ]
+  },
+  {
+    "user_email": "patient007@health.local",
+    "messages": [
+      {
+        "role": "user",
+        "content": "What was my last glucose reading?",
+        "offset_minutes": 0
+      },
+      {
+        "role": "assistant",
+        "content": "Your most recent assessment shows fasting glucose at 110 mg/dL. That reading is from submission 10 of your health history.",
+        "offset_minutes": 3
+      },
+      {
+        "role": "user",
+        "content": "Am I at high risk for diabetes?",
+        "offset_minutes": 6
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest risk level is high. Synthetic assessment for Bogura: fasting glucose 110 mg/dL, BMI 55.",
+        "offset_minutes": 9
+      },
+      {
+        "role": "user",
+        "content": "How has my BMI changed across my check-ups?",
+        "offset_minutes": 12
+      },
+      {
+        "role": "assistant",
+        "content": "Your BMI started around 41.2 and is now 55.5 across 10 stored submissions.",
+        "offset_minutes": 15
+      },
+      {
+        "role": "user",
+        "content": "What diet changes should I prioritize?",
+        "offset_minutes": 18
+      },
+      {
+        "role": "assistant",
+        "content": "Prioritize smaller rice portions, more fish and vegetables, and fewer sugary drinks. These match the diet tips in your latest assessment recommendations.",
+        "offset_minutes": 21
+      },
+      {
+        "role": "user",
+        "content": "What is my current blood pressure?",
+        "offset_minutes": 24
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest blood pressure is 162/97 mmHg from your most recent submission in Bogura.",
+        "offset_minutes": 27
+      },
+      {
+        "role": "user",
+        "content": "What should I track before my next resubmit?",
+        "offset_minutes": 30
+      },
+      {
+        "role": "assistant",
+        "content": "Track weekly fasting glucose, blood pressure twice monthly, and note any new symptoms. Your history shows this helps spot trends between assessments.",
+        "offset_minutes": 33
+      }
+    ]
+  },
+  {
+    "user_email": "patient008@health.local",
+    "messages": [
+      {
+        "role": "user",
+        "content": "What was my last glucose reading?",
+        "offset_minutes": 0
+      },
+      {
+        "role": "assistant",
+        "content": "Your most recent assessment shows fasting glucose at 202 mg/dL. That reading is from submission 10 of your health history.",
+        "offset_minutes": 3
+      },
+      {
+        "role": "user",
+        "content": "Am I at high risk for diabetes?",
+        "offset_minutes": 6
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest risk level is high. Synthetic assessment for Barishal: fasting glucose 202 mg/dL, BMI 38.",
+        "offset_minutes": 9
+      },
+      {
+        "role": "user",
+        "content": "How has my BMI changed across my check-ups?",
+        "offset_minutes": 12
+      },
+      {
+        "role": "assistant",
+        "content": "Your BMI started around 23.6 and is now 38.9 across 10 stored submissions.",
+        "offset_minutes": 15
+      },
+      {
+        "role": "user",
+        "content": "What diet changes should I prioritize?",
+        "offset_minutes": 18
+      },
+      {
+        "role": "assistant",
+        "content": "Prioritize smaller rice portions, more fish and vegetables, and fewer sugary drinks. These match the diet tips in your latest assessment recommendations.",
+        "offset_minutes": 21
+      },
+      {
+        "role": "user",
+        "content": "What is my current blood pressure?",
+        "offset_minutes": 24
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest blood pressure is 165/99 mmHg from your most recent submission in Barishal.",
+        "offset_minutes": 27
+      },
+      {
+        "role": "user",
+        "content": "What should I track before my next resubmit?",
+        "offset_minutes": 30
+      },
+      {
+        "role": "assistant",
+        "content": "Track weekly fasting glucose, blood pressure twice monthly, and note any new symptoms. Your history shows this helps spot trends between assessments.",
+        "offset_minutes": 33
+      }
+    ]
+  },
+  {
+    "user_email": "patient009@health.local",
+    "messages": [
+      {
+        "role": "user",
+        "content": "What was my last glucose reading?",
+        "offset_minutes": 0
+      },
+      {
+        "role": "assistant",
+        "content": "Your most recent assessment shows fasting glucose at not recorded. That reading is from submission 10 of your health history.",
+        "offset_minutes": 3
+      },
+      {
+        "role": "user",
+        "content": "Am I at high risk for diabetes?",
+        "offset_minutes": 6
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest risk level is low. Synthetic assessment for Rajshahi: fasting glucose not recorded, BMI 16.",
+        "offset_minutes": 9
+      },
+      {
+        "role": "user",
+        "content": "How has my BMI changed across my check-ups?",
+        "offset_minutes": 12
+      },
+      {
+        "role": "assistant",
+        "content": "Your BMI started around 29.8 and is now 16.6 across 10 stored submissions.",
+        "offset_minutes": 15
+      },
+      {
+        "role": "user",
+        "content": "What diet changes should I prioritize?",
+        "offset_minutes": 18
+      },
+      {
+        "role": "assistant",
+        "content": "Prioritize smaller rice portions, more fish and vegetables, and fewer sugary drinks. These match the diet tips in your latest assessment recommendations.",
+        "offset_minutes": 21
+      },
+      {
+        "role": "user",
+        "content": "What is my current blood pressure?",
+        "offset_minutes": 24
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest blood pressure is 140/59 mmHg from your most recent submission in Rajshahi.",
+        "offset_minutes": 27
+      },
+      {
+        "role": "user",
+        "content": "What should I track before my next resubmit?",
+        "offset_minutes": 30
+      },
+      {
+        "role": "assistant",
+        "content": "Track weekly fasting glucose, blood pressure twice monthly, and note any new symptoms. Your history shows this helps spot trends between assessments.",
+        "offset_minutes": 33
+      }
+    ]
+  },
+  {
+    "user_email": "patient010@health.local",
+    "messages": [
+      {
+        "role": "user",
+        "content": "What was my last glucose reading?",
+        "offset_minutes": 0
+      },
+      {
+        "role": "assistant",
+        "content": "Your most recent assessment shows fasting glucose at 216 mg/dL. That reading is from submission 10 of your health history.",
+        "offset_minutes": 3
+      },
+      {
+        "role": "user",
+        "content": "Am I at high risk for diabetes?",
+        "offset_minutes": 6
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest risk level is high. Synthetic assessment for Rajshahi: fasting glucose 216 mg/dL, BMI 26.",
+        "offset_minutes": 9
+      },
+      {
+        "role": "user",
+        "content": "How has my BMI changed across my check-ups?",
+        "offset_minutes": 12
+      },
+      {
+        "role": "assistant",
+        "content": "Your BMI started around 29.0 and is now 26.9 across 10 stored submissions.",
+        "offset_minutes": 15
+      },
+      {
+        "role": "user",
+        "content": "What diet changes should I prioritize?",
+        "offset_minutes": 18
+      },
+      {
+        "role": "assistant",
+        "content": "Prioritize smaller rice portions, more fish and vegetables, and fewer sugary drinks. These match the diet tips in your latest assessment recommendations.",
+        "offset_minutes": 21
+      },
+      {
+        "role": "user",
+        "content": "What is my current blood pressure?",
+        "offset_minutes": 24
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest blood pressure is 140/109 mmHg from your most recent submission in Rajshahi.",
+        "offset_minutes": 27
+      },
+      {
+        "role": "user",
+        "content": "What should I track before my next resubmit?",
+        "offset_minutes": 30
+      },
+      {
+        "role": "assistant",
+        "content": "Track weekly fasting glucose, blood pressure twice monthly, and note any new symptoms. Your history shows this helps spot trends between assessments.",
+        "offset_minutes": 33
+      }
+    ]
+  },
+  {
+    "user_email": "patient011@health.local",
+    "messages": [
+      {
+        "role": "user",
+        "content": "What was my last glucose reading?",
+        "offset_minutes": 0
+      },
+      {
+        "role": "assistant",
+        "content": "Your most recent assessment shows fasting glucose at 283 mg/dL. That reading is from submission 10 of your health history.",
+        "offset_minutes": 3
+      },
+      {
+        "role": "user",
+        "content": "Am I at high risk for diabetes?",
+        "offset_minutes": 6
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest risk level is moderate. Synthetic assessment for Cumilla: fasting glucose 283 mg/dL, BMI 25.",
+        "offset_minutes": 9
+      },
+      {
+        "role": "user",
+        "content": "How has my BMI changed across my check-ups?",
+        "offset_minutes": 12
+      },
+      {
+        "role": "assistant",
+        "content": "Your BMI started around 25.9 and is now 25.3 across 10 stored submissions.",
+        "offset_minutes": 15
+      },
+      {
+        "role": "user",
+        "content": "What diet changes should I prioritize?",
+        "offset_minutes": 18
+      },
+      {
+        "role": "assistant",
+        "content": "Prioritize smaller rice portions, more fish and vegetables, and fewer sugary drinks. These match the diet tips in your latest assessment recommendations.",
+        "offset_minutes": 21
+      },
+      {
+        "role": "user",
+        "content": "What is my current blood pressure?",
+        "offset_minutes": 24
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest blood pressure is 103/86 mmHg from your most recent submission in Cumilla.",
+        "offset_minutes": 27
+      },
+      {
+        "role": "user",
+        "content": "What should I track before my next resubmit?",
+        "offset_minutes": 30
+      },
+      {
+        "role": "assistant",
+        "content": "Track weekly fasting glucose, blood pressure twice monthly, and note any new symptoms. Your history shows this helps spot trends between assessments.",
+        "offset_minutes": 33
+      }
+    ]
+  },
+  {
+    "user_email": "patient012@health.local",
+    "messages": [
+      {
+        "role": "user",
+        "content": "What was my last glucose reading?",
+        "offset_minutes": 0
+      },
+      {
+        "role": "assistant",
+        "content": "Your most recent assessment shows fasting glucose at 169 mg/dL. That reading is from submission 10 of your health history.",
+        "offset_minutes": 3
+      },
+      {
+        "role": "user",
+        "content": "Am I at high risk for diabetes?",
+        "offset_minutes": 6
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest risk level is high. Synthetic assessment for Sylhet: fasting glucose 169 mg/dL, BMI 26.",
+        "offset_minutes": 9
+      },
+      {
+        "role": "user",
+        "content": "How has my BMI changed across my check-ups?",
+        "offset_minutes": 12
+      },
+      {
+        "role": "assistant",
+        "content": "Your BMI started around 24.3 and is now 26.4 across 10 stored submissions.",
+        "offset_minutes": 15
+      },
+      {
+        "role": "user",
+        "content": "What diet changes should I prioritize?",
+        "offset_minutes": 18
+      },
+      {
+        "role": "assistant",
+        "content": "Prioritize smaller rice portions, more fish and vegetables, and fewer sugary drinks. These match the diet tips in your latest assessment recommendations.",
+        "offset_minutes": 21
+      },
+      {
+        "role": "user",
+        "content": "What is my current blood pressure?",
+        "offset_minutes": 24
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest blood pressure is 174/76 mmHg from your most recent submission in Sylhet.",
+        "offset_minutes": 27
+      },
+      {
+        "role": "user",
+        "content": "What should I track before my next resubmit?",
+        "offset_minutes": 30
+      },
+      {
+        "role": "assistant",
+        "content": "Track weekly fasting glucose, blood pressure twice monthly, and note any new symptoms. Your history shows this helps spot trends between assessments.",
+        "offset_minutes": 33
+      }
+    ]
+  },
+  {
+    "user_email": "patient013@health.local",
+    "messages": [
+      {
+        "role": "user",
+        "content": "What was my last glucose reading?",
+        "offset_minutes": 0
+      },
+      {
+        "role": "assistant",
+        "content": "Your most recent assessment shows fasting glucose at 198 mg/dL. That reading is from submission 10 of your health history.",
+        "offset_minutes": 3
+      },
+      {
+        "role": "user",
+        "content": "Am I at high risk for diabetes?",
+        "offset_minutes": 6
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest risk level is high. Synthetic assessment for Gazipur: fasting glucose 198 mg/dL, BMI 43.",
+        "offset_minutes": 9
+      },
+      {
+        "role": "user",
+        "content": "How has my BMI changed across my check-ups?",
+        "offset_minutes": 12
+      },
+      {
+        "role": "assistant",
+        "content": "Your BMI started around 14.4 and is now 43.3 across 10 stored submissions.",
+        "offset_minutes": 15
+      },
+      {
+        "role": "user",
+        "content": "What diet changes should I prioritize?",
+        "offset_minutes": 18
+      },
+      {
+        "role": "assistant",
+        "content": "Prioritize smaller rice portions, more fish and vegetables, and fewer sugary drinks. These match the diet tips in your latest assessment recommendations.",
+        "offset_minutes": 21
+      },
+      {
+        "role": "user",
+        "content": "What is my current blood pressure?",
+        "offset_minutes": 24
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest blood pressure is 144/63 mmHg from your most recent submission in Gazipur.",
+        "offset_minutes": 27
+      },
+      {
+        "role": "user",
+        "content": "What should I track before my next resubmit?",
+        "offset_minutes": 30
+      },
+      {
+        "role": "assistant",
+        "content": "Track weekly fasting glucose, blood pressure twice monthly, and note any new symptoms. Your history shows this helps spot trends between assessments.",
+        "offset_minutes": 33
+      }
+    ]
+  },
+  {
+    "user_email": "patient014@health.local",
+    "messages": [
+      {
+        "role": "user",
+        "content": "What was my last glucose reading?",
+        "offset_minutes": 0
+      },
+      {
+        "role": "assistant",
+        "content": "Your most recent assessment shows fasting glucose at 198 mg/dL. That reading is from submission 10 of your health history.",
+        "offset_minutes": 3
+      },
+      {
+        "role": "user",
+        "content": "Am I at high risk for diabetes?",
+        "offset_minutes": 6
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest risk level is high. Synthetic assessment for Dhaka: fasting glucose 198 mg/dL, BMI 52.",
+        "offset_minutes": 9
+      },
+      {
+        "role": "user",
+        "content": "How has my BMI changed across my check-ups?",
+        "offset_minutes": 12
+      },
+      {
+        "role": "assistant",
+        "content": "Your BMI started around 35.0 and is now 52.6 across 10 stored submissions.",
+        "offset_minutes": 15
+      },
+      {
+        "role": "user",
+        "content": "What diet changes should I prioritize?",
+        "offset_minutes": 18
+      },
+      {
+        "role": "assistant",
+        "content": "Prioritize smaller rice portions, more fish and vegetables, and fewer sugary drinks. These match the diet tips in your latest assessment recommendations.",
+        "offset_minutes": 21
+      },
+      {
+        "role": "user",
+        "content": "What is my current blood pressure?",
+        "offset_minutes": 24
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest blood pressure is 160/83 mmHg from your most recent submission in Dhaka.",
+        "offset_minutes": 27
+      },
+      {
+        "role": "user",
+        "content": "What should I track before my next resubmit?",
+        "offset_minutes": 30
+      },
+      {
+        "role": "assistant",
+        "content": "Track weekly fasting glucose, blood pressure twice monthly, and note any new symptoms. Your history shows this helps spot trends between assessments.",
+        "offset_minutes": 33
+      }
+    ]
+  },
+  {
+    "user_email": "patient015@health.local",
+    "messages": [
+      {
+        "role": "user",
+        "content": "What was my last glucose reading?",
+        "offset_minutes": 0
+      },
+      {
+        "role": "assistant",
+        "content": "Your most recent assessment shows fasting glucose at 76 mg/dL. That reading is from submission 10 of your health history.",
+        "offset_minutes": 3
+      },
+      {
+        "role": "user",
+        "content": "Am I at high risk for diabetes?",
+        "offset_minutes": 6
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest risk level is low. Synthetic assessment for Rajshahi: fasting glucose 76 mg/dL, BMI 15.",
+        "offset_minutes": 9
+      },
+      {
+        "role": "user",
+        "content": "How has my BMI changed across my check-ups?",
+        "offset_minutes": 12
+      },
+      {
+        "role": "assistant",
+        "content": "Your BMI started around 25.7 and is now 15.2 across 10 stored submissions.",
+        "offset_minutes": 15
+      },
+      {
+        "role": "user",
+        "content": "What diet changes should I prioritize?",
+        "offset_minutes": 18
+      },
+      {
+        "role": "assistant",
+        "content": "Prioritize smaller rice portions, more fish and vegetables, and fewer sugary drinks. These match the diet tips in your latest assessment recommendations.",
+        "offset_minutes": 21
+      },
+      {
+        "role": "user",
+        "content": "What is my current blood pressure?",
+        "offset_minutes": 24
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest blood pressure is 173/109 mmHg from your most recent submission in Rajshahi.",
+        "offset_minutes": 27
+      },
+      {
+        "role": "user",
+        "content": "What should I track before my next resubmit?",
+        "offset_minutes": 30
+      },
+      {
+        "role": "assistant",
+        "content": "Track weekly fasting glucose, blood pressure twice monthly, and note any new symptoms. Your history shows this helps spot trends between assessments.",
+        "offset_minutes": 33
+      }
+    ]
+  },
+  {
+    "user_email": "patient016@health.local",
+    "messages": [
+      {
+        "role": "user",
+        "content": "What was my last glucose reading?",
+        "offset_minutes": 0
+      },
+      {
+        "role": "assistant",
+        "content": "Your most recent assessment shows fasting glucose at not recorded. That reading is from submission 10 of your health history.",
+        "offset_minutes": 3
+      },
+      {
+        "role": "user",
+        "content": "Am I at high risk for diabetes?",
+        "offset_minutes": 6
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest risk level is moderate. Synthetic assessment for Sylhet: fasting glucose not recorded, BMI 33.",
+        "offset_minutes": 9
+      },
+      {
+        "role": "user",
+        "content": "How has my BMI changed across my check-ups?",
+        "offset_minutes": 12
+      },
+      {
+        "role": "assistant",
+        "content": "Your BMI started around 18.5 and is now 33.3 across 10 stored submissions.",
+        "offset_minutes": 15
+      },
+      {
+        "role": "user",
+        "content": "What diet changes should I prioritize?",
+        "offset_minutes": 18
+      },
+      {
+        "role": "assistant",
+        "content": "Prioritize smaller rice portions, more fish and vegetables, and fewer sugary drinks. These match the diet tips in your latest assessment recommendations.",
+        "offset_minutes": 21
+      },
+      {
+        "role": "user",
+        "content": "What is my current blood pressure?",
+        "offset_minutes": 24
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest blood pressure is 113/64 mmHg from your most recent submission in Sylhet.",
+        "offset_minutes": 27
+      },
+      {
+        "role": "user",
+        "content": "What should I track before my next resubmit?",
+        "offset_minutes": 30
+      },
+      {
+        "role": "assistant",
+        "content": "Track weekly fasting glucose, blood pressure twice monthly, and note any new symptoms. Your history shows this helps spot trends between assessments.",
+        "offset_minutes": 33
+      }
+    ]
+  },
+  {
+    "user_email": "patient017@health.local",
+    "messages": [
+      {
+        "role": "user",
+        "content": "What was my last glucose reading?",
+        "offset_minutes": 0
+      },
+      {
+        "role": "assistant",
+        "content": "Your most recent assessment shows fasting glucose at 94 mg/dL. That reading is from submission 10 of your health history.",
+        "offset_minutes": 3
+      },
+      {
+        "role": "user",
+        "content": "Am I at high risk for diabetes?",
+        "offset_minutes": 6
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest risk level is moderate. Synthetic assessment for Rajshahi: fasting glucose 94 mg/dL, BMI 33.",
+        "offset_minutes": 9
+      },
+      {
+        "role": "user",
+        "content": "How has my BMI changed across my check-ups?",
+        "offset_minutes": 12
+      },
+      {
+        "role": "assistant",
+        "content": "Your BMI started around 28.9 and is now 33.4 across 10 stored submissions.",
+        "offset_minutes": 15
+      },
+      {
+        "role": "user",
+        "content": "What diet changes should I prioritize?",
+        "offset_minutes": 18
+      },
+      {
+        "role": "assistant",
+        "content": "Prioritize smaller rice portions, more fish and vegetables, and fewer sugary drinks. These match the diet tips in your latest assessment recommendations.",
+        "offset_minutes": 21
+      },
+      {
+        "role": "user",
+        "content": "What is my current blood pressure?",
+        "offset_minutes": 24
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest blood pressure is 138/80 mmHg from your most recent submission in Rajshahi.",
+        "offset_minutes": 27
+      },
+      {
+        "role": "user",
+        "content": "What should I track before my next resubmit?",
+        "offset_minutes": 30
+      },
+      {
+        "role": "assistant",
+        "content": "Track weekly fasting glucose, blood pressure twice monthly, and note any new symptoms. Your history shows this helps spot trends between assessments.",
+        "offset_minutes": 33
+      }
+    ]
+  },
+  {
+    "user_email": "patient018@health.local",
+    "messages": [
+      {
+        "role": "user",
+        "content": "What was my last glucose reading?",
+        "offset_minutes": 0
+      },
+      {
+        "role": "assistant",
+        "content": "Your most recent assessment shows fasting glucose at 101 mg/dL. That reading is from submission 10 of your health history.",
+        "offset_minutes": 3
+      },
+      {
+        "role": "user",
+        "content": "Am I at high risk for diabetes?",
+        "offset_minutes": 6
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest risk level is moderate. Synthetic assessment for Narayanganj: fasting glucose 101 mg/dL, BMI 21.",
+        "offset_minutes": 9
+      },
+      {
+        "role": "user",
+        "content": "How has my BMI changed across my check-ups?",
+        "offset_minutes": 12
+      },
+      {
+        "role": "assistant",
+        "content": "Your BMI started around 37.9 and is now 21.0 across 10 stored submissions.",
+        "offset_minutes": 15
+      },
+      {
+        "role": "user",
+        "content": "What diet changes should I prioritize?",
+        "offset_minutes": 18
+      },
+      {
+        "role": "assistant",
+        "content": "Prioritize smaller rice portions, more fish and vegetables, and fewer sugary drinks. These match the diet tips in your latest assessment recommendations.",
+        "offset_minutes": 21
+      },
+      {
+        "role": "user",
+        "content": "What is my current blood pressure?",
+        "offset_minutes": 24
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest blood pressure is 165/66 mmHg from your most recent submission in Narayanganj.",
+        "offset_minutes": 27
+      },
+      {
+        "role": "user",
+        "content": "What should I track before my next resubmit?",
+        "offset_minutes": 30
+      },
+      {
+        "role": "assistant",
+        "content": "Track weekly fasting glucose, blood pressure twice monthly, and note any new symptoms. Your history shows this helps spot trends between assessments.",
+        "offset_minutes": 33
+      }
+    ]
+  },
+  {
+    "user_email": "patient019@health.local",
+    "messages": [
+      {
+        "role": "user",
+        "content": "What was my last glucose reading?",
+        "offset_minutes": 0
+      },
+      {
+        "role": "assistant",
+        "content": "Your most recent assessment shows fasting glucose at 187 mg/dL. That reading is from submission 10 of your health history.",
+        "offset_minutes": 3
+      },
+      {
+        "role": "user",
+        "content": "Am I at high risk for diabetes?",
+        "offset_minutes": 6
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest risk level is high. Synthetic assessment for Mymensingh: fasting glucose 187 mg/dL, BMI 36.",
+        "offset_minutes": 9
+      },
+      {
+        "role": "user",
+        "content": "How has my BMI changed across my check-ups?",
+        "offset_minutes": 12
+      },
+      {
+        "role": "assistant",
+        "content": "Your BMI started around 33.1 and is now 36.6 across 10 stored submissions.",
+        "offset_minutes": 15
+      },
+      {
+        "role": "user",
+        "content": "What diet changes should I prioritize?",
+        "offset_minutes": 18
+      },
+      {
+        "role": "assistant",
+        "content": "Prioritize smaller rice portions, more fish and vegetables, and fewer sugary drinks. These match the diet tips in your latest assessment recommendations.",
+        "offset_minutes": 21
+      },
+      {
+        "role": "user",
+        "content": "What is my current blood pressure?",
+        "offset_minutes": 24
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest blood pressure is 133/99 mmHg from your most recent submission in Mymensingh.",
+        "offset_minutes": 27
+      },
+      {
+        "role": "user",
+        "content": "What should I track before my next resubmit?",
+        "offset_minutes": 30
+      },
+      {
+        "role": "assistant",
+        "content": "Track weekly fasting glucose, blood pressure twice monthly, and note any new symptoms. Your history shows this helps spot trends between assessments.",
+        "offset_minutes": 33
+      }
+    ]
+  },
+  {
+    "user_email": "patient020@health.local",
+    "messages": [
+      {
+        "role": "user",
+        "content": "What was my last glucose reading?",
+        "offset_minutes": 0
+      },
+      {
+        "role": "assistant",
+        "content": "Your most recent assessment shows fasting glucose at 175 mg/dL. That reading is from submission 10 of your health history.",
+        "offset_minutes": 3
+      },
+      {
+        "role": "user",
+        "content": "Am I at high risk for diabetes?",
+        "offset_minutes": 6
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest risk level is high. Synthetic assessment for Mymensingh: fasting glucose 175 mg/dL, BMI 22.",
+        "offset_minutes": 9
+      },
+      {
+        "role": "user",
+        "content": "How has my BMI changed across my check-ups?",
+        "offset_minutes": 12
+      },
+      {
+        "role": "assistant",
+        "content": "Your BMI started around 31.9 and is now 22.6 across 10 stored submissions.",
+        "offset_minutes": 15
+      },
+      {
+        "role": "user",
+        "content": "What diet changes should I prioritize?",
+        "offset_minutes": 18
+      },
+      {
+        "role": "assistant",
+        "content": "Prioritize smaller rice portions, more fish and vegetables, and fewer sugary drinks. These match the diet tips in your latest assessment recommendations.",
+        "offset_minutes": 21
+      },
+      {
+        "role": "user",
+        "content": "What is my current blood pressure?",
+        "offset_minutes": 24
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest blood pressure is 169/94 mmHg from your most recent submission in Mymensingh.",
+        "offset_minutes": 27
+      },
+      {
+        "role": "user",
+        "content": "What should I track before my next resubmit?",
+        "offset_minutes": 30
+      },
+      {
+        "role": "assistant",
+        "content": "Track weekly fasting glucose, blood pressure twice monthly, and note any new symptoms. Your history shows this helps spot trends between assessments.",
+        "offset_minutes": 33
+      }
+    ]
+  },
+  {
+    "user_email": "patient021@health.local",
+    "messages": [
+      {
+        "role": "user",
+        "content": "What was my last glucose reading?",
+        "offset_minutes": 0
+      },
+      {
+        "role": "assistant",
+        "content": "Your most recent assessment shows fasting glucose at 122 mg/dL. That reading is from submission 10 of your health history.",
+        "offset_minutes": 3
+      },
+      {
+        "role": "user",
+        "content": "Am I at high risk for diabetes?",
+        "offset_minutes": 6
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest risk level is low. Synthetic assessment for Khulna: fasting glucose 122 mg/dL, BMI 18.",
+        "offset_minutes": 9
+      },
+      {
+        "role": "user",
+        "content": "How has my BMI changed across my check-ups?",
+        "offset_minutes": 12
+      },
+      {
+        "role": "assistant",
+        "content": "Your BMI started around 30.4 and is now 18.9 across 10 stored submissions.",
+        "offset_minutes": 15
+      },
+      {
+        "role": "user",
+        "content": "What diet changes should I prioritize?",
+        "offset_minutes": 18
+      },
+      {
+        "role": "assistant",
+        "content": "Prioritize smaller rice portions, more fish and vegetables, and fewer sugary drinks. These match the diet tips in your latest assessment recommendations.",
+        "offset_minutes": 21
+      },
+      {
+        "role": "user",
+        "content": "What is my current blood pressure?",
+        "offset_minutes": 24
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest blood pressure is 105/69 mmHg from your most recent submission in Khulna.",
+        "offset_minutes": 27
+      },
+      {
+        "role": "user",
+        "content": "What should I track before my next resubmit?",
+        "offset_minutes": 30
+      },
+      {
+        "role": "assistant",
+        "content": "Track weekly fasting glucose, blood pressure twice monthly, and note any new symptoms. Your history shows this helps spot trends between assessments.",
+        "offset_minutes": 33
+      }
+    ]
+  },
+  {
+    "user_email": "patient022@health.local",
+    "messages": [
+      {
+        "role": "user",
+        "content": "What was my last glucose reading?",
+        "offset_minutes": 0
+      },
+      {
+        "role": "assistant",
+        "content": "Your most recent assessment shows fasting glucose at not recorded. That reading is from submission 10 of your health history.",
+        "offset_minutes": 3
+      },
+      {
+        "role": "user",
+        "content": "Am I at high risk for diabetes?",
+        "offset_minutes": 6
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest risk level is moderate. Synthetic assessment for Bogura: fasting glucose not recorded, BMI 48.",
+        "offset_minutes": 9
+      },
+      {
+        "role": "user",
+        "content": "How has my BMI changed across my check-ups?",
+        "offset_minutes": 12
+      },
+      {
+        "role": "assistant",
+        "content": "Your BMI started around 15.4 and is now 48.6 across 10 stored submissions.",
+        "offset_minutes": 15
+      },
+      {
+        "role": "user",
+        "content": "What diet changes should I prioritize?",
+        "offset_minutes": 18
+      },
+      {
+        "role": "assistant",
+        "content": "Prioritize smaller rice portions, more fish and vegetables, and fewer sugary drinks. These match the diet tips in your latest assessment recommendations.",
+        "offset_minutes": 21
+      },
+      {
+        "role": "user",
+        "content": "What is my current blood pressure?",
+        "offset_minutes": 24
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest blood pressure is 119/87 mmHg from your most recent submission in Bogura.",
+        "offset_minutes": 27
+      },
+      {
+        "role": "user",
+        "content": "What should I track before my next resubmit?",
+        "offset_minutes": 30
+      },
+      {
+        "role": "assistant",
+        "content": "Track weekly fasting glucose, blood pressure twice monthly, and note any new symptoms. Your history shows this helps spot trends between assessments.",
+        "offset_minutes": 33
+      }
+    ]
+  },
+  {
+    "user_email": "patient023@health.local",
+    "messages": [
+      {
+        "role": "user",
+        "content": "What was my last glucose reading?",
+        "offset_minutes": 0
+      },
+      {
+        "role": "assistant",
+        "content": "Your most recent assessment shows fasting glucose at 128 mg/dL. That reading is from submission 10 of your health history.",
+        "offset_minutes": 3
+      },
+      {
+        "role": "user",
+        "content": "Am I at high risk for diabetes?",
+        "offset_minutes": 6
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest risk level is moderate. Synthetic assessment for Rangpur: fasting glucose 128 mg/dL, BMI 19.",
+        "offset_minutes": 9
+      },
+      {
+        "role": "user",
+        "content": "How has my BMI changed across my check-ups?",
+        "offset_minutes": 12
+      },
+      {
+        "role": "assistant",
+        "content": "Your BMI started around 20.2 and is now 19.5 across 10 stored submissions.",
+        "offset_minutes": 15
+      },
+      {
+        "role": "user",
+        "content": "What diet changes should I prioritize?",
+        "offset_minutes": 18
+      },
+      {
+        "role": "assistant",
+        "content": "Prioritize smaller rice portions, more fish and vegetables, and fewer sugary drinks. These match the diet tips in your latest assessment recommendations.",
+        "offset_minutes": 21
+      },
+      {
+        "role": "user",
+        "content": "What is my current blood pressure?",
+        "offset_minutes": 24
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest blood pressure is 157/75 mmHg from your most recent submission in Rangpur.",
+        "offset_minutes": 27
+      },
+      {
+        "role": "user",
+        "content": "What should I track before my next resubmit?",
+        "offset_minutes": 30
+      },
+      {
+        "role": "assistant",
+        "content": "Track weekly fasting glucose, blood pressure twice monthly, and note any new symptoms. Your history shows this helps spot trends between assessments.",
+        "offset_minutes": 33
+      }
+    ]
+  },
+  {
+    "user_email": "patient024@health.local",
+    "messages": [
+      {
+        "role": "user",
+        "content": "What was my last glucose reading?",
+        "offset_minutes": 0
+      },
+      {
+        "role": "assistant",
+        "content": "Your most recent assessment shows fasting glucose at 117 mg/dL. That reading is from submission 10 of your health history.",
+        "offset_minutes": 3
+      },
+      {
+        "role": "user",
+        "content": "Am I at high risk for diabetes?",
+        "offset_minutes": 6
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest risk level is moderate. Synthetic assessment for Narayanganj: fasting glucose 117 mg/dL, BMI 32.",
+        "offset_minutes": 9
+      },
+      {
+        "role": "user",
+        "content": "How has my BMI changed across my check-ups?",
+        "offset_minutes": 12
+      },
+      {
+        "role": "assistant",
+        "content": "Your BMI started around 29.8 and is now 32.9 across 10 stored submissions.",
+        "offset_minutes": 15
+      },
+      {
+        "role": "user",
+        "content": "What diet changes should I prioritize?",
+        "offset_minutes": 18
+      },
+      {
+        "role": "assistant",
+        "content": "Prioritize smaller rice portions, more fish and vegetables, and fewer sugary drinks. These match the diet tips in your latest assessment recommendations.",
+        "offset_minutes": 21
+      },
+      {
+        "role": "user",
+        "content": "What is my current blood pressure?",
+        "offset_minutes": 24
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest blood pressure is 118/55 mmHg from your most recent submission in Narayanganj.",
+        "offset_minutes": 27
+      },
+      {
+        "role": "user",
+        "content": "What should I track before my next resubmit?",
+        "offset_minutes": 30
+      },
+      {
+        "role": "assistant",
+        "content": "Track weekly fasting glucose, blood pressure twice monthly, and note any new symptoms. Your history shows this helps spot trends between assessments.",
+        "offset_minutes": 33
+      }
+    ]
+  },
+  {
+    "user_email": "patient025@health.local",
+    "messages": [
+      {
+        "role": "user",
+        "content": "What was my last glucose reading?",
+        "offset_minutes": 0
+      },
+      {
+        "role": "assistant",
+        "content": "Your most recent assessment shows fasting glucose at not recorded. That reading is from submission 10 of your health history.",
+        "offset_minutes": 3
+      },
+      {
+        "role": "user",
+        "content": "Am I at high risk for diabetes?",
+        "offset_minutes": 6
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest risk level is high. Synthetic assessment for Sylhet: fasting glucose not recorded, BMI 43.",
+        "offset_minutes": 9
+      },
+      {
+        "role": "user",
+        "content": "How has my BMI changed across my check-ups?",
+        "offset_minutes": 12
+      },
+      {
+        "role": "assistant",
+        "content": "Your BMI started around 33.8 and is now 43.5 across 10 stored submissions.",
+        "offset_minutes": 15
+      },
+      {
+        "role": "user",
+        "content": "What diet changes should I prioritize?",
+        "offset_minutes": 18
+      },
+      {
+        "role": "assistant",
+        "content": "Prioritize smaller rice portions, more fish and vegetables, and fewer sugary drinks. These match the diet tips in your latest assessment recommendations.",
+        "offset_minutes": 21
+      },
+      {
+        "role": "user",
+        "content": "What is my current blood pressure?",
+        "offset_minutes": 24
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest blood pressure is 149/59 mmHg from your most recent submission in Sylhet.",
+        "offset_minutes": 27
+      },
+      {
+        "role": "user",
+        "content": "What should I track before my next resubmit?",
+        "offset_minutes": 30
+      },
+      {
+        "role": "assistant",
+        "content": "Track weekly fasting glucose, blood pressure twice monthly, and note any new symptoms. Your history shows this helps spot trends between assessments.",
+        "offset_minutes": 33
+      }
+    ]
+  },
+  {
+    "user_email": "patient026@health.local",
+    "messages": [
+      {
+        "role": "user",
+        "content": "What was my last glucose reading?",
+        "offset_minutes": 0
+      },
+      {
+        "role": "assistant",
+        "content": "Your most recent assessment shows fasting glucose at 65 mg/dL. That reading is from submission 10 of your health history.",
+        "offset_minutes": 3
+      },
+      {
+        "role": "user",
+        "content": "Am I at high risk for diabetes?",
+        "offset_minutes": 6
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest risk level is low. Synthetic assessment for Narayanganj: fasting glucose 65 mg/dL, BMI 14.",
+        "offset_minutes": 9
+      },
+      {
+        "role": "user",
+        "content": "How has my BMI changed across my check-ups?",
+        "offset_minutes": 12
+      },
+      {
+        "role": "assistant",
+        "content": "Your BMI started around 17.6 and is now 14.4 across 10 stored submissions.",
+        "offset_minutes": 15
+      },
+      {
+        "role": "user",
+        "content": "What diet changes should I prioritize?",
+        "offset_minutes": 18
+      },
+      {
+        "role": "assistant",
+        "content": "Prioritize smaller rice portions, more fish and vegetables, and fewer sugary drinks. These match the diet tips in your latest assessment recommendations.",
+        "offset_minutes": 21
+      },
+      {
+        "role": "user",
+        "content": "What is my current blood pressure?",
+        "offset_minutes": 24
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest blood pressure is 175/92 mmHg from your most recent submission in Narayanganj.",
+        "offset_minutes": 27
+      },
+      {
+        "role": "user",
+        "content": "What should I track before my next resubmit?",
+        "offset_minutes": 30
+      },
+      {
+        "role": "assistant",
+        "content": "Track weekly fasting glucose, blood pressure twice monthly, and note any new symptoms. Your history shows this helps spot trends between assessments.",
+        "offset_minutes": 33
+      }
+    ]
+  },
+  {
+    "user_email": "patient027@health.local",
+    "messages": [
+      {
+        "role": "user",
+        "content": "What was my last glucose reading?",
+        "offset_minutes": 0
+      },
+      {
+        "role": "assistant",
+        "content": "Your most recent assessment shows fasting glucose at 205 mg/dL. That reading is from submission 10 of your health history.",
+        "offset_minutes": 3
+      },
+      {
+        "role": "user",
+        "content": "Am I at high risk for diabetes?",
+        "offset_minutes": 6
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest risk level is high. Synthetic assessment for Sylhet: fasting glucose 205 mg/dL, BMI 37.",
+        "offset_minutes": 9
+      },
+      {
+        "role": "user",
+        "content": "How has my BMI changed across my check-ups?",
+        "offset_minutes": 12
+      },
+      {
+        "role": "assistant",
+        "content": "Your BMI started around 18.5 and is now 37.0 across 10 stored submissions.",
+        "offset_minutes": 15
+      },
+      {
+        "role": "user",
+        "content": "What diet changes should I prioritize?",
+        "offset_minutes": 18
+      },
+      {
+        "role": "assistant",
+        "content": "Prioritize smaller rice portions, more fish and vegetables, and fewer sugary drinks. These match the diet tips in your latest assessment recommendations.",
+        "offset_minutes": 21
+      },
+      {
+        "role": "user",
+        "content": "What is my current blood pressure?",
+        "offset_minutes": 24
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest blood pressure is 122/98 mmHg from your most recent submission in Sylhet.",
+        "offset_minutes": 27
+      },
+      {
+        "role": "user",
+        "content": "What should I track before my next resubmit?",
+        "offset_minutes": 30
+      },
+      {
+        "role": "assistant",
+        "content": "Track weekly fasting glucose, blood pressure twice monthly, and note any new symptoms. Your history shows this helps spot trends between assessments.",
+        "offset_minutes": 33
+      }
+    ]
+  },
+  {
+    "user_email": "patient028@health.local",
+    "messages": [
+      {
+        "role": "user",
+        "content": "What was my last glucose reading?",
+        "offset_minutes": 0
+      },
+      {
+        "role": "assistant",
+        "content": "Your most recent assessment shows fasting glucose at 272 mg/dL. That reading is from submission 10 of your health history.",
+        "offset_minutes": 3
+      },
+      {
+        "role": "user",
+        "content": "Am I at high risk for diabetes?",
+        "offset_minutes": 6
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest risk level is high. Synthetic assessment for Barishal: fasting glucose 272 mg/dL, BMI 35.",
+        "offset_minutes": 9
+      },
+      {
+        "role": "user",
+        "content": "How has my BMI changed across my check-ups?",
+        "offset_minutes": 12
+      },
+      {
+        "role": "assistant",
+        "content": "Your BMI started around 44.9 and is now 35.1 across 10 stored submissions.",
+        "offset_minutes": 15
+      },
+      {
+        "role": "user",
+        "content": "What diet changes should I prioritize?",
+        "offset_minutes": 18
+      },
+      {
+        "role": "assistant",
+        "content": "Prioritize smaller rice portions, more fish and vegetables, and fewer sugary drinks. These match the diet tips in your latest assessment recommendations.",
+        "offset_minutes": 21
+      },
+      {
+        "role": "user",
+        "content": "What is my current blood pressure?",
+        "offset_minutes": 24
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest blood pressure is 170/100 mmHg from your most recent submission in Barishal.",
+        "offset_minutes": 27
+      },
+      {
+        "role": "user",
+        "content": "What should I track before my next resubmit?",
+        "offset_minutes": 30
+      },
+      {
+        "role": "assistant",
+        "content": "Track weekly fasting glucose, blood pressure twice monthly, and note any new symptoms. Your history shows this helps spot trends between assessments.",
+        "offset_minutes": 33
+      }
+    ]
+  },
+  {
+    "user_email": "patient029@health.local",
+    "messages": [
+      {
+        "role": "user",
+        "content": "What was my last glucose reading?",
+        "offset_minutes": 0
+      },
+      {
+        "role": "assistant",
+        "content": "Your most recent assessment shows fasting glucose at 83 mg/dL. That reading is from submission 10 of your health history.",
+        "offset_minutes": 3
+      },
+      {
+        "role": "user",
+        "content": "Am I at high risk for diabetes?",
+        "offset_minutes": 6
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest risk level is moderate. Synthetic assessment for Rangpur: fasting glucose 83 mg/dL, BMI 32.",
+        "offset_minutes": 9
+      },
+      {
+        "role": "user",
+        "content": "How has my BMI changed across my check-ups?",
+        "offset_minutes": 12
+      },
+      {
+        "role": "assistant",
+        "content": "Your BMI started around 22.7 and is now 32.9 across 10 stored submissions.",
+        "offset_minutes": 15
+      },
+      {
+        "role": "user",
+        "content": "What diet changes should I prioritize?",
+        "offset_minutes": 18
+      },
+      {
+        "role": "assistant",
+        "content": "Prioritize smaller rice portions, more fish and vegetables, and fewer sugary drinks. These match the diet tips in your latest assessment recommendations.",
+        "offset_minutes": 21
+      },
+      {
+        "role": "user",
+        "content": "What is my current blood pressure?",
+        "offset_minutes": 24
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest blood pressure is 129/67 mmHg from your most recent submission in Rangpur.",
+        "offset_minutes": 27
+      },
+      {
+        "role": "user",
+        "content": "What should I track before my next resubmit?",
+        "offset_minutes": 30
+      },
+      {
+        "role": "assistant",
+        "content": "Track weekly fasting glucose, blood pressure twice monthly, and note any new symptoms. Your history shows this helps spot trends between assessments.",
+        "offset_minutes": 33
+      }
+    ]
+  },
+  {
+    "user_email": "patient030@health.local",
+    "messages": [
+      {
+        "role": "user",
+        "content": "What was my last glucose reading?",
+        "offset_minutes": 0
+      },
+      {
+        "role": "assistant",
+        "content": "Your most recent assessment shows fasting glucose at 227 mg/dL. That reading is from submission 10 of your health history.",
+        "offset_minutes": 3
+      },
+      {
+        "role": "user",
+        "content": "Am I at high risk for diabetes?",
+        "offset_minutes": 6
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest risk level is moderate. Synthetic assessment for Rajshahi: fasting glucose 227 mg/dL, BMI 19.",
+        "offset_minutes": 9
+      },
+      {
+        "role": "user",
+        "content": "How has my BMI changed across my check-ups?",
+        "offset_minutes": 12
+      },
+      {
+        "role": "assistant",
+        "content": "Your BMI started around 33.5 and is now 19.8 across 10 stored submissions.",
+        "offset_minutes": 15
+      },
+      {
+        "role": "user",
+        "content": "What diet changes should I prioritize?",
+        "offset_minutes": 18
+      },
+      {
+        "role": "assistant",
+        "content": "Prioritize smaller rice portions, more fish and vegetables, and fewer sugary drinks. These match the diet tips in your latest assessment recommendations.",
+        "offset_minutes": 21
+      },
+      {
+        "role": "user",
+        "content": "What is my current blood pressure?",
+        "offset_minutes": 24
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest blood pressure is 120/96 mmHg from your most recent submission in Rajshahi.",
+        "offset_minutes": 27
+      },
+      {
+        "role": "user",
+        "content": "What should I track before my next resubmit?",
+        "offset_minutes": 30
+      },
+      {
+        "role": "assistant",
+        "content": "Track weekly fasting glucose, blood pressure twice monthly, and note any new symptoms. Your history shows this helps spot trends between assessments.",
+        "offset_minutes": 33
+      }
+    ]
+  },
+  {
+    "user_email": "patient031@health.local",
+    "messages": [
+      {
+        "role": "user",
+        "content": "What was my last glucose reading?",
+        "offset_minutes": 0
+      },
+      {
+        "role": "assistant",
+        "content": "Your most recent assessment shows fasting glucose at 110 mg/dL. That reading is from submission 10 of your health history.",
+        "offset_minutes": 3
+      },
+      {
+        "role": "user",
+        "content": "Am I at high risk for diabetes?",
+        "offset_minutes": 6
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest risk level is high. Synthetic assessment for Rajshahi: fasting glucose 110 mg/dL, BMI 45.",
+        "offset_minutes": 9
+      },
+      {
+        "role": "user",
+        "content": "How has my BMI changed across my check-ups?",
+        "offset_minutes": 12
+      },
+      {
+        "role": "assistant",
+        "content": "Your BMI started around 41.5 and is now 45.7 across 10 stored submissions.",
+        "offset_minutes": 15
+      },
+      {
+        "role": "user",
+        "content": "What diet changes should I prioritize?",
+        "offset_minutes": 18
+      },
+      {
+        "role": "assistant",
+        "content": "Prioritize smaller rice portions, more fish and vegetables, and fewer sugary drinks. These match the diet tips in your latest assessment recommendations.",
+        "offset_minutes": 21
+      },
+      {
+        "role": "user",
+        "content": "What is my current blood pressure?",
+        "offset_minutes": 24
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest blood pressure is 140/61 mmHg from your most recent submission in Rajshahi.",
+        "offset_minutes": 27
+      },
+      {
+        "role": "user",
+        "content": "What should I track before my next resubmit?",
+        "offset_minutes": 30
+      },
+      {
+        "role": "assistant",
+        "content": "Track weekly fasting glucose, blood pressure twice monthly, and note any new symptoms. Your history shows this helps spot trends between assessments.",
+        "offset_minutes": 33
+      }
+    ]
+  },
+  {
+    "user_email": "patient032@health.local",
+    "messages": [
+      {
+        "role": "user",
+        "content": "What was my last glucose reading?",
+        "offset_minutes": 0
+      },
+      {
+        "role": "assistant",
+        "content": "Your most recent assessment shows fasting glucose at 115 mg/dL. That reading is from submission 10 of your health history.",
+        "offset_minutes": 3
+      },
+      {
+        "role": "user",
+        "content": "Am I at high risk for diabetes?",
+        "offset_minutes": 6
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest risk level is moderate. Synthetic assessment for Dhaka: fasting glucose 115 mg/dL, BMI 17.",
+        "offset_minutes": 9
+      },
+      {
+        "role": "user",
+        "content": "How has my BMI changed across my check-ups?",
+        "offset_minutes": 12
+      },
+      {
+        "role": "assistant",
+        "content": "Your BMI started around 24.4 and is now 17.9 across 10 stored submissions.",
+        "offset_minutes": 15
+      },
+      {
+        "role": "user",
+        "content": "What diet changes should I prioritize?",
+        "offset_minutes": 18
+      },
+      {
+        "role": "assistant",
+        "content": "Prioritize smaller rice portions, more fish and vegetables, and fewer sugary drinks. These match the diet tips in your latest assessment recommendations.",
+        "offset_minutes": 21
+      },
+      {
+        "role": "user",
+        "content": "What is my current blood pressure?",
+        "offset_minutes": 24
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest blood pressure is 169/108 mmHg from your most recent submission in Dhaka.",
+        "offset_minutes": 27
+      },
+      {
+        "role": "user",
+        "content": "What should I track before my next resubmit?",
+        "offset_minutes": 30
+      },
+      {
+        "role": "assistant",
+        "content": "Track weekly fasting glucose, blood pressure twice monthly, and note any new symptoms. Your history shows this helps spot trends between assessments.",
+        "offset_minutes": 33
+      }
+    ]
+  },
+  {
+    "user_email": "patient033@health.local",
+    "messages": [
+      {
+        "role": "user",
+        "content": "What was my last glucose reading?",
+        "offset_minutes": 0
+      },
+      {
+        "role": "assistant",
+        "content": "Your most recent assessment shows fasting glucose at 216 mg/dL. That reading is from submission 10 of your health history.",
+        "offset_minutes": 3
+      },
+      {
+        "role": "user",
+        "content": "Am I at high risk for diabetes?",
+        "offset_minutes": 6
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest risk level is high. Synthetic assessment for Gazipur: fasting glucose 216 mg/dL, BMI 28.",
+        "offset_minutes": 9
+      },
+      {
+        "role": "user",
+        "content": "How has my BMI changed across my check-ups?",
+        "offset_minutes": 12
+      },
+      {
+        "role": "assistant",
+        "content": "Your BMI started around 23.3 and is now 28.8 across 10 stored submissions.",
+        "offset_minutes": 15
+      },
+      {
+        "role": "user",
+        "content": "What diet changes should I prioritize?",
+        "offset_minutes": 18
+      },
+      {
+        "role": "assistant",
+        "content": "Prioritize smaller rice portions, more fish and vegetables, and fewer sugary drinks. These match the diet tips in your latest assessment recommendations.",
+        "offset_minutes": 21
+      },
+      {
+        "role": "user",
+        "content": "What is my current blood pressure?",
+        "offset_minutes": 24
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest blood pressure is 155/59 mmHg from your most recent submission in Gazipur.",
+        "offset_minutes": 27
+      },
+      {
+        "role": "user",
+        "content": "What should I track before my next resubmit?",
+        "offset_minutes": 30
+      },
+      {
+        "role": "assistant",
+        "content": "Track weekly fasting glucose, blood pressure twice monthly, and note any new symptoms. Your history shows this helps spot trends between assessments.",
+        "offset_minutes": 33
+      }
+    ]
+  },
+  {
+    "user_email": "patient034@health.local",
+    "messages": [
+      {
+        "role": "user",
+        "content": "What was my last glucose reading?",
+        "offset_minutes": 0
+      },
+      {
+        "role": "assistant",
+        "content": "Your most recent assessment shows fasting glucose at 284 mg/dL. That reading is from submission 10 of your health history.",
+        "offset_minutes": 3
+      },
+      {
+        "role": "user",
+        "content": "Am I at high risk for diabetes?",
+        "offset_minutes": 6
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest risk level is high. Synthetic assessment for Cumilla: fasting glucose 284 mg/dL, BMI 28.",
+        "offset_minutes": 9
+      },
+      {
+        "role": "user",
+        "content": "How has my BMI changed across my check-ups?",
+        "offset_minutes": 12
+      },
+      {
+        "role": "assistant",
+        "content": "Your BMI started around 43.9 and is now 28.2 across 10 stored submissions.",
+        "offset_minutes": 15
+      },
+      {
+        "role": "user",
+        "content": "What diet changes should I prioritize?",
+        "offset_minutes": 18
+      },
+      {
+        "role": "assistant",
+        "content": "Prioritize smaller rice portions, more fish and vegetables, and fewer sugary drinks. These match the diet tips in your latest assessment recommendations.",
+        "offset_minutes": 21
+      },
+      {
+        "role": "user",
+        "content": "What is my current blood pressure?",
+        "offset_minutes": 24
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest blood pressure is 160/59 mmHg from your most recent submission in Cumilla.",
+        "offset_minutes": 27
+      },
+      {
+        "role": "user",
+        "content": "What should I track before my next resubmit?",
+        "offset_minutes": 30
+      },
+      {
+        "role": "assistant",
+        "content": "Track weekly fasting glucose, blood pressure twice monthly, and note any new symptoms. Your history shows this helps spot trends between assessments.",
+        "offset_minutes": 33
+      }
+    ]
+  },
+  {
+    "user_email": "patient035@health.local",
+    "messages": [
+      {
+        "role": "user",
+        "content": "What was my last glucose reading?",
+        "offset_minutes": 0
+      },
+      {
+        "role": "assistant",
+        "content": "Your most recent assessment shows fasting glucose at 200 mg/dL. That reading is from submission 10 of your health history.",
+        "offset_minutes": 3
+      },
+      {
+        "role": "user",
+        "content": "Am I at high risk for diabetes?",
+        "offset_minutes": 6
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest risk level is moderate. Synthetic assessment for Chattogram: fasting glucose 200 mg/dL, BMI 16.",
+        "offset_minutes": 9
+      },
+      {
+        "role": "user",
+        "content": "How has my BMI changed across my check-ups?",
+        "offset_minutes": 12
+      },
+      {
+        "role": "assistant",
+        "content": "Your BMI started around 43.7 and is now 16.0 across 10 stored submissions.",
+        "offset_minutes": 15
+      },
+      {
+        "role": "user",
+        "content": "What diet changes should I prioritize?",
+        "offset_minutes": 18
+      },
+      {
+        "role": "assistant",
+        "content": "Prioritize smaller rice portions, more fish and vegetables, and fewer sugary drinks. These match the diet tips in your latest assessment recommendations.",
+        "offset_minutes": 21
+      },
+      {
+        "role": "user",
+        "content": "What is my current blood pressure?",
+        "offset_minutes": 24
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest blood pressure is 154/64 mmHg from your most recent submission in Chattogram.",
+        "offset_minutes": 27
+      },
+      {
+        "role": "user",
+        "content": "What should I track before my next resubmit?",
+        "offset_minutes": 30
+      },
+      {
+        "role": "assistant",
+        "content": "Track weekly fasting glucose, blood pressure twice monthly, and note any new symptoms. Your history shows this helps spot trends between assessments.",
+        "offset_minutes": 33
+      }
+    ]
+  },
+  {
+    "user_email": "patient036@health.local",
+    "messages": [
+      {
+        "role": "user",
+        "content": "What was my last glucose reading?",
+        "offset_minutes": 0
+      },
+      {
+        "role": "assistant",
+        "content": "Your most recent assessment shows fasting glucose at 239 mg/dL. That reading is from submission 10 of your health history.",
+        "offset_minutes": 3
+      },
+      {
+        "role": "user",
+        "content": "Am I at high risk for diabetes?",
+        "offset_minutes": 6
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest risk level is moderate. Synthetic assessment for Gazipur: fasting glucose 239 mg/dL, BMI 21.",
+        "offset_minutes": 9
+      },
+      {
+        "role": "user",
+        "content": "How has my BMI changed across my check-ups?",
+        "offset_minutes": 12
+      },
+      {
+        "role": "assistant",
+        "content": "Your BMI started around 27.4 and is now 21.2 across 10 stored submissions.",
+        "offset_minutes": 15
+      },
+      {
+        "role": "user",
+        "content": "What diet changes should I prioritize?",
+        "offset_minutes": 18
+      },
+      {
+        "role": "assistant",
+        "content": "Prioritize smaller rice portions, more fish and vegetables, and fewer sugary drinks. These match the diet tips in your latest assessment recommendations.",
+        "offset_minutes": 21
+      },
+      {
+        "role": "user",
+        "content": "What is my current blood pressure?",
+        "offset_minutes": 24
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest blood pressure is 141/66 mmHg from your most recent submission in Gazipur.",
+        "offset_minutes": 27
+      },
+      {
+        "role": "user",
+        "content": "What should I track before my next resubmit?",
+        "offset_minutes": 30
+      },
+      {
+        "role": "assistant",
+        "content": "Track weekly fasting glucose, blood pressure twice monthly, and note any new symptoms. Your history shows this helps spot trends between assessments.",
+        "offset_minutes": 33
+      }
+    ]
+  },
+  {
+    "user_email": "patient037@health.local",
+    "messages": [
+      {
+        "role": "user",
+        "content": "What was my last glucose reading?",
+        "offset_minutes": 0
+      },
+      {
+        "role": "assistant",
+        "content": "Your most recent assessment shows fasting glucose at 176 mg/dL. That reading is from submission 10 of your health history.",
+        "offset_minutes": 3
+      },
+      {
+        "role": "user",
+        "content": "Am I at high risk for diabetes?",
+        "offset_minutes": 6
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest risk level is moderate. Synthetic assessment for Barishal: fasting glucose 176 mg/dL, BMI 24.",
+        "offset_minutes": 9
+      },
+      {
+        "role": "user",
+        "content": "How has my BMI changed across my check-ups?",
+        "offset_minutes": 12
+      },
+      {
+        "role": "assistant",
+        "content": "Your BMI started around 18.9 and is now 24.7 across 10 stored submissions.",
+        "offset_minutes": 15
+      },
+      {
+        "role": "user",
+        "content": "What diet changes should I prioritize?",
+        "offset_minutes": 18
+      },
+      {
+        "role": "assistant",
+        "content": "Prioritize smaller rice portions, more fish and vegetables, and fewer sugary drinks. These match the diet tips in your latest assessment recommendations.",
+        "offset_minutes": 21
+      },
+      {
+        "role": "user",
+        "content": "What is my current blood pressure?",
+        "offset_minutes": 24
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest blood pressure is 122/103 mmHg from your most recent submission in Barishal.",
+        "offset_minutes": 27
+      },
+      {
+        "role": "user",
+        "content": "What should I track before my next resubmit?",
+        "offset_minutes": 30
+      },
+      {
+        "role": "assistant",
+        "content": "Track weekly fasting glucose, blood pressure twice monthly, and note any new symptoms. Your history shows this helps spot trends between assessments.",
+        "offset_minutes": 33
+      }
+    ]
+  },
+  {
+    "user_email": "patient038@health.local",
+    "messages": [
+      {
+        "role": "user",
+        "content": "What was my last glucose reading?",
+        "offset_minutes": 0
+      },
+      {
+        "role": "assistant",
+        "content": "Your most recent assessment shows fasting glucose at not recorded. That reading is from submission 10 of your health history.",
+        "offset_minutes": 3
+      },
+      {
+        "role": "user",
+        "content": "Am I at high risk for diabetes?",
+        "offset_minutes": 6
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest risk level is moderate. Synthetic assessment for Bogura: fasting glucose not recorded, BMI 22.",
+        "offset_minutes": 9
+      },
+      {
+        "role": "user",
+        "content": "How has my BMI changed across my check-ups?",
+        "offset_minutes": 12
+      },
+      {
+        "role": "assistant",
+        "content": "Your BMI started around 28.6 and is now 22.8 across 10 stored submissions.",
+        "offset_minutes": 15
+      },
+      {
+        "role": "user",
+        "content": "What diet changes should I prioritize?",
+        "offset_minutes": 18
+      },
+      {
+        "role": "assistant",
+        "content": "Prioritize smaller rice portions, more fish and vegetables, and fewer sugary drinks. These match the diet tips in your latest assessment recommendations.",
+        "offset_minutes": 21
+      },
+      {
+        "role": "user",
+        "content": "What is my current blood pressure?",
+        "offset_minutes": 24
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest blood pressure is 167/106 mmHg from your most recent submission in Bogura.",
+        "offset_minutes": 27
+      },
+      {
+        "role": "user",
+        "content": "What should I track before my next resubmit?",
+        "offset_minutes": 30
+      },
+      {
+        "role": "assistant",
+        "content": "Track weekly fasting glucose, blood pressure twice monthly, and note any new symptoms. Your history shows this helps spot trends between assessments.",
+        "offset_minutes": 33
+      }
+    ]
+  },
+  {
+    "user_email": "patient039@health.local",
+    "messages": [
+      {
+        "role": "user",
+        "content": "What was my last glucose reading?",
+        "offset_minutes": 0
+      },
+      {
+        "role": "assistant",
+        "content": "Your most recent assessment shows fasting glucose at not recorded. That reading is from submission 10 of your health history.",
+        "offset_minutes": 3
+      },
+      {
+        "role": "user",
+        "content": "Am I at high risk for diabetes?",
+        "offset_minutes": 6
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest risk level is moderate. Synthetic assessment for Sylhet: fasting glucose not recorded, BMI 28.",
+        "offset_minutes": 9
+      },
+      {
+        "role": "user",
+        "content": "How has my BMI changed across my check-ups?",
+        "offset_minutes": 12
+      },
+      {
+        "role": "assistant",
+        "content": "Your BMI started around 34.7 and is now 28.2 across 10 stored submissions.",
+        "offset_minutes": 15
+      },
+      {
+        "role": "user",
+        "content": "What diet changes should I prioritize?",
+        "offset_minutes": 18
+      },
+      {
+        "role": "assistant",
+        "content": "Prioritize smaller rice portions, more fish and vegetables, and fewer sugary drinks. These match the diet tips in your latest assessment recommendations.",
+        "offset_minutes": 21
+      },
+      {
+        "role": "user",
+        "content": "What is my current blood pressure?",
+        "offset_minutes": 24
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest blood pressure is 108/100 mmHg from your most recent submission in Sylhet.",
+        "offset_minutes": 27
+      },
+      {
+        "role": "user",
+        "content": "What should I track before my next resubmit?",
+        "offset_minutes": 30
+      },
+      {
+        "role": "assistant",
+        "content": "Track weekly fasting glucose, blood pressure twice monthly, and note any new symptoms. Your history shows this helps spot trends between assessments.",
+        "offset_minutes": 33
+      }
+    ]
+  },
+  {
+    "user_email": "patient040@health.local",
+    "messages": [
+      {
+        "role": "user",
+        "content": "What was my last glucose reading?",
+        "offset_minutes": 0
+      },
+      {
+        "role": "assistant",
+        "content": "Your most recent assessment shows fasting glucose at 104 mg/dL. That reading is from submission 10 of your health history.",
+        "offset_minutes": 3
+      },
+      {
+        "role": "user",
+        "content": "Am I at high risk for diabetes?",
+        "offset_minutes": 6
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest risk level is moderate. Synthetic assessment for Khulna: fasting glucose 104 mg/dL, BMI 25.",
+        "offset_minutes": 9
+      },
+      {
+        "role": "user",
+        "content": "How has my BMI changed across my check-ups?",
+        "offset_minutes": 12
+      },
+      {
+        "role": "assistant",
+        "content": "Your BMI started around 22.0 and is now 25.2 across 10 stored submissions.",
+        "offset_minutes": 15
+      },
+      {
+        "role": "user",
+        "content": "What diet changes should I prioritize?",
+        "offset_minutes": 18
+      },
+      {
+        "role": "assistant",
+        "content": "Prioritize smaller rice portions, more fish and vegetables, and fewer sugary drinks. These match the diet tips in your latest assessment recommendations.",
+        "offset_minutes": 21
+      },
+      {
+        "role": "user",
+        "content": "What is my current blood pressure?",
+        "offset_minutes": 24
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest blood pressure is 99/95 mmHg from your most recent submission in Khulna.",
+        "offset_minutes": 27
+      },
+      {
+        "role": "user",
+        "content": "What should I track before my next resubmit?",
+        "offset_minutes": 30
+      },
+      {
+        "role": "assistant",
+        "content": "Track weekly fasting glucose, blood pressure twice monthly, and note any new symptoms. Your history shows this helps spot trends between assessments.",
+        "offset_minutes": 33
+      }
+    ]
+  },
+  {
+    "user_email": "patient041@health.local",
+    "messages": [
+      {
+        "role": "user",
+        "content": "What was my last glucose reading?",
+        "offset_minutes": 0
+      },
+      {
+        "role": "assistant",
+        "content": "Your most recent assessment shows fasting glucose at not recorded. That reading is from submission 10 of your health history.",
+        "offset_minutes": 3
+      },
+      {
+        "role": "user",
+        "content": "Am I at high risk for diabetes?",
+        "offset_minutes": 6
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest risk level is low. Synthetic assessment for Rajshahi: fasting glucose not recorded, BMI 21.",
+        "offset_minutes": 9
+      },
+      {
+        "role": "user",
+        "content": "How has my BMI changed across my check-ups?",
+        "offset_minutes": 12
+      },
+      {
+        "role": "assistant",
+        "content": "Your BMI started around 37.9 and is now 21.5 across 10 stored submissions.",
+        "offset_minutes": 15
+      },
+      {
+        "role": "user",
+        "content": "What diet changes should I prioritize?",
+        "offset_minutes": 18
+      },
+      {
+        "role": "assistant",
+        "content": "Prioritize smaller rice portions, more fish and vegetables, and fewer sugary drinks. These match the diet tips in your latest assessment recommendations.",
+        "offset_minutes": 21
+      },
+      {
+        "role": "user",
+        "content": "What is my current blood pressure?",
+        "offset_minutes": 24
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest blood pressure is 98/64 mmHg from your most recent submission in Rajshahi.",
+        "offset_minutes": 27
+      },
+      {
+        "role": "user",
+        "content": "What should I track before my next resubmit?",
+        "offset_minutes": 30
+      },
+      {
+        "role": "assistant",
+        "content": "Track weekly fasting glucose, blood pressure twice monthly, and note any new symptoms. Your history shows this helps spot trends between assessments.",
+        "offset_minutes": 33
+      }
+    ]
+  },
+  {
+    "user_email": "patient042@health.local",
+    "messages": [
+      {
+        "role": "user",
+        "content": "What was my last glucose reading?",
+        "offset_minutes": 0
+      },
+      {
+        "role": "assistant",
+        "content": "Your most recent assessment shows fasting glucose at 157 mg/dL. That reading is from submission 10 of your health history.",
+        "offset_minutes": 3
+      },
+      {
+        "role": "user",
+        "content": "Am I at high risk for diabetes?",
+        "offset_minutes": 6
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest risk level is moderate. Synthetic assessment for Bogura: fasting glucose 157 mg/dL, BMI 26.",
+        "offset_minutes": 9
+      },
+      {
+        "role": "user",
+        "content": "How has my BMI changed across my check-ups?",
+        "offset_minutes": 12
+      },
+      {
+        "role": "assistant",
+        "content": "Your BMI started around 50.3 and is now 26.0 across 10 stored submissions.",
+        "offset_minutes": 15
+      },
+      {
+        "role": "user",
+        "content": "What diet changes should I prioritize?",
+        "offset_minutes": 18
+      },
+      {
+        "role": "assistant",
+        "content": "Prioritize smaller rice portions, more fish and vegetables, and fewer sugary drinks. These match the diet tips in your latest assessment recommendations.",
+        "offset_minutes": 21
+      },
+      {
+        "role": "user",
+        "content": "What is my current blood pressure?",
+        "offset_minutes": 24
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest blood pressure is 92/87 mmHg from your most recent submission in Bogura.",
+        "offset_minutes": 27
+      },
+      {
+        "role": "user",
+        "content": "What should I track before my next resubmit?",
+        "offset_minutes": 30
+      },
+      {
+        "role": "assistant",
+        "content": "Track weekly fasting glucose, blood pressure twice monthly, and note any new symptoms. Your history shows this helps spot trends between assessments.",
+        "offset_minutes": 33
+      }
+    ]
+  },
+  {
+    "user_email": "patient043@health.local",
+    "messages": [
+      {
+        "role": "user",
+        "content": "What was my last glucose reading?",
+        "offset_minutes": 0
+      },
+      {
+        "role": "assistant",
+        "content": "Your most recent assessment shows fasting glucose at 65 mg/dL. That reading is from submission 10 of your health history.",
+        "offset_minutes": 3
+      },
+      {
+        "role": "user",
+        "content": "Am I at high risk for diabetes?",
+        "offset_minutes": 6
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest risk level is low. Synthetic assessment for Chattogram: fasting glucose 65 mg/dL, BMI 14.",
+        "offset_minutes": 9
+      },
+      {
+        "role": "user",
+        "content": "How has my BMI changed across my check-ups?",
+        "offset_minutes": 12
+      },
+      {
+        "role": "assistant",
+        "content": "Your BMI started around 41.6 and is now 14.0 across 10 stored submissions.",
+        "offset_minutes": 15
+      },
+      {
+        "role": "user",
+        "content": "What diet changes should I prioritize?",
+        "offset_minutes": 18
+      },
+      {
+        "role": "assistant",
+        "content": "Prioritize smaller rice portions, more fish and vegetables, and fewer sugary drinks. These match the diet tips in your latest assessment recommendations.",
+        "offset_minutes": 21
+      },
+      {
+        "role": "user",
+        "content": "What is my current blood pressure?",
+        "offset_minutes": 24
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest blood pressure is 177/64 mmHg from your most recent submission in Chattogram.",
+        "offset_minutes": 27
+      },
+      {
+        "role": "user",
+        "content": "What should I track before my next resubmit?",
+        "offset_minutes": 30
+      },
+      {
+        "role": "assistant",
+        "content": "Track weekly fasting glucose, blood pressure twice monthly, and note any new symptoms. Your history shows this helps spot trends between assessments.",
+        "offset_minutes": 33
+      }
+    ]
+  },
+  {
+    "user_email": "patient044@health.local",
+    "messages": [
+      {
+        "role": "user",
+        "content": "What was my last glucose reading?",
+        "offset_minutes": 0
+      },
+      {
+        "role": "assistant",
+        "content": "Your most recent assessment shows fasting glucose at 164 mg/dL. That reading is from submission 10 of your health history.",
+        "offset_minutes": 3
+      },
+      {
+        "role": "user",
+        "content": "Am I at high risk for diabetes?",
+        "offset_minutes": 6
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest risk level is high. Synthetic assessment for Chattogram: fasting glucose 164 mg/dL, BMI 28.",
+        "offset_minutes": 9
+      },
+      {
+        "role": "user",
+        "content": "How has my BMI changed across my check-ups?",
+        "offset_minutes": 12
+      },
+      {
+        "role": "assistant",
+        "content": "Your BMI started around 34.8 and is now 28.7 across 10 stored submissions.",
+        "offset_minutes": 15
+      },
+      {
+        "role": "user",
+        "content": "What diet changes should I prioritize?",
+        "offset_minutes": 18
+      },
+      {
+        "role": "assistant",
+        "content": "Prioritize smaller rice portions, more fish and vegetables, and fewer sugary drinks. These match the diet tips in your latest assessment recommendations.",
+        "offset_minutes": 21
+      },
+      {
+        "role": "user",
+        "content": "What is my current blood pressure?",
+        "offset_minutes": 24
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest blood pressure is 139/91 mmHg from your most recent submission in Chattogram.",
+        "offset_minutes": 27
+      },
+      {
+        "role": "user",
+        "content": "What should I track before my next resubmit?",
+        "offset_minutes": 30
+      },
+      {
+        "role": "assistant",
+        "content": "Track weekly fasting glucose, blood pressure twice monthly, and note any new symptoms. Your history shows this helps spot trends between assessments.",
+        "offset_minutes": 33
+      }
+    ]
+  },
+  {
+    "user_email": "patient045@health.local",
+    "messages": [
+      {
+        "role": "user",
+        "content": "What was my last glucose reading?",
+        "offset_minutes": 0
+      },
+      {
+        "role": "assistant",
+        "content": "Your most recent assessment shows fasting glucose at 248 mg/dL. That reading is from submission 10 of your health history.",
+        "offset_minutes": 3
+      },
+      {
+        "role": "user",
+        "content": "Am I at high risk for diabetes?",
+        "offset_minutes": 6
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest risk level is moderate. Synthetic assessment for Sylhet: fasting glucose 248 mg/dL, BMI 14.",
+        "offset_minutes": 9
+      },
+      {
+        "role": "user",
+        "content": "How has my BMI changed across my check-ups?",
+        "offset_minutes": 12
+      },
+      {
+        "role": "assistant",
+        "content": "Your BMI started around 32.4 and is now 14.0 across 10 stored submissions.",
+        "offset_minutes": 15
+      },
+      {
+        "role": "user",
+        "content": "What diet changes should I prioritize?",
+        "offset_minutes": 18
+      },
+      {
+        "role": "assistant",
+        "content": "Prioritize smaller rice portions, more fish and vegetables, and fewer sugary drinks. These match the diet tips in your latest assessment recommendations.",
+        "offset_minutes": 21
+      },
+      {
+        "role": "user",
+        "content": "What is my current blood pressure?",
+        "offset_minutes": 24
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest blood pressure is 102/57 mmHg from your most recent submission in Sylhet.",
+        "offset_minutes": 27
+      },
+      {
+        "role": "user",
+        "content": "What should I track before my next resubmit?",
+        "offset_minutes": 30
+      },
+      {
+        "role": "assistant",
+        "content": "Track weekly fasting glucose, blood pressure twice monthly, and note any new symptoms. Your history shows this helps spot trends between assessments.",
+        "offset_minutes": 33
+      }
+    ]
+  },
+  {
+    "user_email": "patient046@health.local",
+    "messages": [
+      {
+        "role": "user",
+        "content": "What was my last glucose reading?",
+        "offset_minutes": 0
+      },
+      {
+        "role": "assistant",
+        "content": "Your most recent assessment shows fasting glucose at 133 mg/dL. That reading is from submission 10 of your health history.",
+        "offset_minutes": 3
+      },
+      {
+        "role": "user",
+        "content": "Am I at high risk for diabetes?",
+        "offset_minutes": 6
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest risk level is high. Synthetic assessment for Bogura: fasting glucose 133 mg/dL, BMI 45.",
+        "offset_minutes": 9
+      },
+      {
+        "role": "user",
+        "content": "How has my BMI changed across my check-ups?",
+        "offset_minutes": 12
+      },
+      {
+        "role": "assistant",
+        "content": "Your BMI started around 23.3 and is now 45.0 across 10 stored submissions.",
+        "offset_minutes": 15
+      },
+      {
+        "role": "user",
+        "content": "What diet changes should I prioritize?",
+        "offset_minutes": 18
+      },
+      {
+        "role": "assistant",
+        "content": "Prioritize smaller rice portions, more fish and vegetables, and fewer sugary drinks. These match the diet tips in your latest assessment recommendations.",
+        "offset_minutes": 21
+      },
+      {
+        "role": "user",
+        "content": "What is my current blood pressure?",
+        "offset_minutes": 24
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest blood pressure is 113/91 mmHg from your most recent submission in Bogura.",
+        "offset_minutes": 27
+      },
+      {
+        "role": "user",
+        "content": "What should I track before my next resubmit?",
+        "offset_minutes": 30
+      },
+      {
+        "role": "assistant",
+        "content": "Track weekly fasting glucose, blood pressure twice monthly, and note any new symptoms. Your history shows this helps spot trends between assessments.",
+        "offset_minutes": 33
+      }
+    ]
+  },
+  {
+    "user_email": "patient047@health.local",
+    "messages": [
+      {
+        "role": "user",
+        "content": "What was my last glucose reading?",
+        "offset_minutes": 0
+      },
+      {
+        "role": "assistant",
+        "content": "Your most recent assessment shows fasting glucose at not recorded. That reading is from submission 10 of your health history.",
+        "offset_minutes": 3
+      },
+      {
+        "role": "user",
+        "content": "Am I at high risk for diabetes?",
+        "offset_minutes": 6
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest risk level is high. Synthetic assessment for Rajshahi: fasting glucose not recorded, BMI 33.",
+        "offset_minutes": 9
+      },
+      {
+        "role": "user",
+        "content": "How has my BMI changed across my check-ups?",
+        "offset_minutes": 12
+      },
+      {
+        "role": "assistant",
+        "content": "Your BMI started around 17.6 and is now 33.1 across 10 stored submissions.",
+        "offset_minutes": 15
+      },
+      {
+        "role": "user",
+        "content": "What diet changes should I prioritize?",
+        "offset_minutes": 18
+      },
+      {
+        "role": "assistant",
+        "content": "Prioritize smaller rice portions, more fish and vegetables, and fewer sugary drinks. These match the diet tips in your latest assessment recommendations.",
+        "offset_minutes": 21
+      },
+      {
+        "role": "user",
+        "content": "What is my current blood pressure?",
+        "offset_minutes": 24
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest blood pressure is 141/73 mmHg from your most recent submission in Rajshahi.",
+        "offset_minutes": 27
+      },
+      {
+        "role": "user",
+        "content": "What should I track before my next resubmit?",
+        "offset_minutes": 30
+      },
+      {
+        "role": "assistant",
+        "content": "Track weekly fasting glucose, blood pressure twice monthly, and note any new symptoms. Your history shows this helps spot trends between assessments.",
+        "offset_minutes": 33
+      }
+    ]
+  },
+  {
+    "user_email": "patient048@health.local",
+    "messages": [
+      {
+        "role": "user",
+        "content": "What was my last glucose reading?",
+        "offset_minutes": 0
+      },
+      {
+        "role": "assistant",
+        "content": "Your most recent assessment shows fasting glucose at 225 mg/dL. That reading is from submission 10 of your health history.",
+        "offset_minutes": 3
+      },
+      {
+        "role": "user",
+        "content": "Am I at high risk for diabetes?",
+        "offset_minutes": 6
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest risk level is high. Synthetic assessment for Bogura: fasting glucose 225 mg/dL, BMI 54.",
+        "offset_minutes": 9
+      },
+      {
+        "role": "user",
+        "content": "How has my BMI changed across my check-ups?",
+        "offset_minutes": 12
+      },
+      {
+        "role": "assistant",
+        "content": "Your BMI started around 13.3 and is now 54.3 across 10 stored submissions.",
+        "offset_minutes": 15
+      },
+      {
+        "role": "user",
+        "content": "What diet changes should I prioritize?",
+        "offset_minutes": 18
+      },
+      {
+        "role": "assistant",
+        "content": "Prioritize smaller rice portions, more fish and vegetables, and fewer sugary drinks. These match the diet tips in your latest assessment recommendations.",
+        "offset_minutes": 21
+      },
+      {
+        "role": "user",
+        "content": "What is my current blood pressure?",
+        "offset_minutes": 24
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest blood pressure is 93/92 mmHg from your most recent submission in Bogura.",
+        "offset_minutes": 27
+      },
+      {
+        "role": "user",
+        "content": "What should I track before my next resubmit?",
+        "offset_minutes": 30
+      },
+      {
+        "role": "assistant",
+        "content": "Track weekly fasting glucose, blood pressure twice monthly, and note any new symptoms. Your history shows this helps spot trends between assessments.",
+        "offset_minutes": 33
+      }
+    ]
+  },
+  {
+    "user_email": "patient049@health.local",
+    "messages": [
+      {
+        "role": "user",
+        "content": "What was my last glucose reading?",
+        "offset_minutes": 0
+      },
+      {
+        "role": "assistant",
+        "content": "Your most recent assessment shows fasting glucose at not recorded. That reading is from submission 10 of your health history.",
+        "offset_minutes": 3
+      },
+      {
+        "role": "user",
+        "content": "Am I at high risk for diabetes?",
+        "offset_minutes": 6
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest risk level is low. Synthetic assessment for Bogura: fasting glucose not recorded, BMI 19.",
+        "offset_minutes": 9
+      },
+      {
+        "role": "user",
+        "content": "How has my BMI changed across my check-ups?",
+        "offset_minutes": 12
+      },
+      {
+        "role": "assistant",
+        "content": "Your BMI started around 45.1 and is now 19.9 across 10 stored submissions.",
+        "offset_minutes": 15
+      },
+      {
+        "role": "user",
+        "content": "What diet changes should I prioritize?",
+        "offset_minutes": 18
+      },
+      {
+        "role": "assistant",
+        "content": "Prioritize smaller rice portions, more fish and vegetables, and fewer sugary drinks. These match the diet tips in your latest assessment recommendations.",
+        "offset_minutes": 21
+      },
+      {
+        "role": "user",
+        "content": "What is my current blood pressure?",
+        "offset_minutes": 24
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest blood pressure is 96/64 mmHg from your most recent submission in Bogura.",
+        "offset_minutes": 27
+      },
+      {
+        "role": "user",
+        "content": "What should I track before my next resubmit?",
+        "offset_minutes": 30
+      },
+      {
+        "role": "assistant",
+        "content": "Track weekly fasting glucose, blood pressure twice monthly, and note any new symptoms. Your history shows this helps spot trends between assessments.",
+        "offset_minutes": 33
+      }
+    ]
+  },
+  {
+    "user_email": "patient050@health.local",
+    "messages": [
+      {
+        "role": "user",
+        "content": "What was my last glucose reading?",
+        "offset_minutes": 0
+      },
+      {
+        "role": "assistant",
+        "content": "Your most recent assessment shows fasting glucose at not recorded. That reading is from submission 10 of your health history.",
+        "offset_minutes": 3
+      },
+      {
+        "role": "user",
+        "content": "Am I at high risk for diabetes?",
+        "offset_minutes": 6
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest risk level is moderate. Synthetic assessment for Barishal: fasting glucose not recorded, BMI 27.",
+        "offset_minutes": 9
+      },
+      {
+        "role": "user",
+        "content": "How has my BMI changed across my check-ups?",
+        "offset_minutes": 12
+      },
+      {
+        "role": "assistant",
+        "content": "Your BMI started around 46.6 and is now 27.7 across 10 stored submissions.",
+        "offset_minutes": 15
+      },
+      {
+        "role": "user",
+        "content": "What diet changes should I prioritize?",
+        "offset_minutes": 18
+      },
+      {
+        "role": "assistant",
+        "content": "Prioritize smaller rice portions, more fish and vegetables, and fewer sugary drinks. These match the diet tips in your latest assessment recommendations.",
+        "offset_minutes": 21
+      },
+      {
+        "role": "user",
+        "content": "What is my current blood pressure?",
+        "offset_minutes": 24
+      },
+      {
+        "role": "assistant",
+        "content": "Your latest blood pressure is 153/100 mmHg from your most recent submission in Barishal.",
+        "offset_minutes": 27
+      },
+      {
+        "role": "user",
+        "content": "What should I track before my next resubmit?",
+        "offset_minutes": 30
+      },
+      {
+        "role": "assistant",
+        "content": "Track weekly fasting glucose, blood pressure twice monthly, and note any new symptoms. Your history shows this helps spot trends between assessments.",
+        "offset_minutes": 33
+      }
+    ]
+  }
+]

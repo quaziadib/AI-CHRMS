@@ -30,6 +30,15 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
 const ACCESS_TOKEN_KEY = 'health_access_token'
 const REFRESH_TOKEN_KEY = 'health_refresh_token'
 
+/** Role-aware post-login / already-authenticated home path. */
+export function getRoleHome(roles: string[] | undefined): string {
+  const list = roles ?? []
+  if (list.includes('admin')) return '/admin'
+  if (list.includes('doctor')) return '/doctor'
+  if (list.includes('national_admin')) return '/national'
+  return '/dashboard'
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [isLoading, setIsLoading] = useState(true)

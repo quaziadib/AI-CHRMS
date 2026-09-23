@@ -10,7 +10,9 @@ const WELCOME = "Hi! I'm your diabetes health assistant. Ask me anything about d
 export function ChatWidget() {
   const [open, setOpen] = useState(false)
   const [input, setInput] = useState('')
-  const { messages, isLoading, isLoadingHistory, sendMessage, clearHistory } = useChat()
+  const { messages, isLoading, isLoadingHistory, sendMessage, clearHistory } = useChat({
+    enabled: open,
+  })
   const bottomRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLTextAreaElement>(null)
 
