@@ -63,6 +63,19 @@ def _run_migrations() -> None:
             END
             $$;
         """))
+        # Risk assessment columns (added after initial patient_records schema)
+        conn.execute(text(
+            "ALTER TABLE patient_records ADD COLUMN IF NOT EXISTS risk_level VARCHAR(10)"
+        ))
+        conn.execute(text(
+            "ALTER TABLE patient_records ADD COLUMN IF NOT EXISTS risk_explanation TEXT"
+        ))
+        conn.execute(text(
+            "ALTER TABLE patient_records ADD COLUMN IF NOT EXISTS recommendations JSONB"
+        ))
+        conn.execute(text(
+            "ALTER TABLE patient_records ADD COLUMN IF NOT EXISTS risk_scored_at TIMESTAMPTZ"
+        ))
         conn.execute(text(
             "ALTER TABLE patient_records ADD COLUMN IF NOT EXISTS ehr_summary TEXT"
         ))
