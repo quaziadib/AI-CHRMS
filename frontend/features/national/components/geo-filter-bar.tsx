@@ -7,16 +7,10 @@ import type { GeoOption } from '@/lib/api/national'
 type Props = {
   divisions: GeoOption[]
   districts: GeoOption[]
-  upazillas: GeoOption[]
-  thanas: GeoOption[]
   divisionId: string
   districtId: string
-  upazillaId: string
-  thanaId: string
   onDivisionChange: (id: string) => void
   onDistrictChange: (id: string) => void
-  onUpazillaChange: (id: string) => void
-  onThanaChange: (id: string) => void
   onReset: () => void
 }
 
@@ -25,11 +19,13 @@ function SelectField({
   value,
   options,
   onChange,
+  disabled,
 }: {
   label: string
   value: string
   options: GeoOption[]
   onChange: (v: string) => void
+  disabled?: boolean
 }) {
   return (
     <div className="space-y-1.5">
@@ -37,6 +33,7 @@ function SelectField({
       <select
         className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
         value={value}
+        disabled={disabled}
         onChange={(e) => onChange(e.target.value)}
       >
         {options.map((o) => (
@@ -54,36 +51,25 @@ export function GeoFilterBar(props: Props) {
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <p className="text-sm text-muted-foreground">
-          Select Bangladesh administrative units to scope spatial risk tracking.
+          Only divisions and districts present in stored patient records are listed.
         </p>
         <Button type="button" variant="outline" size="sm" onClick={props.onReset}>
           Reset regions
         </Button>
       </div>
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2">
         <SelectField
           label="Division"
           value={props.divisionId}
-          options={props.divisions}
+          options={[{ id: '', name: 'All divisions' }, ...props.divisions]}
           onChange={props.onDivisionChange}
         />
         <SelectField
           label="District (Zila)"
           value={props.districtId}
-          options={props.districts}
+          options={[{ id: '', name: 'All districts' }, ...props.districts]}
           onChange={props.onDistrictChange}
-        />
-        <SelectField
-          label="Upazilla / Area"
-          value={props.upazillaId}
-          options={props.upazillas}
-          onChange={props.onUpazillaChange}
-        />
-        <SelectField
-          label="Thana"
-          value={props.thanaId}
-          options={props.thanas}
-          onChange={props.onThanaChange}
+          disabled={!props.divisionId || props.districts.length === 0}
         />
       </div>
     </div>

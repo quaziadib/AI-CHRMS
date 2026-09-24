@@ -18,20 +18,17 @@ export function SpatialRiskMatrix({ spatial }: { spatial: SpatialPanel | null })
         <div className="mb-4 flex items-start justify-between gap-3">
           <div>
             <span className="rounded border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-mono uppercase tracking-wider text-emerald-400">
-              Spatial heat grid
+              Database aggregates
             </span>
             <h4 className="mt-2 text-base font-semibold">{spatial.title}</h4>
-            {spatial.synthesis ? (
-              <p className="mt-1 text-xs text-slate-400">Includes curated synthesis where record grain is limited.</p>
-            ) : null}
           </div>
           <div className="text-right text-xs text-slate-400">
             <div>Selected district</div>
-            <div className="text-sm font-semibold text-emerald-300">{spatial.district_id ?? '—'}</div>
+            <div className="text-sm font-semibold text-emerald-300">{spatial.district_id ?? 'All districts'}</div>
           </div>
         </div>
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-          {spatial.hotspots.map((h) => (
+        {spatial.districts.length > 0 ? <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+          {spatial.districts.map((h) => (
             <div key={h.label} className="rounded-lg border border-slate-700 bg-slate-800/80 p-2.5 text-center">
               <span className="block text-[11px] text-slate-400">{h.label}</span>
               <span
@@ -49,13 +46,19 @@ export function SpatialRiskMatrix({ spatial }: { spatial: SpatialPanel | null })
               <span className="block text-[10px] capitalize text-slate-400">{h.severity}</span>
             </div>
           ))}
-        </div>
+        </div> : <p className="rounded-md border border-dashed border-slate-700 p-4 text-sm text-slate-300">No districts in this scope have enough scored database records to display a rate.</p>}
       </div>
       <div className="grid grid-cols-3 gap-3 text-center text-sm">
-        <Metric label="Prevalence growth YoY" value={`+${spatial.metrics.prevalence_growth_yoy_percent}%`} />
-        <Metric label="Avg diagnosis age" value={`${spatial.metrics.avg_diagnosis_age} yrs`} />
-        <Metric label="Screening coverage" value={`${spatial.metrics.screening_coverage_percent}%`} />
+        <Metric
+          label="High-risk share change YoY"
+          value={spatial.metrics.high_risk_share_change_yoy_percentage_points == null
+            ? 'No stored history'
+            : `${spatial.metrics.high_risk_share_change_yoy_percentage_points > 0 ? '+' : ''}${spatial.metrics.high_risk_share_change_yoy_percentage_points} pp`}
+        />
+        <Metric label="Average record age" value={spatial.metrics.mean_record_age_years == null ? 'No database data' : `${spatial.metrics.mean_record_age_years} yrs`} />
+        <Metric label="Screening coverage" value={spatial.metrics.screening_coverage_percent == null ? 'Not collected' : `${spatial.metrics.screening_coverage_percent}%`} />
       </div>
+      <p className="text-xs text-muted-foreground">{spatial.metric_basis}</p>
     </div>
   )
 }

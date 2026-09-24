@@ -4,37 +4,36 @@ import { AlertTriangle, Globe, Loader2 } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { useNationalRsgi } from '@/features/national/hooks/use-national-rsgi'
 import { GeoFilterBar } from '@/features/national/components/geo-filter-bar'
-import { IndividualPredictorPanel } from '@/features/national/components/individual-predictor-panel'
 import { SpatialRiskMatrix } from '@/features/national/components/spatial-risk-matrix'
 import { DemographicsPrevalenceChart, DivisionPrevalenceChart } from '@/features/national/components/national-charts'
-import { EpidemicForecastPanel } from '@/features/national/components/epidemic-forecast-panel'
+import { DistrictChoropleth } from '@/features/national/components/district-choropleth'
+import { DivisionForecastExplorer } from '@/features/national/components/division-forecast-explorer'
 
 export default function NationalDashboardPage() {
   const {
     divisions,
     districts,
-    upazillas,
-    thanas,
     divisionId,
     districtId,
-    upazillaId,
-    thanaId,
-    setThanaId,
     spatial,
     divisionChart,
     demoChart,
-    prediction,
-    epidemic,
+    mapSummary,
+    mapDivisionId,
+    divisionForecast,
+    forecastScopeId,
     isLoading,
     disabled,
-    isPredicting,
-    isForecasting,
     onDivisionChange,
     onDistrictChange,
-    onUpazillaChange,
     resetFilters,
-    runPrediction,
-    runEpidemicForecast,
+    selectMapDivision,
+    returnMapToNational,
+    onForecastScopeChange,
+    onGenerateDivisionForecast,
+    divisionForecastDisabled,
+    isRefreshingMap,
+    refreshMapSummary,
   } = useNationalRsgi()
 
   if (isLoading) {
@@ -71,58 +70,54 @@ export default function NationalDashboardPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Hierarchical spatial filter</CardTitle>
-          <CardDescription>Division → district → upazilla → thana for localized risk tracking.</CardDescription>
+          <CardTitle>Geographic filters</CardTitle>
+          <CardDescription>Filter at the division and district levels available in stored patient records.</CardDescription>
         </CardHeader>
         <CardContent>
           <GeoFilterBar
             divisions={divisions}
             districts={districts}
-            upazillas={upazillas}
-            thanas={thanas}
             divisionId={divisionId}
             districtId={districtId}
-            upazillaId={upazillaId}
-            thanaId={thanaId}
             onDivisionChange={onDivisionChange}
             onDistrictChange={onDistrictChange}
-            onUpazillaChange={onUpazillaChange}
-            onThanaChange={setThanaId}
             onReset={resetFilters}
           />
         </CardContent>
       </Card>
 
-      <div className="grid gap-6 lg:grid-cols-12">
-        <Card className="lg:col-span-5">
-          <CardHeader>
-            <CardTitle>Individual risk predictor</CardTitle>
-            <CardDescription>LLM-based what-if scoring for planners.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <IndividualPredictorPanel
-              onPredict={runPrediction}
-              isPredicting={isPredicting}
-              prediction={prediction}
-            />
-          </CardContent>
-        </Card>
-        <Card className="lg:col-span-7">
-          <CardHeader>
-            <CardTitle>Spatial risk matrix</CardTitle>
-            <CardDescription>Hotspots and regional metrics for the selected geography.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <SpatialRiskMatrix spatial={spatial} />
-          </CardContent>
-        </Card>
-      </div>
+      <Card>
+        <CardHeader>
+          <CardTitle>Bangladesh burden map</CardTitle>
+          <CardDescription>Explore privacy-safe submitted-record risk shares by division and district.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <DistrictChoropleth
+            data={mapSummary}
+            selectedDivisionId={mapDivisionId}
+            onSelectDivision={selectMapDivision}
+            onReturnToNational={returnMapToNational}
+            onRefresh={refreshMapSummary}
+            isRefreshing={isRefreshingMap}
+          />
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Regional record metrics</CardTitle>
+          <CardDescription>District summaries and cohort metrics calculated from scored records in the database.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <SpatialRiskMatrix spatial={spatial} />
+        </CardContent>
+      </Card>
 
       <div className="grid gap-6 lg:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle>Division-wise prevalence</CardTitle>
-            <CardDescription>Anonymized high-risk rates across divisions.</CardDescription>
+            <CardTitle>Division high-risk share</CardTitle>
+            <CardDescription>Share of scored submitted records classified as high risk, calculated from the database.</CardDescription>
           </CardHeader>
           <CardContent>
             <DivisionPrevalenceChart data={divisionChart} />
@@ -130,8 +125,8 @@ export default function NationalDashboardPage() {
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle>Gender & age demographics</CardTitle>
-            <CardDescription>Prevalence by age band and gender (cell-size suppressed).</CardDescription>
+            <CardTitle>High-risk share by age and gender</CardTitle>
+            <CardDescription>Database records grouped into age bands and gender; small cells are suppressed.</CardDescription>
           </CardHeader>
           <CardContent>
             <DemographicsPrevalenceChart data={demoChart} />
@@ -141,14 +136,17 @@ export default function NationalDashboardPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>National epidemic forecast</CardTitle>
-          <CardDescription>Multi-year urban/rural trajectory and population risk shares via LLM.</CardDescription>
+          <CardTitle>Stored division trends and forecasts</CardTitle>
+          <CardDescription>View database aggregates and saved forecast jobs for a division.</CardDescription>
         </CardHeader>
         <CardContent>
-          <EpidemicForecastPanel
-            epidemic={epidemic}
-            onRun={runEpidemicForecast}
-            isForecasting={isForecasting}
+          <DivisionForecastExplorer
+            divisions={divisions}
+            scopeId={forecastScopeId}
+            forecast={divisionForecast}
+            onScopeChange={onForecastScopeChange}
+            onGenerate={onGenerateDivisionForecast}
+            disabled={divisionForecastDisabled}
           />
         </CardContent>
       </Card>
@@ -165,7 +163,7 @@ function Header() {
       <div>
         <h1 className="text-2xl font-bold text-foreground">National Health Dashboard</h1>
         <p className="text-muted-foreground">
-          Spatial diabetes intelligence for Bangladesh — LLM predictions, anonymized surveillance
+          Spatial diabetes intelligence for Bangladesh, based on stored health-record aggregates
         </p>
       </div>
     </div>

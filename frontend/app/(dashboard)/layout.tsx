@@ -43,6 +43,7 @@ const NAV_NATIONAL = [
 
 const NAV_ADMIN = [
   { name: "Admin Dashboard", href: "/admin", icon: Shield },
+  { name: "National Overview", href: "/national", icon: Globe },
   { name: "Profile", href: "/profile", icon: User },
 ];
 
@@ -67,10 +68,10 @@ function getRoleHome(roles: string[]): string {
   return ROLE_HOMES.user;
 }
 
-const ROLE_GUARDS: Array<{ prefix: string; requiredRole: string }> = [
-  { prefix: "/admin", requiredRole: "admin" },
-  { prefix: "/doctor", requiredRole: "doctor" },
-  { prefix: "/national", requiredRole: "national_admin" },
+const ROLE_GUARDS: Array<{ prefix: string; allowedRoles: string[] }> = [
+  { prefix: "/admin", allowedRoles: ["admin"] },
+  { prefix: "/doctor", allowedRoles: ["doctor"] },
+  { prefix: "/national", allowedRoles: ["national_admin", "admin"] },
 ];
 
 const PATIENT_ONLY_PREFIXES = ["/dashboard", "/health-form", "/records"];
@@ -92,7 +93,7 @@ export default function DashboardLayout({
     }
     if (!isLoading && isAuthenticated && user) {
       for (const guard of ROLE_GUARDS) {
-        if (pathname.startsWith(guard.prefix) && !user.roles.includes(guard.requiredRole)) {
+        if (pathname.startsWith(guard.prefix) && !guard.allowedRoles.some((role) => user.roles.includes(role))) {
           router.replace(getRoleHome(user.roles));
           return;
         }
@@ -126,7 +127,7 @@ export default function DashboardLayout({
   const navItems = getNavItems(roles);
 
   return (
-    <div className="min-h-screen flex">
+    <div className="flex h-dvh overflow-hidden">
       {sidebarOpen && (
         <div
           className="fixed inset-0 z-40 bg-black/50 lg:hidden"
@@ -136,11 +137,11 @@ export default function DashboardLayout({
 
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-50 w-64 bg-card border-r transform transition-transform lg:translate-x-0 lg:static lg:z-auto",
+          "fixed inset-y-0 left-0 z-50 w-64 bg-card border-r transform transition-transform lg:translate-x-0",
           sidebarOpen ? "translate-x-0" : "-translate-x-full",
         )}
       >
-        <div className="flex h-full flex-col">
+        <div className="flex h-full min-h-0 flex-col">
           <div className="flex h-16 items-center gap-2 px-6 border-b">
             <Heart className="h-8 w-8 text-primary" />
             <span className="text-lg font-semibold">Health Project</span>
@@ -152,7 +153,7 @@ export default function DashboardLayout({
             </button>
           </div>
 
-          <nav className="flex-1 px-4 py-6 space-y-1">
+          <nav className="min-h-0 flex-1 overflow-y-auto px-4 py-6 space-y-1">
             {navItems.map((item) => {
               const isActive = item.href === "/admin"
                 ? pathname.startsWith(item.href)
@@ -201,8 +202,8 @@ export default function DashboardLayout({
         </div>
       </aside>
 
-      <div className="flex-1 flex flex-col min-h-screen">
-        <header className="h-16 border-b bg-card flex items-center px-4 lg:px-6">
+      <div className="flex h-full min-h-0 min-w-0 flex-1 flex-col lg:ml-64">
+        <header className="h-16 shrink-0 border-b bg-card flex items-center px-4 lg:px-6">
           <button
             className="lg:hidden p-2 -ml-2"
             onClick={() => setSidebarOpen(true)}
@@ -217,7 +218,7 @@ export default function DashboardLayout({
           </Link>
         </header>
 
-        <main className="flex-1 p-4 lg:p-6 bg-background">
+        <main className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-4 lg:p-6 bg-background">
           <div
             key={pathname}
             className="animate-in fade-in slide-in-from-bottom-2 duration-300"

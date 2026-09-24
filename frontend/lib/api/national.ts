@@ -20,6 +20,22 @@ export type DistrictSummaryResponse = {
   min_cell_size: number
 }
 
+export type NationalMapMetric = {
+  id: string
+  name: string
+  status: 'available' | 'awaiting_scores' | 'suppressed' | 'unavailable'
+  high_risk_share: number | null
+}
+
+export type NationalMapSummary = {
+  generated_at: string
+  metric_basis: string
+  minimum_cell_size: number
+  attribution: string
+  divisions: NationalMapMetric[]
+  districts: NationalMapMetric[]
+}
+
 export type ResourceEstimate = {
   district: string
   suppressed: boolean
@@ -69,26 +85,26 @@ export type SpatialPanel = {
   title: string
   division_id: string
   district_id: string | null
-  hotspots: Array<{ label: string; rate: number; severity: string; source: string }>
+  districts: Array<{ label: string; rate: number; severity: string; source: 'database' }>
   metrics: {
-    prevalence_growth_yoy_percent: number
-    avg_diagnosis_age: number
-    screening_coverage_percent: number
+    high_risk_share_change_yoy_percentage_points: number | null
+    mean_record_age_years: number | null
+    screening_coverage_percent: number | null
   }
-  synthesis: boolean
+  metric_basis: string
 }
 
 export type DivisionChart = {
   labels: string[]
-  prevalence_percent: Array<number | null>
-  national_benchmark_percent: number
+  high_risk_share_percent: Array<number | null>
+  national_high_risk_share_percent: number | null
   empty: boolean
 }
 
 export type DemographicsChart = {
   labels: string[]
-  male_prevalence_percent: Array<number | null>
-  female_prevalence_percent: Array<number | null>
+  male_high_risk_share_percent: Array<number | null>
+  female_high_risk_share_percent: Array<number | null>
   empty: boolean
 }
 
@@ -136,6 +152,39 @@ export type EpidemicForecastJob = {
   completed_at: string | null
 }
 
+export type DivisionForecastPoint = {
+  year: number
+  value: number | null
+  kind: 'observed' | 'projected' | 'unavailable'
+  source: string | null
+}
+
+export type DivisionForecastJob = {
+  id: string
+  status: string
+  result: {
+    forecast_kind?: string
+    scope_id?: string
+    engine?: string
+    metric_basis?: string
+    minimum_cell_size?: number
+    display_years?: number[]
+    projection_start_year?: number | null
+    urban_rural_status?: string
+    summary?: string
+    series?: Array<{
+      id: string
+      name: string
+      status: string
+      urban_rural_status: string
+      points: DivisionForecastPoint[]
+    }>
+  } | null
+  error_message: string | null
+  created_at: string
+  completed_at: string | null
+}
+
 const ACCESS_TOKEN_KEY = 'health_access_token'
 
 async function downloadCsv(): Promise<{ error?: string }> {
@@ -165,10 +214,6 @@ export const nationalApi = {
   getDivisions: () => api.get<{ items: GeoOption[] }>('/national/geo/divisions'),
   getDistricts: (divisionId: string) =>
     api.get<{ items: GeoOption[] }>(`/national/geo/districts?division_id=${encodeURIComponent(divisionId)}`),
-  getUpazillas: (districtId: string) =>
-    api.get<{ items: GeoOption[] }>(`/national/geo/upazillas?district_id=${encodeURIComponent(districtId)}`),
-  getThanas: (upazillaId: string) =>
-    api.get<{ items: GeoOption[] }>(`/national/geo/thanas?upazilla_id=${encodeURIComponent(upazillaId)}`),
   getSpatial: (divisionId: string, districtId?: string) => {
     const q = new URLSearchParams({ division_id: divisionId })
     if (districtId) q.set('district_id', districtId)
@@ -180,7 +225,11 @@ export const nationalApi = {
     api.post<IndividualPredictResponse>('/national/predict-individual', body),
   enqueueEpidemicForecast: () => api.post<EpidemicForecastJob>('/national/epidemic-forecast'),
   getLatestEpidemicForecast: () => api.get<EpidemicForecastJob>('/national/epidemic-forecast/latest'),
+  enqueueDivisionForecast: (scopeId: string) => api.post<DivisionForecastJob>('/national/division-forecasts', { scope_id: scopeId }),
+  getLatestDivisionForecast: (scopeId: string) =>
+    api.get<DivisionForecastJob>(`/national/division-forecasts/latest?scope_id=${encodeURIComponent(scopeId)}`),
   getDistrictSummary: () => api.get<DistrictSummaryResponse>('/national/districts/summary'),
+  getMapSummary: () => api.get<NationalMapSummary>('/national/map/summary'),
   getResources: () => api.get<ResourceAllocationResponse>('/national/resources'),
   exportCsv: downloadCsv,
   enqueueForecast: () => api.post<PopulationForecastJob>('/national/forecasts'),

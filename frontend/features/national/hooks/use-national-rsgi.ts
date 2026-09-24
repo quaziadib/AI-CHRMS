@@ -1,68 +1,67 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 import { nationalApi } from '@/lib/api/national'
 import type {
   DemographicsChart,
+  DivisionForecastJob,
   DivisionChart,
-  EpidemicForecastJob,
   GeoOption,
-  IndividualPredictResponse,
+  NationalMapSummary,
   SpatialPanel,
 } from '@/lib/api/national'
 
 export function useNationalRsgi() {
   const [divisions, setDivisions] = useState<GeoOption[]>([])
   const [districts, setDistricts] = useState<GeoOption[]>([])
-  const [upazillas, setUpazillas] = useState<GeoOption[]>([])
-  const [thanas, setThanas] = useState<GeoOption[]>([])
-  const [divisionId, setDivisionId] = useState('dhaka')
+  const [divisionId, setDivisionId] = useState('')
   const [districtId, setDistrictId] = useState<string>('')
-  const [upazillaId, setUpazillaId] = useState('')
-  const [thanaId, setThanaId] = useState('')
   const [spatial, setSpatial] = useState<SpatialPanel | null>(null)
   const [divisionChart, setDivisionChart] = useState<DivisionChart | null>(null)
   const [demoChart, setDemoChart] = useState<DemographicsChart | null>(null)
-  const [prediction, setPrediction] = useState<IndividualPredictResponse | null>(null)
-  const [epidemic, setEpidemic] = useState<EpidemicForecastJob | null>(null)
+  const [divisionForecast, setDivisionForecast] = useState<DivisionForecastJob | null>(null)
+  const [forecastScopeId, setForecastScopeId] = useState('all')
+  const [mapSummary, setMapSummary] = useState<NationalMapSummary | null>(null)
+  const [mapDivisionId, setMapDivisionId] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [disabled, setDisabled] = useState(false)
-  const [isPredicting, setIsPredicting] = useState(false)
-  const [isForecasting, setIsForecasting] = useState(false)
+  const [divisionForecastDisabled, setDivisionForecastDisabled] = useState(false)
+  const [isRefreshingMap, setIsRefreshingMap] = useState(false)
+  const filterRequest = useRef(0)
+  const forecastRequest = useRef(0)
 
-  const loadGeoChildren = useCallback(async (div: string, dist?: string, upa?: string) => {
-    const distRes = await nationalApi.getDistricts(div)
-    const distItems = distRes.data?.items ?? []
-    setDistricts(distItems)
-    const nextDist = dist && distItems.some((d) => d.id === dist) ? dist : distItems[0]?.id ?? ''
-    setDistrictId(nextDist)
-
-    const upaRes = nextDist ? await nationalApi.getUpazillas(nextDist) : { data: { items: [] } }
-    const upaItems = upaRes.data?.items ?? []
-    setUpazillas(upaItems)
-    const nextUpa = upa && upaItems.some((u) => u.id === upa) ? upa : upaItems[0]?.id ?? ''
-    setUpazillaId(nextUpa)
-
-    const thanaRes = nextUpa ? await nationalApi.getThanas(nextUpa) : { data: { items: [] } }
-    const thanaItems = thanaRes.data?.items ?? []
-    setThanas(thanaItems)
-    setThanaId(thanaItems[0]?.id ?? '')
-    return nextDist
+  const refreshMapSummary = useCallback(async () => {
+    setIsRefreshingMap(true)
+    try {
+      const res = await nationalApi.getMapSummary()
+      if (res.data) setMapSummary(res.data)
+      else if (res.error) toast.error(res.error)
+    } finally {
+      setIsRefreshingMap(false)
+    }
   }, [])
 
-  const refreshSpatial = useCallback(async (div: string, dist: string) => {
+  const loadGeoChildren = useCallback(async (div: string, requestId: number) => {
+    const distRes = await nationalApi.getDistricts(div)
+    if (requestId !== filterRequest.current) return
+    const distItems = distRes.data?.items ?? []
+    setDistricts(distItems)
+    setDistrictId('')
+  }, [])
+
+  const refreshSpatial = useCallback(async (div: string, dist: string, requestId: number) => {
     const res = await nationalApi.getSpatial(div, dist || undefined)
-    if (res.data) setSpatial(res.data)
+    if (requestId === filterRequest.current && res.data) setSpatial(res.data)
   }, [])
 
   const loadCore = useCallback(async () => {
-    setIsLoading(true)
-    const [divRes, chartDiv, chartDemo, epidemicRes] = await Promise.all([
+    const [divRes, chartDiv, chartDemo, mapRes, divisionForecastRes] = await Promise.all([
       nationalApi.getDivisions(),
       nationalApi.getDivisionChart(),
       nationalApi.getDemographicsChart(),
-      nationalApi.getLatestEpidemicForecast(),
+      nationalApi.getMapSummary(),
+      nationalApi.getLatestDivisionForecast('all'),
     ])
 
     if (divRes.status === 503) {
@@ -75,113 +74,145 @@ export function useNationalRsgi() {
     if (divRes.data) setDivisions(divRes.data.items)
     if (chartDiv.data) setDivisionChart(chartDiv.data)
     if (chartDemo.data) setDemoChart(chartDemo.data)
-    if (epidemicRes.data) setEpidemic(epidemicRes.data)
+    if (mapRes.data) setMapSummary(mapRes.data)
+    if (divisionForecastRes.data) setDivisionForecast(divisionForecastRes.data)
+    setDivisionForecastDisabled(divisionForecastRes.status === 503)
 
-    const nextDist = await loadGeoChildren('dhaka')
-    await refreshSpatial('dhaka', nextDist)
+    setDistricts([])
     setIsLoading(false)
-  }, [loadGeoChildren, refreshSpatial])
+  }, [])
 
   useEffect(() => {
+    // This loader only updates component state after its API requests resolve.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     loadCore()
   }, [loadCore])
 
   useEffect(() => {
-    if (!epidemic || (epidemic.status !== 'pending' && epidemic.status !== 'running')) return
+    const refreshWhenVisible = () => {
+      if (document.visibilityState === 'visible') void refreshMapSummary()
+    }
+    const intervalId = window.setInterval(refreshWhenVisible, 30_000)
+    window.addEventListener('focus', refreshWhenVisible)
+    document.addEventListener('visibilitychange', refreshWhenVisible)
+    return () => {
+      window.clearInterval(intervalId)
+      window.removeEventListener('focus', refreshWhenVisible)
+      document.removeEventListener('visibilitychange', refreshWhenVisible)
+    }
+  }, [refreshMapSummary])
+
+  useEffect(() => {
+    if (!divisionForecast || (divisionForecast.status !== 'pending' && divisionForecast.status !== 'running')) return
+    const scope = forecastScopeId
+    const requestId = forecastRequest.current
     const id = setInterval(async () => {
-      const res = await nationalApi.getLatestEpidemicForecast()
-      if (!res.data) return
-      setEpidemic(res.data)
-      if (res.data.status === 'completed') toast.success('Epidemic forecast ready')
-      if (res.data.status === 'failed') {
-        toast.error(res.data.error_message || 'Epidemic forecast failed')
-      }
+      const res = await nationalApi.getLatestDivisionForecast(scope)
+      if (requestId !== forecastRequest.current || !res.data) return
+      setDivisionForecast(res.data)
+      if (res.data.status === 'completed') toast.success('Division forecast ready')
+      if (res.data.status === 'failed') toast.error(res.data.error_message || 'Division forecast failed')
     }, 2500)
     return () => clearInterval(id)
-  }, [epidemic])
+  }, [divisionForecast, forecastScopeId])
 
   const onDivisionChange = async (id: string) => {
+    const filterRequestId = ++filterRequest.current
+    const forecastRequestId = ++forecastRequest.current
     setDivisionId(id)
-    const nextDist = await loadGeoChildren(id)
-    await refreshSpatial(id, nextDist)
+    setMapDivisionId(id || null)
+    const scopeId = id || 'all'
+    setForecastScopeId(scopeId)
+    const forecastRes = await nationalApi.getLatestDivisionForecast(scopeId)
+    if (forecastRequestId !== forecastRequest.current) return
+    setDivisionForecast(forecastRes.data ?? null)
+    setDivisionForecastDisabled(forecastRes.status === 503)
+    if (!id) {
+      setDistricts([])
+      setDistrictId('')
+      setSpatial(null)
+      return
+    }
+    await loadGeoChildren(id, filterRequestId)
+    await refreshSpatial(id, '', filterRequestId)
   }
 
   const onDistrictChange = async (id: string) => {
+    const requestId = ++filterRequest.current
     setDistrictId(id)
-    const upaRes = await nationalApi.getUpazillas(id)
-    const upaItems = upaRes.data?.items ?? []
-    setUpazillas(upaItems)
-    const nextUpa = upaItems[0]?.id ?? ''
-    setUpazillaId(nextUpa)
-    const thanaRes = nextUpa ? await nationalApi.getThanas(nextUpa) : { data: { items: [] } }
-    setThanas(thanaRes.data?.items ?? [])
-    setThanaId(thanaRes.data?.items?.[0]?.id ?? '')
-    await refreshSpatial(divisionId, id)
-  }
-
-  const onUpazillaChange = async (id: string) => {
-    setUpazillaId(id)
-    const thanaRes = await nationalApi.getThanas(id)
-    setThanas(thanaRes.data?.items ?? [])
-    setThanaId(thanaRes.data?.items?.[0]?.id ?? '')
+    await refreshSpatial(divisionId, id, requestId)
   }
 
   const resetFilters = async () => {
-    setDivisionId('dhaka')
-    const nextDist = await loadGeoChildren('dhaka')
-    await refreshSpatial('dhaka', nextDist)
+    filterRequest.current += 1
+    const forecastRequestId = ++forecastRequest.current
+    setDivisionId('')
+    setMapDivisionId(null)
+    setForecastScopeId('all')
+    const forecastRes = await nationalApi.getLatestDivisionForecast('all')
+    if (forecastRequestId !== forecastRequest.current) return
+    setDivisionForecast(forecastRes.data ?? null)
+    setDivisionForecastDisabled(forecastRes.status === 503)
+    setDistricts([])
+    setDistrictId('')
+    setSpatial(null)
   }
 
-  const runPrediction = async (body: {
-    age: number
-    gender: string
-    bmi: number
-    glucose: number
-    family_history: string
-    activity: string
-  }) => {
-    setIsPredicting(true)
-    const res = await nationalApi.predictIndividual(body)
-    if (res.error) toast.error(res.error)
-    else if (res.data) setPrediction(res.data)
-    setIsPredicting(false)
+  const selectMapDivision = async (id: string) => {
+    setMapDivisionId(id)
+    await onDivisionChange(id)
   }
 
-  const runEpidemicForecast = async () => {
-    setIsForecasting(true)
-    const res = await nationalApi.enqueueEpidemicForecast()
-    if (res.error) toast.error(res.error)
-    else if (res.data) {
-      setEpidemic(res.data)
-      toast.success('LLM epidemic forecast started')
+  const returnMapToNational = async () => {
+    await resetFilters()
+  }
+
+  const onForecastScopeChange = async (scopeId: string) => {
+    const requestId = ++forecastRequest.current
+    setForecastScopeId(scopeId)
+    setDivisionForecast(null)
+    const res = await nationalApi.getLatestDivisionForecast(scopeId)
+    if (requestId !== forecastRequest.current) return
+    setDivisionForecast(res.data ?? null)
+    setDivisionForecastDisabled(res.status === 503)
+  }
+
+  const onGenerateDivisionForecast = async () => {
+    const requestId = ++forecastRequest.current
+    const scopeId = forecastScopeId
+    const res = await nationalApi.enqueueDivisionForecast(scopeId)
+    if (requestId !== forecastRequest.current) return
+    if (res.data) {
+      setDivisionForecast(res.data)
+      return
     }
-    setIsForecasting(false)
+    setDivisionForecastDisabled(res.status === 503)
+    toast.error(res.error || 'Could not start the division forecast')
   }
 
   return {
     divisions,
     districts,
-    upazillas,
-    thanas,
     divisionId,
     districtId,
-    upazillaId,
-    thanaId,
-    setThanaId,
     spatial,
     divisionChart,
     demoChart,
-    prediction,
-    epidemic,
+    divisionForecast,
+    forecastScopeId,
+    mapSummary,
+    mapDivisionId,
     isLoading,
     disabled,
-    isPredicting,
-    isForecasting,
+    divisionForecastDisabled,
+    isRefreshingMap,
     onDivisionChange,
     onDistrictChange,
-    onUpazillaChange,
     resetFilters,
-    runPrediction,
-    runEpidemicForecast,
+    selectMapDivision,
+    returnMapToNational,
+    onForecastScopeChange,
+    onGenerateDivisionForecast,
+    refreshMapSummary,
   }
 }

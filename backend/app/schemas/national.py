@@ -23,6 +23,26 @@ class DistrictSummaryResponse(BaseModel):
     min_cell_size: int
 
 
+class NationalMapMetric(BaseModel):
+    id: str
+    name: str
+    status: str
+    high_risk_share: float | None = None
+
+
+class NationalMapSummaryResponse(BaseModel):
+    generated_at: str
+    metric_basis: str
+    minimum_cell_size: int
+    attribution: str
+    divisions: list[NationalMapMetric]
+    districts: list[NationalMapMetric]
+
+
+class DivisionForecastRequest(BaseModel):
+    scope_id: str = Field(min_length=1, max_length=32)
+
+
 class ResourceEstimate(BaseModel):
     district: str
     suppressed: bool = False
@@ -88,29 +108,29 @@ class IndividualPredictResponse(BaseModel):
 
 class DivisionChartResponse(BaseModel):
     labels: list[str]
-    prevalence_percent: list[float | None]
-    national_benchmark_percent: float
+    high_risk_share_percent: list[float | None]
+    national_high_risk_share_percent: float | None
     empty: bool
 
 
 class DemographicsChartResponse(BaseModel):
     labels: list[str]
-    male_prevalence_percent: list[float | None]
-    female_prevalence_percent: list[float | None]
+    male_high_risk_share_percent: list[float | None]
+    female_high_risk_share_percent: list[float | None]
     empty: bool
 
 
-class SpatialHotspot(BaseModel):
+class SpatialDistrictMetric(BaseModel):
     label: str
     rate: float
     severity: str
-    source: str = "synthesis"
+    source: str = "database"
 
 
 class SpatialPanelResponse(BaseModel):
     title: str
     division_id: str
     district_id: str | None = None
-    hotspots: list[SpatialHotspot]
+    districts: list[SpatialDistrictMetric]
     metrics: dict
-    synthesis: bool
+    metric_basis: str

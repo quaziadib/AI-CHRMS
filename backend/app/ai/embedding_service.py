@@ -90,7 +90,9 @@ def get_latest_record(db: Session, user_id: str) -> PatientRecord | None:
 
 def ensure_embeddings_for_user(user_id: str, db: Session) -> None:
     """Backfill embeddings for records that were scored before RAG or when embed failed."""
-    if not settings.ENABLE_RAG:
+    # Chat can use the latest record as plain-text context without vector search.
+    # Do not retry OpenAI-only embeddings when the app is configured with another LLM provider.
+    if not settings.ENABLE_RAG or not settings.OPENAI_API_KEY:
         return
     records = db.query(PatientRecord).filter(PatientRecord.user_id == user_id).all()
     for record in records:
@@ -105,7 +107,8 @@ def ensure_embeddings_for_user(user_id: str, db: Session) -> None:
 
 def embed_record(record: PatientRecord, db: Session) -> None:
     """Embed record chunks into pgvector. Replaces prior embeddings for this record."""
-    if not settings.ENABLE_RAG:
+    # Embeddings are an optional RAG enhancement and currently require OpenAI credentials.
+    if not settings.ENABLE_RAG or not settings.OPENAI_API_KEY:
         return
 
     chunks = build_chunks(record)
