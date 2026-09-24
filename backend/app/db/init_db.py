@@ -133,15 +133,16 @@ def create_tables() -> None:
 
 # Add new seed users here. Each dict maps directly to User model fields.
 # Credentials for admin/demo are read from environment via settings.
-_SEED_USERS = [
-    {
-        "email": settings.ADMIN_EMAIL,
-        "password": settings.ADMIN_PASSWORD,
-        "full_name": "System Administrator",
-        "roles": ["admin", "user"],
-        "is_active": True,
-        "is_verified": True,
-    },
+_ADMIN_USER = {
+    "email": settings.ADMIN_EMAIL,
+    "password": settings.ADMIN_PASSWORD,
+    "full_name": "System Administrator",
+    "roles": ["admin", "user"],
+    "is_active": True,
+    "is_verified": True,
+}
+
+_DEMO_USERS = [
     {
         "email": settings.DEMO_EMAIL,
         "password": settings.DEMO_PASSWORD,
@@ -171,8 +172,12 @@ _SEED_USERS = [
 
 
 def seed_default_users(db: Session) -> None:
-    """Seed default users if they don't exist."""
-    for spec in _SEED_USERS:
+    """Seed the configured admin and, in demo mode, local demo accounts."""
+    seed_users = [_ADMIN_USER]
+    if settings.SEED_DEMO_USERS:
+        seed_users.extend(_DEMO_USERS)
+
+    for spec in seed_users:
         email = spec["email"]
         if db.query(User).filter(User.email == email).first():
             continue

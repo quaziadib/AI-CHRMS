@@ -21,7 +21,7 @@ This is the recommended way to run the full stack.
 # 1. Configure environment
 cp .env.example .env
 # Edit .env — at minimum set a unique JWT_SECRET_KEY (≥32 characters).
-# Optionally add ANTHROPIC_API_KEY / OPENAI_API_KEY / GOOGLE_API_KEY for LLM features.
+# Optionally add ANTHROPIC_API_KEY / OPENAI_API_KEY / GOOGLE_API_KEY / GROQ_API_KEY for LLM features.
 
 # 2. Build and start all services
 docker compose up --build
@@ -73,8 +73,9 @@ Root `.env` (used by Docker Compose). Start from `.env.example`:
 |---|---|---|
 | `JWT_SECRET_KEY` | **Yes** | ≥32 characters; must not be a known weak default |
 | `POSTGRES_USER` / `POSTGRES_PASSWORD` / `POSTGRES_DB` | No | DB credentials (defaults match `.env.example`) |
-| `LLM_PROVIDER` | No | `anthropic` (default), `openai`, or `google` |
-| `ANTHROPIC_API_KEY` / `OPENAI_API_KEY` / `GOOGLE_API_KEY` | For AI features | Key matching `LLM_PROVIDER` |
+| `LLM_PROVIDER` | No | `anthropic` (default), `openai`, `google`, or `groq` |
+| `LLM_MODEL` | No | Provider-specific chat model; defaults are selected by the backend |
+| `ANTHROPIC_API_KEY` / `OPENAI_API_KEY` / `GOOGLE_API_KEY` / `GROQ_API_KEY` | For AI features | Key matching `LLM_PROVIDER` |
 | `ENABLE_*` feature flags | No | Toggle RAG, plans, forecasting, national analytics, etc. |
 
 Without an LLM API key, auth and CRUD still work; risk scoring, chatbot, and related AI endpoints will fail until a key is set.
@@ -130,7 +131,11 @@ pnpm install
 BACKEND_URL=http://localhost:8000 pnpm dev
 ```
 
-App: http://localhost:3000 — browser calls go to `/api/v1/*`, which Next.js proxies to the backend.
+App: http://localhost:3000 — browser calls go to `/v1/*`, which Next.js proxies to the backend.
+
+## Vercel production deployment
+
+See [docs/deployment/vercel.md](docs/deployment/vercel.md) for the Vercel Services, FastAPI, Vercel Queues, and Supabase setup.
 
 ---
 

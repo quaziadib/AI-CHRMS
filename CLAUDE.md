@@ -47,9 +47,9 @@ ANTHROPIC_API_KEY=<key>
 ## Architecture
 
 ### Request flow
-Browser → Next.js (`/api/v1/*` rewrite) → `http://backend:8000/v1/*` → FastAPI
+Local browser → Next.js (`/v1/*` rewrite) → `http://backend:8000/v1/*` → FastAPI
 
-Next.js proxies all API calls via `next.config.mjs` rewrites — frontend never exposes backend origin to the browser.
+On Vercel, the root `vercel.json` routes `/v1/*` to the FastAPI service. The browser uses the same `/v1/*` origin in both environments.
 
 ### Backend layout
 ```
@@ -125,3 +125,22 @@ frontend/
 Backend Dockerfile: `backend/Dockerfile` — built and deployed to Render.com (`render.yaml`). Health check endpoint: `GET /health`.
 
 TypeScript build errors are suppressed (`ignoreBuildErrors: true` in `next.config.mjs`). Fix the type error; don't rely on this.
+
+## Skill routing
+
+When the user's request matches an available skill, invoke it via the Skill tool. When in doubt, invoke the skill.
+
+Key routing rules:
+- Product ideas/brainstorming → invoke /office-hours
+- Strategy/scope → invoke /plan-ceo-review
+- Architecture → invoke /plan-eng-review
+- Design system/plan review → invoke /design-consultation or /plan-design-review
+- Full review pipeline → invoke /autoplan
+- Bugs/errors → invoke /investigate
+- QA/testing site behavior → invoke /qa or /qa-only
+- Code review/diff check → invoke /review
+- Visual polish → invoke /design-review
+- Ship/deploy/PR → invoke /ship or /land-and-deploy
+- Save progress → invoke /context-save
+- Resume context → invoke /context-restore
+- Author a backlog-ready spec/issue → invoke /spec

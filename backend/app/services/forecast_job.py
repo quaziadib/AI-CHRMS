@@ -1,4 +1,5 @@
 import logging
+import os
 from datetime import datetime, timezone
 
 from fastapi import HTTPException, status
@@ -48,8 +49,14 @@ def enqueue_forecast(
     try:
         run_forecast_job.delay(job.id)
     except Exception:
-        logger.exception("Failed to enqueue forecast job %s — running synchronously", job.id)
-        run_forecast_job(job.id)
+        if os.environ.get("VERCEL"):
+            logger.exception("Failed to enqueue forecast job %s", job.id)
+            job.status = "failed"
+            job.error_message = "Background job queue is unavailable"
+            job.completed_at = datetime.now(timezone.utc)
+        else:
+            logger.exception("Failed to enqueue forecast job %s — running synchronously", job.id)
+            run_forecast_job(job.id)
         db.refresh(job)
 
     return job
