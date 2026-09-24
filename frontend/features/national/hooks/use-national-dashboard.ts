@@ -24,7 +24,6 @@ export function useNationalDashboard() {
   const [minCellSize, setMinCellSize] = useState(5)
 
   const loadCore = useCallback(async () => {
-    setIsLoading(true)
     const [summaryRes, resourcesRes, forecastRes] = await Promise.all([
       nationalApi.getDistrictSummary(),
       nationalApi.getResources(),
@@ -59,7 +58,14 @@ export function useNationalDashboard() {
   }, [])
 
   useEffect(() => {
+    // This loader only updates component state after its API requests resolve.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     loadCore()
+  }, [loadCore])
+
+  const refresh = useCallback(async () => {
+    setIsLoading(true)
+    await loadCore()
   }, [loadCore])
 
   useEffect(() => {
@@ -126,7 +132,7 @@ export function useNationalDashboard() {
     isDiscovering,
     disabled,
     minCellSize,
-    refresh: loadCore,
+    refresh,
     exportCsv,
     runForecast,
     runPatterns,

@@ -6,23 +6,26 @@ from app.ai.pattern_discovery_chain import run_pattern_discovery
 from app.ai.individual_predictor_chain import run_individual_prediction
 from app.schemas.national import (
     DemographicsChartResponse,
+    DivisionForecastRequest,
     DistrictSummaryResponse,
     DivisionChartResponse,
     GeoListResponse,
     GeoOption,
     IndividualPredictRequest,
     IndividualPredictResponse,
+    NationalMapSummaryResponse,
     PatternDiscoveryResponse,
     PatternInsight,
     PopulationForecastJobResponse,
     ResourceAllocationResponse,
-    SpatialHotspot,
+    SpatialDistrictMetric,
     SpatialPanelResponse,
 )
 from app.services import national as national_service
 from app.services import population_forecast as pop_forecast_service
 from app.services import bd_geo
 from app.services import national_charts
+from app.services import national_map
 from app.services.anonymization import public_district_summaries
 from app.services.audit import log_audit
 
@@ -38,27 +41,28 @@ def _require_national_analytics() -> None:
 
 
 @router.get("/geo/divisions", response_model=GeoListResponse)
-def geo_divisions(user: NationalAdminUser):
+def geo_divisions(user: NationalAdminUser, db: DB):
     _require_national_analytics()
-    return GeoListResponse(items=[GeoOption(**d) for d in bd_geo.list_divisions()])
+    return GeoListResponse(items=[GeoOption(**d) for d in national_map.division_options(db)])
 
 
 @router.get("/geo/districts", response_model=GeoListResponse)
-def geo_districts(user: NationalAdminUser, division_id: str = Query(...)):
+def geo_districts(user: NationalAdminUser, db: DB, division_id: str = Query(...)):
     _require_national_analytics()
-    return GeoListResponse(items=[GeoOption(**d) for d in bd_geo.list_districts(division_id)])
+    return GeoListResponse(items=[GeoOption(**d) for d in national_map.district_options(db, division_id)])
 
 
 @router.get("/geo/upazillas", response_model=GeoListResponse)
 def geo_upazillas(user: NationalAdminUser, district_id: str = Query(...)):
     _require_national_analytics()
-    return GeoListResponse(items=[GeoOption(**d) for d in bd_geo.list_upazillas(district_id)])
+    # Patient records currently store district only; finer geography is not collected.
+    return GeoListResponse(items=[])
 
 
 @router.get("/geo/thanas", response_model=GeoListResponse)
 def geo_thanas(user: NationalAdminUser, upazilla_id: str = Query(...)):
     _require_national_analytics()
-    return GeoListResponse(items=[GeoOption(**d) for d in bd_geo.list_thanas(upazilla_id)])
+    return GeoListResponse(items=[])
 
 
 @router.get("/spatial", response_model=SpatialPanelResponse)
@@ -74,9 +78,9 @@ def get_spatial_panel(
         title=data["title"],
         division_id=data["division_id"],
         district_id=data.get("district_id"),
-        hotspots=[SpatialHotspot(**h) for h in data["hotspots"]],
+        districts=[SpatialDistrictMetric(**district) for district in data["districts"]],
         metrics=data["metrics"],
-        synthesis=data["synthesis"],
+        metric_basis=data["metric_basis"],
     )
 
 
@@ -145,6 +149,42 @@ def latest_epidemic_forecast(user: NationalAdminUser, db: DB):
     return PopulationForecastJobResponse.model_validate(job)
 
 
+@router.post("/division-forecasts", response_model=PopulationForecastJobResponse, status_code=202)
+def enqueue_division_forecast(body: DivisionForecastRequest, user: NationalAdminUser, db: DB):
+    _require_national_analytics()
+    if not settings.ENABLE_POPULATION_FORECASTING:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Population forecasting is disabled",
+        )
+    valid_scopes = {division["id"] for division in bd_geo.list_divisions()} | {"all"}
+    if body.scope_id not in valid_scopes:
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="Unknown division forecast scope")
+    job = pop_forecast_service.enqueue_division_forecast(db, user.id, body.scope_id)
+    return PopulationForecastJobResponse.model_validate(job)
+
+
+@router.get("/division-forecasts/latest", response_model=PopulationForecastJobResponse)
+def latest_division_forecast(
+    user: NationalAdminUser,
+    db: DB,
+    scope_id: str = Query(...),
+):
+    _require_national_analytics()
+    if not settings.ENABLE_POPULATION_FORECASTING:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Population forecasting is disabled",
+        )
+    valid_scopes = {division["id"] for division in bd_geo.list_divisions()} | {"all"}
+    if scope_id not in valid_scopes:
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="Unknown division forecast scope")
+    job = pop_forecast_service.get_latest_division_forecast(db, scope_id)
+    if not job:
+        raise HTTPException(status_code=404, detail="No division forecast job found for this scope")
+    return PopulationForecastJobResponse.model_validate(job)
+
+
 @router.get("/districts/summary", response_model=DistrictSummaryResponse)
 def get_district_summary(user: NationalAdminUser, db: DB):
     _require_national_analytics()
@@ -154,6 +194,12 @@ def get_district_summary(user: NationalAdminUser, db: DB):
         generated_at=national_service.utc_now_iso(),
         min_cell_size=settings.NATIONAL_MIN_CELL_SIZE,
     )
+
+
+@router.get("/map/summary", response_model=NationalMapSummaryResponse)
+def get_map_summary(user: NationalAdminUser, db: DB):
+    _require_national_analytics()
+    return NationalMapSummaryResponse(**national_map.map_summary(db))
 
 
 @router.get("/resources", response_model=ResourceAllocationResponse)

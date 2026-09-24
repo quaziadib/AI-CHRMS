@@ -73,6 +73,15 @@ export function ProgressionChart({ record }: ProgressionChartProps) {
     glucose: p.glucose_mg_dl,
     type: p.kind === 'actual' ? 'Actual' : 'Forecast',
   })) ?? []
+  const glucoseValues = chartData.map(({ glucose }) => glucose).filter(Number.isFinite)
+  const minGlucose = glucoseValues.length ? Math.min(...glucoseValues) : 0
+  const maxGlucose = glucoseValues.length ? Math.max(...glucoseValues) : 1
+  const glucoseRange = maxGlucose - minGlucose
+  const glucosePadding = Math.max(glucoseRange * 0.15, Math.abs((minGlucose + maxGlucose) / 2) * 0.005, 0.5)
+  const glucoseDomain: [number, number] = [
+    Math.max(0, minGlucose - glucosePadding),
+    maxGlucose + glucosePadding,
+  ]
 
   return (
     <Card>
@@ -122,13 +131,13 @@ export function ProgressionChart({ record }: ProgressionChartProps) {
               <LineChart data={chartData}>
                 <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
                 <XAxis dataKey="date" tick={{ fontSize: 11 }} />
-                <YAxis unit=" mg/dL" tick={{ fontSize: 11 }} />
+                <YAxis domain={glucoseDomain} unit=" mg/dL" tick={{ fontSize: 11 }} />
                 <Tooltip />
                 <Legend />
                 <Line
                   type="monotone"
                   dataKey="glucose"
-                  stroke="hsl(var(--primary))"
+                  stroke="var(--primary)"
                   strokeWidth={2}
                   dot={{ r: 4 }}
                   name="Glucose (mg/dL)"

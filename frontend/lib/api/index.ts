@@ -8,5 +8,5 @@ export { nationalApi } from './national'
 export type {
   User, PatientRecord, PatientRecordCreate, AuditLog, AdminStats, ApiResponse,
   RecommendationsOutput, RecommendationCategories, ResubmitStatus, HealthTrends,
-  SystemSettings,
+  SystemSettings, PersonalizedPlan, ForecastJob, ForecastPoint, ForecastResult,
 } from './types'

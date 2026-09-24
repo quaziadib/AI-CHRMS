@@ -20,9 +20,9 @@ export function DivisionPrevalenceChart({ data }: { data: DivisionChart | null }
   const rows = data.labels
     .map((label, i) => ({
       name: label,
-      prevalence: data.prevalence_percent[i],
+      highRiskShare: data.high_risk_share_percent[i],
     }))
-    .filter((row): row is { name: string; prevalence: number } => row.prevalence != null)
+    .filter((row): row is { name: string; highRiskShare: number } => row.highRiskShare != null)
 
   if (rows.length === 0) {
     return <EmptyChart label="No division aggregate data yet (min cell size applies)." />
@@ -31,7 +31,9 @@ export function DivisionPrevalenceChart({ data }: { data: DivisionChart | null }
   return (
     <div className="h-72 w-full">
       <p className="mb-2 text-xs text-muted-foreground">
-        National benchmark: {data.national_benchmark_percent}%
+        {data.national_high_risk_share_percent == null
+          ? 'National benchmark unavailable: there are not enough scored database records.'
+          : `Database national high-risk share: ${data.national_high_risk_share_percent}%`}
       </p>
       <ResponsiveContainer width="100%" height="90%">
         <BarChart data={rows}>
@@ -39,7 +41,7 @@ export function DivisionPrevalenceChart({ data }: { data: DivisionChart | null }
           <XAxis dataKey="name" tick={{ fontSize: 11 }} />
           <YAxis tick={{ fontSize: 11 }} />
           <Tooltip />
-          <Bar dataKey="prevalence" fill="#16a34a" radius={[4, 4, 0, 0]} name="Prevalence %" />
+          <Bar dataKey="highRiskShare" fill="#16a34a" radius={[4, 4, 0, 0]} name="High-risk share %" />
         </BarChart>
       </ResponsiveContainer>
     </div>
@@ -53,8 +55,8 @@ export function DemographicsPrevalenceChart({ data }: { data: DemographicsChart 
   // Keep nulls as null so Recharts skips bars; do not coerce to 0%.
   const rows = data.labels.map((label, i) => ({
     name: label,
-    male: data.male_prevalence_percent[i],
-    female: data.female_prevalence_percent[i],
+    male: data.male_high_risk_share_percent[i],
+    female: data.female_high_risk_share_percent[i],
   }))
   return (
     <div className="h-72 w-full">
@@ -65,8 +67,8 @@ export function DemographicsPrevalenceChart({ data }: { data: DemographicsChart 
           <YAxis tick={{ fontSize: 11 }} />
           <Tooltip />
           <Legend />
-          <Bar dataKey="male" fill="#3b82f6" name="Male %" radius={[4, 4, 0, 0]} />
-          <Bar dataKey="female" fill="#ec4899" name="Female %" radius={[4, 4, 0, 0]} />
+          <Bar dataKey="male" fill="#3b82f6" name="Male high-risk share %" radius={[4, 4, 0, 0]} />
+          <Bar dataKey="female" fill="#ec4899" name="Female high-risk share %" radius={[4, 4, 0, 0]} />
         </BarChart>
       </ResponsiveContainer>
     </div>

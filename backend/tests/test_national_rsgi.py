@@ -6,34 +6,45 @@ import pytest
 from fastapi import HTTPException
 
 from app.api.deps import get_national_admin_user
-from app.services.bd_geo import (
-    division_for_district,
-    list_districts,
-    list_divisions,
-    list_thanas,
-    list_upazillas,
-)
 from app.ai.individual_predictor_chain import build_predictor_prompt_vars
+from app.models.record import PatientRecord
+from app.services.national_map import _canonical_district, district_options, division_options
 from app.services.anonymization import assert_no_pii
 
 
-def test_geo_cascade_dhaka_and_chittagong():
-    divs = list_divisions()
-    assert any(d["id"] == "dhaka" for d in divs)
-    dhaka_districts = list_districts("dhaka")
-    assert any(d["id"] == "Dhaka" for d in dhaka_districts)
-    upas = list_upazillas("Dhaka")
-    assert len(upas) >= 1
-    thanas = list_thanas(upas[0]["id"])
-    assert len(thanas) >= 1
+class _DistrictQuery:
+    def __init__(self, names: list[str]):
+        self.names = names
 
-    ctg = list_districts("chittagong")
-    assert any("Chittagong" in d["name"] or d["id"] == "Chittagong" for d in ctg)
+    def distinct(self):
+        return self
+
+    def all(self):
+        return [(name,) for name in self.names]
 
 
-def test_unknown_district_maps_to_other():
-    assert division_for_district("CompletelyUnknownPlace") == "other"
-    assert division_for_district("Dhaka") == "dhaka"
+class _DistrictDb:
+    def __init__(self, names: list[str]):
+        self.query_result = _DistrictQuery(names)
+
+    def query(self, _column):
+        return self.query_result
+
+
+def test_geo_options_only_include_districts_present_in_database():
+    db = _DistrictDb(["Dhaka", "Cumilla", "Unmapped place"])
+
+    assert division_options(db) == [
+        {"id": "dhaka", "name": "Dhaka Division"},
+        {"id": "chittagong", "name": "Chittagong Division"},
+    ]
+    assert district_options(db, "chittagong") == [{"id": "Comilla", "name": "Comilla"}]
+
+
+def test_district_normalization_handles_aliases_and_unknown_names():
+    assert _canonical_district("Dhaka District") == "Dhaka"
+    assert _canonical_district("Cumilla") == "Comilla"
+    assert _canonical_district("CompletelyUnknownPlace") is None
 
 
 def test_predictor_prompt_allowlist_only():

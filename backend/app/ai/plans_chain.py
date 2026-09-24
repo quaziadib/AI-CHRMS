@@ -74,7 +74,8 @@ class PersonalizedPlanOutput(BaseModel):
 
 
 def run_personalized_plan_chain(record: PatientRecord) -> PersonalizedPlanOutput:
-    llm = get_llm()
+    # A complete 5–7 day meal and exercise plan exceeds the generic 1,024-token cap.
+    llm = get_llm(max_tokens=4096)
     structured_llm = llm.with_structured_output(PersonalizedPlanOutput)
     prompt = ChatPromptTemplate.from_messages([
         ("system", _SYSTEM_PROMPT),
