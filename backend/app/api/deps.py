@@ -60,6 +60,20 @@ def get_doctor_user(
     return current_user
 
 
+def get_patient_user(
+    current_user: Annotated[User, Depends(get_current_user)],
+) -> User:
+    roles = set(current_user.roles or [])
+    if not roles.intersection({"user", "patient"}) or roles.intersection(
+        {"doctor", "admin", "national_admin"}
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Patient access required",
+        )
+    return current_user
+
+
 def get_national_admin_user(
     current_user: Annotated[User, Depends(get_current_user)],
 ) -> User:
@@ -75,5 +89,6 @@ def get_national_admin_user(
 CurrentUser = Annotated[User, Depends(get_current_user)]
 AdminUser = Annotated[User, Depends(get_admin_user)]
 DoctorUser = Annotated[User, Depends(get_doctor_user)]
+PatientUser = Annotated[User, Depends(get_patient_user)]
 NationalAdminUser = Annotated[User, Depends(get_national_admin_user)]
 DB = Annotated[Session, Depends(get_db)]

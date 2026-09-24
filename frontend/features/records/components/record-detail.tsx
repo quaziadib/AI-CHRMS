@@ -35,7 +35,7 @@ export function RecordDetail({ record, readOnly = false }: Props) {
     <CardContent className="border-t bg-muted/20 pt-4">
       {readOnly && (
         <div className="mb-4 flex items-center gap-2 rounded-md border border-blue-200 bg-blue-50 px-3 py-2 text-sm text-blue-700">
-          Read-only — assigned patient record
+          Read-only — patient-shared health record
         </div>
       )}
       {record.flags !== undefined && (

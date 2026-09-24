@@ -1,5 +1,5 @@
 import { api } from './client'
-import type { User, PatientRecord, AuditLog, AdminStats, SystemSettings } from './types'
+import type { User, PatientRecord, AuditLog, AdminStats, SystemSettings, PatientAccessEvent } from './types'
 
 export const adminApi = {
   getUsers: (params?: { skip?: number; limit?: number; search?: string; role?: string }) => {
@@ -37,6 +37,14 @@ export const adminApi = {
     if (params?.action) searchParams.set('action', params.action)
     const query = searchParams.toString()
     return api.get<AuditLog[]>(`/admin/audit-logs${query ? `?${query}` : ''}`)
+  },
+  getPatientAccessEvents: (params?: { patient_id?: string; skip?: number; limit?: number }) => {
+    const searchParams = new URLSearchParams()
+    if (params?.patient_id) searchParams.set('patient_id', params.patient_id)
+    if (params?.skip) searchParams.set('skip', String(params.skip))
+    if (params?.limit) searchParams.set('limit', String(params.limit))
+    const query = searchParams.toString()
+    return api.get<PatientAccessEvent[]>(`/admin/patient-access-events${query ? `?${query}` : ''}`)
   },
   getStats: () => api.get<AdminStats>('/admin/stats'),
   getSettings: () => api.get<SystemSettings>('/admin/settings'),

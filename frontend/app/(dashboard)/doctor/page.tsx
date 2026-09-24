@@ -6,6 +6,7 @@ import { Spinner } from '@/components/ui/spinner'
 import { RiskFilter } from '@/features/doctor/components/risk-filter'
 import { PatientList } from '@/features/doctor/components/patient-list'
 import { useDoctorPatients } from '@/features/doctor/hooks/use-doctor-patients'
+import { AccessRequests } from '@/features/doctor/components/access-requests'
 
 export default function DoctorDashboardPage() {
   const [riskFilter, setRiskFilter] = useState('')
@@ -19,9 +20,11 @@ export default function DoctorDashboardPage() {
         </div>
         <div>
           <h1 className="text-2xl font-bold text-foreground">Doctor Dashboard</h1>
-          <p className="text-muted-foreground">Assigned patients and their health records</p>
+          <p className="text-muted-foreground">Patients who have granted you access to their health records</p>
         </div>
       </div>
+
+      <AccessRequests />
 
       <div className="flex items-center justify-between">
         <RiskFilter value={riskFilter} onChange={setRiskFilter} />
