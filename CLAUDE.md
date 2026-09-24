@@ -47,9 +47,9 @@ ANTHROPIC_API_KEY=<key>
 ## Architecture
 
 ### Request flow
-Browser → Next.js (`/api/v1/*` rewrite) → `http://backend:8000/v1/*` → FastAPI
+Local browser → Next.js (`/v1/*` rewrite) → `http://backend:8000/v1/*` → FastAPI
 
-Next.js proxies all API calls via `next.config.mjs` rewrites — frontend never exposes backend origin to the browser.
+On Vercel, the root `vercel.json` routes `/v1/*` to the FastAPI service. The browser uses the same `/v1/*` origin in both environments.
 
 ### Backend layout
 ```

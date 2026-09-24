@@ -11,24 +11,24 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from app.api.v1.router import router as v1_router
 from app.core.config import settings
 from app.db.base import engine
-from app.db.init_db import create_tables, seed_default_users, seed_system_settings, seed_national_demo_records
-from app.db.seed_synthetic import seed_synthetic_data
-from app.db.session import SessionLocal
+from app.db.bootstrap import bootstrap_database
 
-_LOG_DIR = os.environ.get("LOG_DIR", "/app/logs")
-os.makedirs(_LOG_DIR, exist_ok=True)
-
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s %(levelname)s %(name)s %(message)s",
-    handlers=[
-        logging.StreamHandler(),
+_LOG_HANDLERS = [logging.StreamHandler()]
+if not os.environ.get("VERCEL"):
+    _LOG_DIR = os.environ.get("LOG_DIR", "/app/logs")
+    os.makedirs(_LOG_DIR, exist_ok=True)
+    _LOG_HANDLERS.append(
         RotatingFileHandler(
             os.path.join(_LOG_DIR, "backend.log"),
             maxBytes=10 * 1024 * 1024,
             backupCount=5,
-        ),
-    ],
+        )
+    )
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)s %(name)s %(message)s",
+    handlers=_LOG_HANDLERS,
 )
 logger = logging.getLogger(__name__)
 
@@ -49,17 +49,9 @@ class BodySizeLimitMiddleware(BaseHTTPMiddleware):
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     logger.info("Starting up Health Project API...")
-    create_tables()
-    db = SessionLocal()
-    try:
-        seed_default_users(db)
-        seed_system_settings(db)
-        seed_national_demo_records(db)
-        if settings.SEED_SYNTHETIC_DATA:
-            seed_synthetic_data(db)
-    finally:
-        db.close()
-    logger.info("Startup complete")
+    if settings.DB_INIT_ON_STARTUP:
+        bootstrap_database()
+        logger.info("Startup database initialization complete")
     yield
     logger.info("Shutting down")
 

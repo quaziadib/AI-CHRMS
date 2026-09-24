@@ -14,6 +14,8 @@ import {
 } from 'lucide-react'
 
 export default function HomePage() {
+  const showDemoCredentials = process.env.NEXT_PUBLIC_DEMO_MODE === 'true'
+
   return (
     <div className="min-h-screen flex flex-col">
       {/* Header */}
@@ -155,7 +157,7 @@ export default function HomePage() {
         {/* Security Section */}
         <div className="border-t bg-muted/30 py-16 md:py-24">
           <div className="container mx-auto px-4">
-            <div className="grid gap-12 lg:grid-cols-2 lg:items-center">
+            <div className={`grid gap-12 ${showDemoCredentials ? 'lg:grid-cols-2 lg:items-center' : ''}`}>
               <div>
                 <h2 className="text-3xl font-bold tracking-tight">
                   Enterprise-Grade Security
@@ -180,7 +182,7 @@ export default function HomePage() {
                   ))}
                 </ul>
               </div>
-              <Card className="bg-card">
+              {showDemoCredentials && <Card className="bg-card">
                 <CardHeader>
                   <CardTitle>Demo Credentials</CardTitle>
                   <CardDescription>
@@ -203,7 +205,7 @@ export default function HomePage() {
                     </p>
                   </div>
                 </CardContent>
-              </Card>
+              </Card>}
             </div>
           </div>
         </div>

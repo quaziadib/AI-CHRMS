@@ -83,6 +83,9 @@ cd frontend
 corepack enable pnpm
 pnpm install
 
+# Show local demo credentials (never set this to true in a public deployment)
+cp .env.example .env.local
+
 # Start dev server
 pnpm dev
 ```
@@ -193,4 +196,4 @@ Edit the `navigation` array at the top of `app/(dashboard)/layout.tsx`.
 |---|---|
 | `NEXT_PUBLIC_API_URL` | Backend URL (Docker internal: `http://backend:8000`) |
 
-API calls from the browser use the Next.js rewrite proxy (`/api/v1/*` → `http://backend:8000/v1/*`) so no CORS issues and the backend URL is never exposed to the client.
+API calls from the browser use the Next.js rewrite proxy (`/v1/*` → `http://backend:8000/v1/*`) so no CORS issues and the backend URL is never exposed to the client.

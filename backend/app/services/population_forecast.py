@@ -1,4 +1,6 @@
 import logging
+import os
+from datetime import datetime, timezone
 
 from sqlalchemy.orm import Session
 
@@ -28,10 +30,16 @@ def enqueue_population_forecast(db: Session, user_id: str) -> PopulationForecast
     try:
         run_population_forecast_job.delay(job.id)
     except Exception:
-        logger.exception(
-            "Failed to enqueue population forecast job %s — running synchronously", job.id
-        )
-        run_population_forecast_job(job.id)
+        if os.environ.get("VERCEL"):
+            logger.exception("Failed to enqueue population forecast job %s", job.id)
+            job.status = "failed"
+            job.error_message = "Background job queue is unavailable"
+            job.completed_at = datetime.now(timezone.utc)
+        else:
+            logger.exception(
+                "Failed to enqueue population forecast job %s — running synchronously", job.id
+            )
+            run_population_forecast_job(job.id)
         db.refresh(job)
 
     return job
@@ -50,10 +58,16 @@ def enqueue_epidemic_forecast(db: Session, user_id: str) -> PopulationForecastJo
     try:
         run_epidemic_forecast_job.delay(job.id)
     except Exception:
-        logger.exception(
-            "Failed to enqueue epidemic forecast job %s — running synchronously", job.id
-        )
-        run_epidemic_forecast_job(job.id)
+        if os.environ.get("VERCEL"):
+            logger.exception("Failed to enqueue epidemic forecast job %s", job.id)
+            job.status = "failed"
+            job.error_message = "Background job queue is unavailable"
+            job.completed_at = datetime.now(timezone.utc)
+        else:
+            logger.exception(
+                "Failed to enqueue epidemic forecast job %s — running synchronously", job.id
+            )
+            run_epidemic_forecast_job(job.id)
         db.refresh(job)
 
     return job

@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'standalone',
+  ...(process.env.VERCEL === '1' ? {} : { output: 'standalone' }),
   typescript: {
     ignoreBuildErrors: true,
   },
@@ -8,10 +8,11 @@ const nextConfig = {
     unoptimized: true,
   },
   async rewrites() {
+    if (process.env.VERCEL === '1') return []
     const backendUrl = process.env.BACKEND_URL || 'http://backend:8000'
     return [
       {
-        source: '/api/v1/:path*',
+        source: '/v1/:path*',
         destination: `${backendUrl}/v1/:path*`,
       },
     ]

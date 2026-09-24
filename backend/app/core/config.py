@@ -1,6 +1,7 @@
 from functools import lru_cache
+import os
 
-from pydantic import field_validator
+from pydantic import field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 _WEAK_SECRETS = {
@@ -15,6 +16,7 @@ class Settings(BaseSettings):
     # Application
     APP_NAME: str = "Health Project API"
     APP_VERSION: str = "1.0.0"
+    APP_ENV: str = "development"
     DEBUG: bool = False
 
     # Database
@@ -27,11 +29,12 @@ class Settings(BaseSettings):
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7
 
     # LLM
-    LLM_PROVIDER: str = "anthropic"  # "openai" | "anthropic" | "google"
+    LLM_PROVIDER: str = "anthropic"  # "openai" | "anthropic" | "google" | "groq"
     LLM_MODEL: str | None = None
     OPENAI_API_KEY: str | None = None
     ANTHROPIC_API_KEY: str | None = None
     GOOGLE_API_KEY: str | None = None
+    GROQ_API_KEY: str | None = None
     ENABLE_RECOMMENDATIONS: bool = True
     ENABLE_CHATBOT: bool = True
     ENABLE_RAG: bool = True
@@ -49,6 +52,9 @@ class Settings(BaseSettings):
     NATIONAL_CLINIC_CAPACITY_PER_SITE: int = 500
     EMBEDDING_MODEL: str = "text-embedding-3-small"
     REDIS_URL: str = "redis://localhost:6379/0"
+    DB_POOL_SIZE: int = 5
+    DB_MAX_OVERFLOW: int = 0
+    DB_INIT_ON_STARTUP: bool = True
     RESUBMIT_INTERVAL_MONTHS_DEFAULT: int = 6
 
     # CORS
@@ -59,6 +65,7 @@ class Settings(BaseSettings):
     ADMIN_PASSWORD: str = "admin123"
     DEMO_EMAIL: str = "demo@health.local"
     DEMO_PASSWORD: str = "demo123"
+    SEED_DEMO_USERS: bool = True
 
     # When true, seed 50 synthetic patients (patient001–050) on startup
     SEED_SYNTHETIC_DATA: bool = False
@@ -73,6 +80,28 @@ class Settings(BaseSettings):
         if v in _WEAK_SECRETS:
             raise ValueError("JWT_SECRET_KEY is using a known-weak default — set a unique secret in .env")
         return v
+
+    @model_validator(mode="after")
+    def validate_production_settings(self):
+        deployed_environment = os.environ.get("VERCEL_ENV") in {"production", "preview"}
+        if self.APP_ENV.lower() == "production" or deployed_environment:
+            if self.ADMIN_EMAIL.endswith((".local", "example.com", "your-domain.com")):
+                raise ValueError("ADMIN_EMAIL must use a real domain in production")
+            if len(self.ADMIN_PASSWORD) < 16 or self.ADMIN_PASSWORD == "admin123":
+                raise ValueError("Set a unique ADMIN_PASSWORD of at least 16 characters in production")
+            if "localhost" in self.DATABASE_URL or "<" in self.DATABASE_URL or ">" in self.DATABASE_URL:
+                raise ValueError("Set a real production DATABASE_URL before deployment")
+            if "sslmode=require" not in self.DATABASE_URL:
+                raise ValueError("DATABASE_URL must require TLS in production")
+            if self.DEBUG:
+                raise ValueError("DEBUG must be false in production")
+            if self.SEED_DEMO_USERS:
+                raise ValueError("SEED_DEMO_USERS must be false in production")
+            if self.SEED_SYNTHETIC_DATA:
+                raise ValueError("SEED_SYNTHETIC_DATA must be false in production")
+            if self.DB_INIT_ON_STARTUP:
+                raise ValueError("Run the database bootstrap once, then set DB_INIT_ON_STARTUP=false")
+        return self
 
 
 @lru_cache

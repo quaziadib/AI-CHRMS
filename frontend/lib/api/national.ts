@@ -141,7 +141,7 @@ const ACCESS_TOKEN_KEY = 'health_access_token'
 async function downloadCsv(): Promise<{ error?: string }> {
   const token = typeof window !== 'undefined' ? localStorage.getItem(ACCESS_TOKEN_KEY) : null
   try {
-    const res = await fetch('/api/v1/national/export.csv', {
+    const res = await fetch('/v1/national/export.csv', {
       headers: token ? { Authorization: `Bearer ${token}` } : {},
     })
     if (!res.ok) {

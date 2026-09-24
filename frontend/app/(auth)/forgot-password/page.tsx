@@ -6,6 +6,8 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from '@/components/ui/button'
 
 export default function ForgotPasswordPage() {
+  const showDemoCredentials = process.env.NEXT_PUBLIC_DEMO_MODE === 'true'
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-muted/30 px-4 py-12">
       <Card className="w-full max-w-md">
@@ -16,14 +18,18 @@ export default function ForgotPasswordPage() {
           </Link>
           <CardTitle className="text-2xl">Reset Password</CardTitle>
           <CardDescription>
-            Password reset is not available in this demo. Please contact your administrator.
+            {showDemoCredentials
+              ? 'Password reset is not available in this demo. Please contact your administrator.'
+              : 'Password reset is not configured. Please contact your administrator.'}
           </CardDescription>
         </CardHeader>
-        <CardContent className="text-center text-sm text-muted-foreground">
-          <p>Demo credentials:</p>
-          <p className="mt-1 font-medium">Admin: admin@health.local / admin123</p>
-          <p className="font-medium">User: demo@health.local / demo123</p>
-        </CardContent>
+        {showDemoCredentials && (
+          <CardContent className="text-center text-sm text-muted-foreground">
+            <p>Demo credentials:</p>
+            <p className="mt-1 font-medium">Admin: admin@health.local / admin123</p>
+            <p className="font-medium">User: demo@health.local / demo123</p>
+          </CardContent>
+        )}
         <CardFooter className="justify-center">
           <Link href="/login">
             <Button variant="outline">Back to Login</Button>
