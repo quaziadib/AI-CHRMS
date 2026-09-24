@@ -15,6 +15,7 @@ import {
   X,
   Stethoscope,
   Globe,
+  MessageCircle,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -29,10 +30,12 @@ const NAV_PATIENT = [
   { name: "Health Form", href: "/health-form", icon: ClipboardList },
   { name: "My Records", href: "/records", icon: FileText },
   { name: "Profile", href: "/profile", icon: User },
+  { name: "Messages", href: "/messages", icon: MessageCircle },
 ];
 
 const NAV_DOCTOR = [
   { name: "Doctor Dashboard", href: "/doctor", icon: Stethoscope },
+  { name: "Messages", href: "/messages", icon: MessageCircle },
   { name: "Profile", href: "/profile", icon: User },
 ];
 
@@ -101,6 +104,14 @@ export default function DashboardLayout({
       if (isNonPatient && PATIENT_ONLY_PREFIXES.some(p => pathname.startsWith(p))) {
         router.replace(getRoleHome(user.roles));
         return;
+      }
+      if (pathname.startsWith("/messages")) {
+        const isDoctor = user.roles.includes("doctor") && !user.roles.some(r => ["admin", "national_admin"].includes(r));
+        const isPatient = user.roles.some(r => ["user", "patient"].includes(r)) && !isNonPatient;
+        if (!isDoctor && !isPatient) {
+          router.replace(getRoleHome(user.roles));
+          return;
+        }
       }
     }
   }, [isLoading, isAuthenticated, user, pathname, router]);

@@ -5,9 +5,11 @@ from fastapi import APIRouter
 from app.api.deps import AdminUser, DB
 from app.schemas.audit import AdminStatsResponse, AuditLogResponse
 from app.schemas.record import AssignDoctorRequest, PatientRecordResponse
+from app.schemas.patient_sharing import AccessEventResponse
 from app.schemas.user import AdminUserUpdate, UserResponse
 from app.schemas.resubmit import SystemSettingsResponse, SystemSettingsUpdate
 from app.services import admin as admin_service
+from app.services import patient_sharing as sharing_service
 from app.services.settings import get_or_create_settings, update_resubmit_interval_months
 
 router = APIRouter()
@@ -62,6 +64,17 @@ def get_audit_logs(
     action: Optional[str] = None,
 ):
     return admin_service.list_audit_logs(db, skip=skip, limit=limit, user_id=user_id, action=action)
+
+
+@router.get("/patient-access-events", response_model=list[AccessEventResponse])
+def get_patient_access_events(
+    admin: AdminUser,
+    db: DB,
+    patient_id: Optional[str] = None,
+    skip: int = 0,
+    limit: int = 100,
+):
+    return sharing_service.list_access_events(db, patient_id=patient_id, skip=skip, limit=limit)
 
 
 @router.get("/settings", response_model=SystemSettingsResponse)

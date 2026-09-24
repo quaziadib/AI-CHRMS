@@ -144,6 +144,103 @@ export interface PatientRecord {
   updated_at: string
 }
 
+export type PatientGrantStatus = 'pending' | 'active' | 'declined' | 'revoked'
+
+export interface DoctorOption {
+  id: string
+  full_name: string
+  email: string
+}
+
+export interface PatientGrant {
+  id: string
+  patient_id: string
+  doctor_id: string
+  doctor_name?: string
+  patient_name?: string
+  status: PatientGrantStatus
+  created_at: string
+  responded_at?: string
+  revoked_at?: string
+}
+
+export interface PatientMedication {
+  id: string
+  patient_id: string
+  name: string
+  dosage?: string
+  start_date?: string
+  end_date?: string
+  created_at: string
+  updated_at: string
+}
+
+export interface DoctorInteraction {
+  id: string
+  patient_id: string
+  doctor_id: string
+  doctor_name?: string
+  interaction_at: string
+  note: string
+  created_at: string
+}
+
+export type MessagingGrantStatus = 'pending' | 'active' | 'declined' | 'revoked'
+
+export interface PatientDoctorMessage {
+  id: string
+  conversation_id: string
+  sender_id: string
+  content: string
+  created_at: string
+}
+
+export interface PatientDoctorConversationSummary {
+  conversation_id?: string
+  patient_id: string
+  doctor_id: string
+  participant_id: string
+  participant_name: string
+  grant_status: MessagingGrantStatus
+  can_send: boolean
+  unread_count: number
+  last_message?: string
+  last_message_at?: string
+}
+
+export interface PatientDoctorConversation extends PatientDoctorConversationSummary {
+  conversation_id: string
+  messages: PatientDoctorMessage[]
+}
+
+export interface PatientAccessEvent {
+  id: string
+  grant_id?: string
+  patient_id: string
+  patient_name?: string
+  doctor_id: string
+  doctor_name?: string
+  actor_id: string
+  actor_name?: string
+  event_type: string
+  occurred_at: string
+}
+
+export interface DoctorPatientProfile {
+  patient_id: string
+  patient_name: string
+  latest_record?: PatientRecord | null
+  records: PatientRecord[]
+  medications: PatientMedication[]
+  interactions: DoctorInteraction[]
+}
+
+export interface DoctorPatientListItem {
+  patient_id: string
+  patient_name: string
+  latest_record?: PatientRecord | null
+}
+
 export interface PatientRecordCreate {
   age: number
   gender: string

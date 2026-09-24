@@ -18,6 +18,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { User, Mail, Calendar, Shield, Save, Lock } from "lucide-react";
 import { toast } from "sonner";
 import type { User as UserType } from "@/lib/api";
+import { PatientSharingPanel } from "@/features/sharing/components/patient-sharing-panel";
 
 function ProfileContent({ user, refreshUser }: { user: UserType; refreshUser: () => Promise<void> }) {
   const [isUpdating, setIsUpdating] = useState(false);
@@ -71,7 +72,7 @@ function ProfileContent({ user, refreshUser }: { user: UserType; refreshUser: ()
   };
 
   return (
-    <div className="flex items-center justify-center min-h-[60vh]">
+    <div className="mx-auto flex w-full max-w-3xl flex-col items-stretch gap-6 py-8">
       <div>
         <h1 className="text-2xl font-bold text-foreground">Profile Settings</h1>
         <p className="text-muted-foreground">
@@ -235,6 +236,8 @@ function ProfileContent({ user, refreshUser }: { user: UserType; refreshUser: ()
           </form>
         </CardContent>
       </Card>
+
+      {user.role === "user" && <PatientSharingPanel />}
     </div>
   );
 }

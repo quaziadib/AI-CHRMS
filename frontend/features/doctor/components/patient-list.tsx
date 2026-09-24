@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { Users, CheckCircle, AlertTriangle, XCircle, ChevronRight, Calendar } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { formatDate } from '@/lib/utils'
-import type { PatientRecord } from '@/lib/api'
+import type { DoctorPatientListItem } from '@/lib/api'
 
 const RISK_BADGE = {
   low: { label: 'Low', icon: CheckCircle, cls: 'text-green-600 bg-green-50' },
@@ -13,7 +13,7 @@ const RISK_BADGE = {
 }
 
 interface Props {
-  patients: PatientRecord[]
+  patients: DoctorPatientListItem[]
   isLoading: boolean
 }
 
@@ -25,9 +25,9 @@ export function PatientList({ patients, isLoading }: Props) {
       <Card>
         <CardContent className="flex flex-col items-center justify-center py-16">
           <Users className="h-12 w-12 text-muted-foreground mb-4" />
-          <p className="font-medium">No patients assigned</p>
+          <p className="font-medium">No patients have shared access</p>
           <p className="text-sm text-muted-foreground mt-1">
-            Ask an administrator to assign patients to your account.
+            Patients will appear here after they grant you access and you accept their request.
           </p>
         </CardContent>
       </Card>
@@ -36,28 +36,27 @@ export function PatientList({ patients, isLoading }: Props) {
 
   return (
     <div className="space-y-2">
-      {patients.map((record) => {
-        const risk = record.risk_level
+      {patients.map((patient) => {
+        const record = patient.latest_record
+        const risk = record?.risk_level
           ? RISK_BADGE[record.risk_level as keyof typeof RISK_BADGE]
           : null
         const RiskIcon = risk?.icon
 
         return (
-          <Link key={record.id} href={`/doctor/patients/${record.id}`}>
+          <Link key={patient.patient_id} href={`/doctor/patients/${patient.patient_id}`}>
             <Card className="hover:bg-muted/50 transition-colors cursor-pointer">
               <CardContent className="py-4 px-5">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
                     <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary font-semibold">
-                      {(record.patient_name ?? 'P').charAt(0).toUpperCase()}
+                      {patient.patient_name.charAt(0).toUpperCase()}
                     </div>
                     <div>
-                      <p className="font-medium">{record.patient_name ?? record.pid}</p>
+                      <p className="font-medium">{patient.patient_name}</p>
                       <div className="flex items-center gap-3 text-sm text-muted-foreground mt-0.5">
-                        <span>{record.age} yrs, {record.gender}</span>
-                        <span>•</span>
-                        <span>{record.district}</span>
-                        {record.hemoglobin != null && (
+                        {record ? <><span>{record.age} yrs, {record.gender}</span><span>•</span><span>{record.district}</span></> : <span>No health assessment on file</span>}
+                        {record?.hemoglobin != null && (
                           <>
                             <span>•</span>
                             <span>HbA1c {record.hemoglobin} g/dL</span>
@@ -73,10 +72,7 @@ export function PatientList({ patients, isLoading }: Props) {
                         {risk.label}
                       </span>
                     )}
-                    <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                      <Calendar className="h-3 w-3" />
-                      {formatDate(record.created_at)}
-                    </div>
+                    {record && <div className="flex items-center gap-1 text-xs text-muted-foreground"><Calendar className="h-3 w-3" />{formatDate(record.created_at)}</div>}
                     <ChevronRight className="h-4 w-4 text-muted-foreground" />
                   </div>
                 </div>

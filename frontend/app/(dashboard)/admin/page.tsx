@@ -8,6 +8,7 @@ import { StatsCards } from '@/features/admin/components/stats-cards'
 import { UsersTab } from '@/features/admin/components/users-tab'
 import { RecordsTab } from '@/features/admin/components/records-tab'
 import { SettingsTab } from '@/features/admin/components/settings-tab'
+import { AccessHistoryTab } from '@/features/admin/components/access-history-tab'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Spinner } from '@/components/ui/spinner'
@@ -19,7 +20,7 @@ import type { SystemSettings } from '@/lib/api'
 export default function AdminPage() {
   const { user, isLoading: authLoading } = useAuth()
   const router = useRouter()
-  const [activeTab, setActiveTab] = useState<'users' | 'records' | 'settings'>('users')
+  const [activeTab, setActiveTab] = useState<'users' | 'records' | 'access' | 'settings'>('users')
   const [searchTerm, setSearchTerm] = useState('')
   const [systemSettings, setSystemSettings] = useState<SystemSettings | null>(null)
 
@@ -91,6 +92,13 @@ export default function AdminPage() {
           Records ({records.length})
         </Button>
         <Button
+          variant={activeTab === 'access' ? 'default' : 'ghost'}
+          onClick={() => setActiveTab('access')}
+          className="rounded-b-none"
+        >
+          Patient Access History
+        </Button>
+        <Button
           variant={activeTab === 'settings' ? 'default' : 'ghost'}
           onClick={() => setActiveTab('settings')}
           className="rounded-b-none"
@@ -105,7 +113,7 @@ export default function AdminPage() {
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder={activeTab === 'users' ? 'Search users by name or email...' : 'Search by user name, email, or PID...'}
+            placeholder={activeTab === 'users' ? 'Search users by name or email...' : activeTab === 'access' ? 'Search by patient, doctor, actor, or event...' : 'Search by user name, email, or PID...'}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="pl-10"
@@ -133,7 +141,7 @@ export default function AdminPage() {
           onStatusChange={handleStatusChange}
           searchQuery={searchTerm}
         />
-      ) : (
+      ) : activeTab === 'records' ? (
         <RecordsTab
           records={records}
           users={users}
@@ -142,6 +150,8 @@ export default function AdminPage() {
           searchQuery={searchTerm}
           onAssignDoctor={handleAssignDoctor}
         />
+      ) : (
+        <AccessHistoryTab searchQuery={searchTerm} />
       )}
     </div>
   )
