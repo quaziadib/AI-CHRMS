@@ -1,7 +1,7 @@
 'use client'
 
-import { useState } from 'react'
-import { Salad, Dumbbell, RefreshCw, ChevronDown, ChevronUp, CalendarDays } from 'lucide-react'
+import { useRef, useState } from 'react'
+import { Salad, Dumbbell, RefreshCw, ChevronDown, ChevronUp, CalendarDays, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -21,15 +21,28 @@ interface PersonalizedPlanWidgetProps {
 
 export function PersonalizedPlanWidget({ record, onUpdated }: PersonalizedPlanWidgetProps) {
   const [expanded, setExpanded] = useState(false)
+  const [isGenerating, setIsGenerating] = useState(false)
+  const generationInFlight = useRef(false)
   const plan = record.personalized_plan
 
   const handleGenerate = async () => {
-    const { data, error } = await recordsApi.generatePlan(record.id)
-    if (data && !error) {
-      toast.success('Personalized plan generated')
-      onUpdated?.(data)
-    } else {
-      toast.error(error || 'Failed to generate plan')
+    if (generationInFlight.current) return
+
+    generationInFlight.current = true
+    setIsGenerating(true)
+    try {
+      const { data, error } = await recordsApi.generatePlan(record.id)
+      if (data && !error) {
+        toast.success('Personalized plan generated')
+        onUpdated?.(data)
+      } else {
+        toast.error(error || 'Failed to generate plan')
+      }
+    } catch {
+      toast.error('Could not generate the plan. Please try again.')
+    } finally {
+      generationInFlight.current = false
+      setIsGenerating(false)
     }
   }
 
@@ -41,9 +54,9 @@ export function PersonalizedPlanWidget({ record, onUpdated }: PersonalizedPlanWi
           <p className="text-sm text-muted-foreground max-w-sm">
             AI-generated weekly meal and exercise plan based on your assessment.
           </p>
-          <Button onClick={handleGenerate} disabled={!record.risk_level} className="gap-2">
-            <RefreshCw className="h-4 w-4" />
-            Generate Plan
+          <Button onClick={handleGenerate} disabled={!record.risk_level || isGenerating} className="gap-2" aria-busy={isGenerating}>
+            {isGenerating ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
+            {isGenerating ? 'Generating…' : 'Generate Plan'}
           </Button>
         </CardContent>
       </Card>
@@ -58,9 +71,9 @@ export function PersonalizedPlanWidget({ record, onUpdated }: PersonalizedPlanWi
             <CalendarDays className="h-4 w-4 text-primary" />
             Your Weekly Plan
           </CardTitle>
-          <Button variant="outline" size="sm" onClick={handleGenerate} className="gap-1">
-            <RefreshCw className="h-3 w-3" />
-            Refresh
+          <Button variant="outline" size="sm" onClick={handleGenerate} disabled={isGenerating} className="gap-1" aria-busy={isGenerating}>
+            {isGenerating ? <Loader2 className="h-3 w-3 animate-spin" /> : <RefreshCw className="h-3 w-3" />}
+            {isGenerating ? 'Generating…' : 'Refresh'}
           </Button>
         </div>
       </CardHeader>

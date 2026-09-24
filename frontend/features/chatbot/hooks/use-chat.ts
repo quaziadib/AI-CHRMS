@@ -22,16 +22,11 @@ export function useChat({ enabled = true }: { enabled?: boolean } = {}) {
   const [isLoading, setIsLoading] = useState(false)
   const [historyLoaded, setHistoryLoaded] = useState(false)
   const [historyFailed, setHistoryFailed] = useState(false)
-  // Derive loading so the first open paint shows the skeleton (not the welcome bubble)
-  // before the effect runs. Clear failure on reopen so the next open can retry.
+  // Derive initial loading so the first open paint shows the skeleton before the effect runs.
   const isLoadingHistory = Boolean(enabled && !historyLoaded && !historyFailed)
 
   useEffect(() => {
-    if (!enabled) {
-      // Reset so the next open shows the skeleton immediately and retries on failure
-      setHistoryFailed(false)
-      return
-    }
+    if (!enabled) return
     if (historyLoaded) return
 
     let cancelled = false

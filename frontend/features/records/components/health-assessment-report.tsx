@@ -22,7 +22,6 @@ import {
   RISK_META,
   type RiskLevel,
   isStructuredRecs,
-  essence,
   summarizeTip,
   summaryLine,
   getVitalHighlights,
@@ -55,7 +54,6 @@ export function HealthAssessmentReport({
   compact = false,
   showTitle = !compact,
 }: HealthAssessmentReportProps) {
-  const [expandedInsight, setExpandedInsight] = useState(false)
   const [expandedRecs, setExpandedRecs] = useState(false)
 
   if (!record.risk_level) {
@@ -73,9 +71,6 @@ export function HealthAssessmentReport({
   const RiskIcon = RISK_ICONS[level]
   const vitals = getVitalHighlights(record)
   const recs = record.recommendations
-  const insightShort = record.risk_explanation ? essence(record.risk_explanation) : ''
-  const insightFull = record.risk_explanation ?? ''
-  const showFullInsight = expandedInsight || insightShort === insightFull
   const tipsPerCategory = expandedRecs ? 3 : 1
   const summaryWords = compact ? 8 : 10
 
@@ -96,8 +91,8 @@ export function HealthAssessmentReport({
       )}
 
       {/* Risk + vitals hero */}
-      <div className={cn('grid gap-4', compact ? 'grid-cols-1' : 'lg:grid-cols-5')}>
-        <Card className={cn('border-2 lg:col-span-2', meta.bg)}>
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-4">
+        <Card className={cn('border-2 lg:col-span-1', meta.bg)}>
           <CardContent className="pt-6 pb-5">
             <div className="flex items-start gap-4">
               <div className={cn('rounded-full p-3 bg-background/80', meta.color)}>
@@ -115,7 +110,7 @@ export function HealthAssessmentReport({
           </CardContent>
         </Card>
 
-        <div className={cn('grid grid-cols-2 gap-2', compact ? '' : 'lg:col-span-3 lg:grid-cols-4')}>
+        <div className="grid grid-cols-2 gap-2 lg:col-span-3 lg:grid-cols-2">
           {vitals.map((v) => (
             <div
               key={v.label}
@@ -127,34 +122,6 @@ export function HealthAssessmentReport({
           ))}
         </div>
       </div>
-
-      {/* AI insight — short by default */}
-      {insightFull && (
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">What this means</CardTitle>
-          </CardHeader>
-          <CardContent className="pt-0">
-            <p className="text-sm leading-relaxed">
-              {showFullInsight ? insightFull : insightShort}
-            </p>
-            {insightShort !== insightFull && (
-              <Button
-                variant="ghost"
-                size="sm"
-                className="mt-2 h-8 px-2 text-primary"
-                onClick={() => setExpandedInsight((v) => !v)}
-              >
-                {expandedInsight ? (
-                  <>Show less <ChevronUp className="ml-1 h-3 w-3" /></>
-                ) : (
-                  <>Read more <ChevronDown className="ml-1 h-3 w-3" /></>
-                )}
-              </Button>
-            )}
-          </CardContent>
-        </Card>
-      )}
 
       {/* Action suggestions — compact summaries */}
       {recs && isStructuredRecs(recs) && (

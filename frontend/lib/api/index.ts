@@ -10,7 +10,7 @@ export { nationalApi } from './national'
 export type {
   User, PatientRecord, PatientRecordCreate, AuditLog, AdminStats, ApiResponse,
   RecommendationsOutput, RecommendationCategories, ResubmitStatus, HealthTrends,
-  SystemSettings, PersonalizedPlan, ForecastJob,
+  SystemSettings, PersonalizedPlan, ForecastJob, ForecastPoint, ForecastResult,
   DoctorOption, PatientGrant, PatientGrantStatus, PatientMedication, DoctorInteraction,
   PatientAccessEvent, DoctorPatientProfile, DoctorPatientListItem,
   PatientDoctorMessage, PatientDoctorConversationSummary, PatientDoctorConversation, MessagingGrantStatus,

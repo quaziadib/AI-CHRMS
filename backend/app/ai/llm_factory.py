@@ -41,7 +41,7 @@ def get_llm(*, max_tokens: int = 1024) -> BaseChatModel:
             raise RuntimeError("LLM provider not configured: GROQ_API_KEY missing")
         from langchain_openai import ChatOpenAI
         return ChatOpenAI(
-            model=settings.LLM_MODEL or "llama-3.3-70b-versatile",
+            model=settings.LLM_MODEL or "openai/gpt-oss-120b",
             api_key=settings.GROQ_API_KEY,
             base_url="https://api.groq.com/openai/v1",
             max_tokens=max_tokens,
