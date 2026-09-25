@@ -14,6 +14,8 @@ This Blueprint runs the Next.js frontend, FastAPI backend, Celery worker, and Re
 
    Use the exact host, username, and URL shown by Supabase. Do not use the transaction pooler on port `6543` for the Render services.
 
+This app uses FastAPI/JWT for authentication and SQLAlchemy for database access. The Supabase Auth/Data API quickstart's `@supabase/ssr` helpers, browser client, project URL, and publishable key are not required for this deployment. Do not add a second frontend auth session unless intentionally migrating authentication to Supabase.
+
 ## 2. Create the Render services
 
 Connect this repository to Render as a **Blueprint** and use the repository root `render.yaml`. The Blueprint creates:
