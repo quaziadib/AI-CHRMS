@@ -27,10 +27,16 @@ export function useAdmin() {
     })
   }, [])
 
-  const handleRoleChange = async (userId: string, newRole: 'user' | 'admin') => {
-    const { error } = await adminApi.updateUser(userId, { roles: [newRole] })
+  const handleRoleChange = async (
+    userId: string,
+    newRole: 'user' | 'doctor' | 'national_admin' | 'admin',
+  ) => {
+    const roles = newRole === 'admin' ? ['admin', 'user'] : [newRole]
+    const { error } = await adminApi.updateUser(userId, { roles })
     if (!error) {
-      setUsers(users.map(u => u.id === userId ? { ...u, roles: [newRole] } : u))
+      const nextUsers = users.map(u => u.id === userId ? { ...u, roles } : u)
+      setUsers(nextUsers)
+      setDoctors(nextUsers.filter(u => u.roles.includes('doctor')))
       toast.success('User role updated')
     } else {
       toast.error('Failed to update role')

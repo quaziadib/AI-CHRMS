@@ -41,11 +41,13 @@ function getPrimaryRole(roles: string[]): string {
   return 'user'
 }
 
+type AssignableRole = 'user' | 'doctor' | 'national_admin' | 'admin'
+
 interface Props {
   users: User[]
   isLoading: boolean
   currentUserId: string
-  onRoleChange: (userId: string, newRole: 'user' | 'admin') => void
+  onRoleChange: (userId: string, newRole: AssignableRole) => void
   onStatusChange: (userId: string, isActive: boolean) => void
   searchQuery: string
 }
@@ -144,15 +146,17 @@ export function UsersTab({
                   <div className="space-y-1">
                     <p className="text-sm text-muted-foreground">Role</p>
                     <Select
-                      value={u.roles.includes('admin') ? 'admin' : 'user'}
-                      onValueChange={(value) => onRoleChange(u.id, value as 'user' | 'admin')}
+                      value={primaryRole}
+                      onValueChange={(value) => onRoleChange(u.id, value as AssignableRole)}
                       disabled={u.id === currentUserId}
                     >
-                      <SelectTrigger className="w-32">
+                      <SelectTrigger className="w-44">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="user">Patient</SelectItem>
+                        <SelectItem value="doctor">Doctor</SelectItem>
+                        <SelectItem value="national_admin">National Admin</SelectItem>
                         <SelectItem value="admin">Admin</SelectItem>
                       </SelectContent>
                     </Select>
