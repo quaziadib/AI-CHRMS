@@ -68,6 +68,7 @@ until curl -fsS "http://127.0.0.1:${BACKEND_PORT}/health" >/dev/null 2>&1; do
   fi
   if [ $((i % 10)) -eq 0 ]; then
     echo "Waiting for API health… (${i}s)"
+    dump_api_log
   fi
   sleep 1
 done

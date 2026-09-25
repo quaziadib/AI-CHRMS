@@ -4,8 +4,6 @@ from typing import Optional
 
 from fastapi import APIRouter, HTTPException, status
 
-from app.ai.ehr_summary_chain import run_ehr_summary_chain
-from app.ai.embedding_service import embed_record
 from app.api.deps import DB, DoctorUser
 from app.core.config import settings
 from app.models.record import PatientRecord
@@ -62,6 +60,7 @@ def summarize_patient_ehr(patient_id: str, doctor: DoctorUser, db: DB):
     sharing_service.record_profile_event(db, grant, doctor.id, "ehr_summary_requested")
 
     try:
+        from app.ai.ehr_summary_chain import run_ehr_summary_chain
         summary = run_ehr_summary_chain(record)
     except Exception:
         logger.exception("EHR summary chain failed for patient %s", patient_id)
@@ -75,6 +74,7 @@ def summarize_patient_ehr(patient_id: str, doctor: DoctorUser, db: DB):
     log_audit(db, doctor.id, "ehr_summary_generated", "patient_record", record.id)
 
     try:
+        from app.ai.embedding_service import embed_record
         embed_record(record, db)
     except Exception:
         logger.exception("Failed to embed record %s after EHR summary", record.id)

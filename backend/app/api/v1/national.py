@@ -2,8 +2,6 @@ from fastapi import APIRouter, HTTPException, Query, Response, status
 
 from app.api.deps import DB, NationalAdminUser
 from app.core.config import settings
-from app.ai.pattern_discovery_chain import run_pattern_discovery
-from app.ai.individual_predictor_chain import run_individual_prediction
 from app.schemas.national import (
     DemographicsChartResponse,
     DivisionForecastRequest,
@@ -104,6 +102,7 @@ def predict_individual(body: IndividualPredictRequest, user: NationalAdminUser):
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail="National individual predictor is disabled",
         )
+    from app.ai.individual_predictor_chain import run_individual_prediction
     result = run_individual_prediction(
         age=body.age,
         gender=body.gender,
@@ -273,6 +272,7 @@ def discover_patterns(user: NationalAdminUser, db: DB):
             insufficient_data=True,
         )
 
+    from app.ai.pattern_discovery_chain import run_pattern_discovery
     result = run_pattern_discovery(aggregates)
     log_audit(
         db,

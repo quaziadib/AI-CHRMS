@@ -4,10 +4,6 @@ from datetime import datetime, timezone
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
-from app.ai.embedding_service import embed_record
-from app.ai.plans_chain import run_personalized_plan_chain
-from app.ai.recommendations_chain import run_recommendations_chain
-from app.ai.risk_chain import run_risk_chain
 from app.core.config import settings
 from app.core.security import generate_pid
 from app.models.record import PatientRecord
@@ -22,6 +18,7 @@ logger = logging.getLogger(__name__)
 
 def _maybe_embed_record(db: Session, record: PatientRecord) -> None:
     try:
+        from app.ai.embedding_service import embed_record
         embed_record(record, db)
     except Exception:
         logger.exception("Failed to embed record %s", record.id)
@@ -31,6 +28,7 @@ def _maybe_generate_plan(db: Session, record: PatientRecord, user_id: str, recor
     if not settings.ENABLE_PERSONALIZED_PLANS or not record.risk_level:
         return
     try:
+        from app.ai.plans_chain import run_personalized_plan_chain
         plan = run_personalized_plan_chain(record)
         record.personalized_plan = plan.model_dump()
         record.personalized_plan_at = datetime.now(timezone.utc)
@@ -126,6 +124,7 @@ def update_record(
     log_audit(db, user_id, "update_record", "patient_record", record_id)
     risk_scored = False
     try:
+        from app.ai.risk_chain import run_risk_chain
         assessment = run_risk_chain(record)
         record.risk_level = assessment.risk_level
         record.risk_explanation = assessment.explanation
@@ -138,6 +137,7 @@ def update_record(
         pass
     if risk_scored and settings.ENABLE_RECOMMENDATIONS:
         try:
+            from app.ai.recommendations_chain import run_recommendations_chain
             recs = run_recommendations_chain(record)
             record.recommendations = recs.model_dump()
             db.commit()
@@ -168,6 +168,7 @@ def score_record(
     record = _get_record_or_404(db, record_id)
     _check_ownership(record, user_id, roles)
     try:
+        from app.ai.risk_chain import run_risk_chain
         assessment = run_risk_chain(record)
     except RuntimeError as exc:
         raise HTTPException(status_code=500, detail=str(exc))
@@ -182,6 +183,7 @@ def score_record(
     log_audit(db, user_id, "risk_scored", "patient_record", record_id)
     if settings.ENABLE_RECOMMENDATIONS:
         try:
+            from app.ai.recommendations_chain import run_recommendations_chain
             recs = run_recommendations_chain(record)
             record.recommendations = recs.model_dump()
             db.commit()
@@ -202,6 +204,7 @@ def recommend_record(
     record = _get_record_or_404(db, record_id)
     _check_ownership(record, user_id, roles)
     try:
+        from app.ai.recommendations_chain import run_recommendations_chain
         recs = run_recommendations_chain(record)
     except RuntimeError as exc:
         raise HTTPException(status_code=500, detail=str(exc))
@@ -223,6 +226,7 @@ def generate_plan_record(
     if not record.risk_level:
         raise HTTPException(status_code=400, detail="Risk assessment required before generating a plan")
     try:
+        from app.ai.plans_chain import run_personalized_plan_chain
         plan = run_personalized_plan_chain(record)
     except RuntimeError as exc:
         raise HTTPException(status_code=500, detail=str(exc))

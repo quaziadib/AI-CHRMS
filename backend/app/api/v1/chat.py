@@ -4,8 +4,6 @@ from datetime import datetime
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 
-from app.ai.embedding_service import ensure_embeddings_for_user
-from app.ai.rag_chain import run_rag_chat_chain
 from app.api.deps import CurrentUser, DB
 from app.core.config import settings
 from app.models.conversation import ConversationMessage
@@ -73,6 +71,9 @@ def chat(body: ChatRequest, current_user: CurrentUser, db: DB):
     )
     db.add(user_msg)
     db.commit()
+
+    from app.ai.embedding_service import ensure_embeddings_for_user
+    from app.ai.rag_chain import run_rag_chat_chain
 
     ensure_embeddings_for_user(current_user.id, db)
 

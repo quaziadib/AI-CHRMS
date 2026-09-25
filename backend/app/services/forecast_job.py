@@ -8,7 +8,6 @@ from sqlalchemy.orm import Session
 from app.core.config import settings
 from app.models.forecast_job import ForecastJob
 from app.models.record import PatientRecord
-from app.tasks.forecast import run_forecast_job
 
 logger = logging.getLogger(__name__)
 
@@ -47,6 +46,7 @@ def enqueue_forecast(
     db.refresh(job)
 
     try:
+        from app.tasks.forecast import run_forecast_job
         run_forecast_job.delay(job.id)
     except Exception:
         if os.environ.get("VERCEL"):
@@ -56,6 +56,7 @@ def enqueue_forecast(
             job.completed_at = datetime.now(timezone.utc)
         else:
             logger.exception("Failed to enqueue forecast job %s — running synchronously", job.id)
+            from app.tasks.forecast import run_forecast_job
             run_forecast_job(job.id)
         db.refresh(job)
 

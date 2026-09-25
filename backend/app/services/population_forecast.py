@@ -6,8 +6,6 @@ from sqlalchemy import func, or_
 from sqlalchemy.orm import Session
 
 from app.models.population_forecast import PopulationForecastJob
-from app.tasks.population_forecast import run_population_forecast_job
-from app.tasks.epidemic_forecast import run_epidemic_forecast_job
 
 logger = logging.getLogger(__name__)
 
@@ -51,6 +49,7 @@ def enqueue_population_forecast(db: Session, user_id: str) -> PopulationForecast
     db.refresh(job)
 
     try:
+        from app.tasks.population_forecast import run_population_forecast_job
         run_population_forecast_job.delay(job.id)
     except Exception:
         if os.environ.get("VERCEL"):
@@ -62,6 +61,7 @@ def enqueue_population_forecast(db: Session, user_id: str) -> PopulationForecast
             logger.exception(
                 "Failed to enqueue population forecast job %s — running synchronously", job.id
             )
+            from app.tasks.population_forecast import run_population_forecast_job
             run_population_forecast_job(job.id)
         db.refresh(job)
 
@@ -79,6 +79,7 @@ def enqueue_epidemic_forecast(db: Session, user_id: str) -> PopulationForecastJo
     db.refresh(job)
 
     try:
+        from app.tasks.epidemic_forecast import run_epidemic_forecast_job
         run_epidemic_forecast_job.delay(job.id)
     except Exception:
         if os.environ.get("VERCEL"):
@@ -90,6 +91,7 @@ def enqueue_epidemic_forecast(db: Session, user_id: str) -> PopulationForecastJo
             logger.exception(
                 "Failed to enqueue epidemic forecast job %s — running synchronously", job.id
             )
+            from app.tasks.epidemic_forecast import run_epidemic_forecast_job
             run_epidemic_forecast_job(job.id)
         db.refresh(job)
 
