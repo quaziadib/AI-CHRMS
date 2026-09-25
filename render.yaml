@@ -1,11 +1,11 @@
 services:
-  # Public app server. Browser API calls go through the frontend's same-origin
-  # /v1 rewrite, while the API remains available at this service URL for health checks.
+  # Free-plan API. Frontend rewrites reach this through its public Render URL,
+  # because free web services do not receive private-network traffic.
   - type: web
     name: ai-chrms-backend
     runtime: docker
     region: singapore
-    plan: 0.5c-512mb
+    plan: free
     dockerfilePath: ./backend/Dockerfile
     dockerContext: ./backend
     healthCheckPath: /health
@@ -34,105 +34,28 @@ services:
         value: "false"
       - key: SEED_SYNTHETIC_DATA
         value: "false"
+      # Render's free tier has no free background workers. Keep async features
+      # disabled so their API endpoints fail clearly instead of queuing forever.
+      - key: ENABLE_FORECASTING
+        value: "false"
+      - key: ENABLE_POPULATION_FORECASTING
+        value: "false"
       - key: ADMIN_EMAIL
         sync: false
       - key: ADMIN_PASSWORD
         sync: false
       - key: CORS_ORIGINS
         value: "[]"
-      - key: LLM_PROVIDER
-        value: groq
-      - key: GROQ_API_KEY
-        sync: false
       - key: ENABLE_CHATBOT
         value: "false"
       - key: ENABLE_RAG
         value: "false"
-      - key: CELERY_BROKER_URL
-        fromService:
-          type: keyvalue
-          name: ai-chrms-redis
-          property: connectionString
-
-  - type: worker
-    name: ai-chrms-worker
-    runtime: docker
-    region: singapore
-    plan: 0.5c-512mb
-    dockerfilePath: ./backend/Dockerfile
-    dockerContext: ./backend
-    dockerCommand: celery -A app.celery_app worker --loglevel=info
-    envVars:
-      - key: APP_ENV
-        value: production
-      - key: DEBUG
-        value: "false"
-      - key: DATABASE_URL
-        fromService:
-          type: web
-          name: ai-chrms-backend
-          envVarKey: DATABASE_URL
-      - key: JWT_SECRET_KEY
-        fromService:
-          type: web
-          name: ai-chrms-backend
-          envVarKey: JWT_SECRET_KEY
-      - key: JWT_ALGORITHM
-        value: HS256
-      - key: ACCESS_TOKEN_EXPIRE_MINUTES
-        value: "15"
-      - key: REFRESH_TOKEN_EXPIRE_DAYS
-        value: "7"
-      - key: DB_POOL_SIZE
-        value: "3"
-      - key: DB_MAX_OVERFLOW
-        value: "0"
-      - key: DB_INIT_ON_STARTUP
-        value: "false"
-      - key: SEED_DEMO_USERS
-        value: "false"
-      - key: SEED_SYNTHETIC_DATA
-        value: "false"
-      - key: ADMIN_EMAIL
-        fromService:
-          type: web
-          name: ai-chrms-backend
-          envVarKey: ADMIN_EMAIL
-      - key: ADMIN_PASSWORD
-        fromService:
-          type: web
-          name: ai-chrms-backend
-          envVarKey: ADMIN_PASSWORD
-      - key: LLM_PROVIDER
-        value: groq
-      - key: GROQ_API_KEY
-        fromService:
-          type: web
-          name: ai-chrms-backend
-          envVarKey: GROQ_API_KEY
-      - key: ENABLE_CHATBOT
-        value: "false"
-      - key: ENABLE_RAG
-        value: "false"
-      - key: CELERY_BROKER_URL
-        fromService:
-          type: keyvalue
-          name: ai-chrms-redis
-          property: connectionString
-
-  - type: keyvalue
-    name: ai-chrms-redis
-    region: singapore
-    plan: 256mb
-    maxmemoryPolicy: noeviction
-    persistenceMode: journal-snapshot
-    ipAllowList: []
 
   - type: web
     name: ai-chrms-frontend
     runtime: docker
     region: singapore
-    plan: 0.5c-512mb
+    plan: free
     dockerfilePath: ./frontend/Dockerfile
     dockerContext: ./frontend
     envVars:
@@ -140,6 +63,6 @@ services:
         fromService:
           type: web
           name: ai-chrms-backend
-          property: hostport
+          envVarKey: RENDER_EXTERNAL_URL
       - key: NEXT_PUBLIC_DEMO_MODE
         value: "false"
