@@ -46,6 +46,12 @@ services:
         sync: false
       - key: CORS_ORIGINS
         value: "[]"
+      - key: LLM_PROVIDER
+        value: groq
+      - key: LLM_MODEL
+        value: llama-3.3-70b-versatile
+      - key: GROQ_API_KEY
+        sync: false
       - key: ENABLE_CHATBOT
         value: "false"
       - key: ENABLE_RAG
