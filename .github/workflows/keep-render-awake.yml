@@ -1,11 +1,9 @@
-# Ping both free Render services so they tend to wake / stay up together.
-# Free instance hours are limited — disable this workflow if you upgrade to paid
-# always-on plans or if you hit the monthly hour cap.
+# Ping the combined free Render service so cold starts are less common.
+# Free instance hours are limited — disable this workflow on paid always-on plans.
 name: Keep Render awake
 
 on:
   schedule:
-    # Every 12 minutes (Render free sleeps after ~15m idle)
     - cron: '*/12 * * * *'
   workflow_dispatch:
 
@@ -14,21 +12,17 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - name: Wake backend and frontend
+      - name: Wake combined app
         env:
-          BACKEND_URL: ${{ vars.RENDER_BACKEND_URL }}
-          FRONTEND_URL: ${{ vars.RENDER_FRONTEND_URL }}
+          APP_URL: ${{ vars.RENDER_APP_URL }}
         run: |
           set -euo pipefail
-          BACKEND_URL="${BACKEND_URL:-https://ai-chrms-backend.onrender.com}"
-          FRONTEND_URL="${FRONTEND_URL:-https://ai-chrms-frontend.onrender.com}"
+          APP_URL="${APP_URL:-https://ai-chrms.onrender.com}"
 
-          echo "Pinging backend health…"
-          curl -fsS --max-time 90 "$BACKEND_URL/health" || true
+          echo "Pinging $APP_URL/health …"
+          curl -fsS --max-time 90 "$APP_URL/health" || true
 
-          echo "Pinging frontend (wakes API via /backend-health)…"
-          curl -fsS --max-time 90 "$FRONTEND_URL/backend-health" \
-            || curl -fsS --max-time 90 "$FRONTEND_URL/" \
-            || true
+          echo "Pinging $APP_URL/ …"
+          curl -fsS --max-time 90 "$APP_URL/" || true
 
           echo "Done."

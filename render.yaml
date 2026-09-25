@@ -1,13 +1,14 @@
 services:
-  # Free-plan API. Frontend rewrites reach this through its public Render URL,
-  # because free web services do not receive private-network traffic.
+  # One free web service runs Next.js + FastAPI together so they sleep/wake
+  # as a single unit. Split frontend/backend services on free tier leave the
+  # UI up while the API is still cold.
   - type: web
-    name: ai-chrms-backend
+    name: ai-chrms
     runtime: docker
     region: singapore
     plan: free
-    dockerfilePath: ./backend/Dockerfile
-    dockerContext: ./backend
+    dockerfilePath: ./deploy/render/Dockerfile
+    dockerContext: .
     healthCheckPath: /health
     envVars:
       - key: APP_ENV
@@ -34,8 +35,6 @@ services:
         value: "false"
       - key: SEED_SYNTHETIC_DATA
         value: "false"
-      # Render's free tier has no free background workers. Keep async features
-      # disabled so their API endpoints fail clearly instead of queuing forever.
       - key: ENABLE_FORECASTING
         value: "false"
       - key: ENABLE_POPULATION_FORECASTING
@@ -56,19 +55,7 @@ services:
         value: "false"
       - key: ENABLE_RAG
         value: "false"
-
-  - type: web
-    name: ai-chrms-frontend
-    runtime: docker
-    region: singapore
-    plan: free
-    dockerfilePath: ./frontend/Dockerfile
-    dockerContext: ./frontend
-    envVars:
-      - key: BACKEND_URL
-        fromService:
-          type: web
-          name: ai-chrms-backend
-          envVarKey: RENDER_EXTERNAL_URL
       - key: NEXT_PUBLIC_DEMO_MODE
         value: "false"
+      - key: BACKEND_URL
+        value: http://127.0.0.1:8000

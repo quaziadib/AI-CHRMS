@@ -1,13 +1,20 @@
 # Free Render + Supabase deployment
 
-The root `render.yaml` is configured for a low-traffic demo on free tiers: a Next.js web service and FastAPI web service on Render, with Supabase Postgres. It does not create a Celery worker or Redis queue because Render does not offer free background workers. Forecast generation is disabled in this profile. Chatbot and RAG are also disabled.
+The root `render.yaml` deploys **one** free web service (`ai-chrms`) that runs Next.js and FastAPI in the same container. They share one sleep/wake cycle so the UI and API always come up together. Forecast/chatbot/RAG stay disabled (no free workers).
 
 ## Free-tier limits
 
-- Render free web services sleep after 15 minutes without traffic and can take about a minute to wake up. The frontend and backend sleep **independently**, so the UI can be up while the API is still cold.
-- Mitigations in this repo: the frontend calls `/backend-health` on load to wake the API, the API client retries on 502/503/504, and `.github/workflows/keep-render-awake.yml` pings both services every 12 minutes. Free instance hours are shared across the workspace — disable that workflow if you hit the monthly cap or move to paid always-on plans.
-- This profile disables forecasting because forecast jobs require a background worker. It is not a production configuration.
-- Supabase Free projects can pause after a period of low database activity. See [Supabase's project pausing policy](https://supabase.com/docs/guides/platform/free-project-pausing).
+- The combined service still sleeps after ~15 minutes idle and can take about a minute to wake. Free instance hours are shared across the workspace.
+- Split frontend/backend free services are **not** recommended: the UI can wake while the API is still cold.
+- Supabase Free projects can pause after low database activity. See [Supabase's project pausing policy](https://supabase.com/docs/guides/platform/free-project-pausing).
+
+## 0. Replace old split services (if you already deployed two)
+
+If you still have `ai-chrms-frontend` and `ai-chrms-backend`:
+
+1. Render Dashboard → delete both services (and the old Blueprint if any).
+2. Create a new Blueprint from this repo’s `render.yaml` (service name `ai-chrms`).
+3. Re-enter `DATABASE_URL`, `ADMIN_EMAIL`, `ADMIN_PASSWORD`, and `GROQ_API_KEY`.
 
 ## 1. Create the Supabase database
 
@@ -22,16 +29,15 @@ The root `render.yaml` is configured for a low-traffic demo on free tiers: a Nex
 
 The app uses FastAPI/JWT and SQLAlchemy for authentication and database access. Supabase Auth's browser client, project URL, and publishable key are not required.
 
-## 2. Create the Render services
+## 2. Create the Render service
 
-Connect this repository to Render as a Blueprint and select the root `render.yaml`. It creates two free web services:
+Connect this repository to Render as a Blueprint and select the root `render.yaml`. It creates:
 
 | Service | Purpose |
 |---------|---------|
-| `ai-chrms-frontend` | Next.js UI; proxies `/v1/*` to the API |
-| `ai-chrms-backend` | FastAPI API and `/health` endpoint |
+| `ai-chrms` | Next.js UI + FastAPI on one free instance |
 
-The frontend calls the backend through its public Render URL because free web services cannot receive private-network traffic. The URL is wired into `BACKEND_URL` by the Blueprint.
+Public URL looks like `https://ai-chrms.onrender.com`. Browser calls `/v1/*` on the same origin; Next proxies to FastAPI on `127.0.0.1:8000` inside the container.
 
 ## 3. Configure the secrets
 
@@ -42,33 +48,34 @@ The Blueprint generates `JWT_SECRET_KEY`. Enter these values when Render prompts
 | `DATABASE_URL` | Supabase Session pooler URL from step 1 |
 | `ADMIN_EMAIL` | Email address for the first admin |
 | `ADMIN_PASSWORD` | Unique password with at least 16 characters |
+| `GROQ_API_KEY` | Groq API key (risk scoring) |
 
-The free profile sets `SEED_DEMO_USERS=false`; demo accounts are not created. Chatbot, RAG, and forecast generation are disabled. Keep all credentials out of Git and chat.
+Keep credentials out of Git and chat. `LLM_PROVIDER` / `LLM_MODEL` default to Groq `openai/gpt-oss-120b`.
 
 ## 4. Initialize the database from your computer
 
-Render's free web services do not provide Shell/SSH access. From the repository, use the backend Python environment and set the same database URL and admin credentials that you entered in Render. A temporary JWT secret is sufficient for this one-time bootstrap; the backend uses Render's generated secret at runtime.
+Render's free web services do not provide Shell/SSH access. From the repository, use the backend Python environment and set the same database URL (and demo seed flags if you want demo logins).
 
 ```bash
 cd backend
 uv sync
-export APP_ENV=production
-export DEBUG=false
-export DB_INIT_ON_STARTUP=false
-export SEED_DEMO_USERS=false
-export SEED_SYNTHETIC_DATA=false
+export APP_ENV=development
 export DATABASE_URL='paste the Supabase Session pooler URL in your local terminal'
-export ADMIN_EMAIL='the admin email entered in Render'
-export ADMIN_PASSWORD='the admin password entered in Render'
+export ADMIN_EMAIL='admin@health.local'
+export ADMIN_PASSWORD='admin123'
 export JWT_SECRET_KEY="$(openssl rand -hex 32)"
+export SEED_DEMO_USERS=true
+export SEED_SYNTHETIC_DATA=true
 uv run python -m app.db.bootstrap
 unset DATABASE_URL ADMIN_EMAIL ADMIN_PASSWORD JWT_SECRET_KEY
 ```
 
-Run this once against the new database before signing in. Do not enable automatic database initialization in production.
+On the Render service, keep `SEED_DEMO_USERS=false` and `DB_INIT_ON_STARTUP=false` so the process can start; demo users come from this one-time bootstrap.
 
 ## 5. Deploy and verify
 
-Wait for both services to become healthy, visit the frontend URL, and sign in with the configured admin credentials. The backend health endpoint is `https://<backend-service>.onrender.com/health`.
+Wait for `ai-chrms` to become healthy, open the service URL, and sign in (e.g. `demo@health.local` / `demo123` after seeding). Health: `https://<service>.onrender.com/health`.
 
-For a deployment with forecasting, chatbot/RAG, and always-on services, use paid Render plans and restore the worker/queue configuration rather than this free profile.
+Optional: `.github/workflows/keep-render-awake.yml` pings the service every 12 minutes to reduce cold starts (uses free hours).
+
+For forecasting, chatbot/RAG, and always-on, use paid Render plans rather than this free profile.

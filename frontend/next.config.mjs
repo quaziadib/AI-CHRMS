@@ -18,6 +18,11 @@ const nextConfig = {
         source: '/v1/:path*',
         destination: `${backendUrl}/v1/:path*`,
       },
+      {
+        // Combined Render image and local proxy: expose API health on the UI origin
+        source: '/health',
+        destination: `${backendUrl}/health`,
+      },
     ]
   },
 }
