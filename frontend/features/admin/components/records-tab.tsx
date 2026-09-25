@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   FileText,
   ChevronDown,
@@ -30,6 +30,7 @@ import {
 } from '@/components/ui/record-sections'
 import { formatDate } from '@/lib/utils'
 import type { PatientRecord, User, RecommendationsOutput } from '@/lib/api'
+import { AdminPagination, ADMIN_PAGE_SIZE } from './admin-pagination'
 
 function isStructuredRecs(recs: unknown): recs is RecommendationsOutput {
   return typeof recs === 'object' && recs !== null && !Array.isArray(recs) && 'categories' in recs
@@ -46,6 +47,9 @@ interface Props {
 
 export function RecordsTab({ records, users, doctors, isLoading, searchQuery, onAssignDoctor }: Props) {
   const [expandedRecord, setExpandedRecord] = useState<string | null>(null)
+  const [page, setPage] = useState(1)
+
+  useEffect(() => setPage(1), [searchQuery])
 
   const RISK_BADGE = {
     low: { label: 'Low Risk', icon: CheckCircle, cls: 'text-green-600 bg-green-50' },
@@ -62,6 +66,9 @@ export function RecordsTab({ records, users, doctors, isLoading, searchQuery, on
       recordUser?.full_name.toLowerCase().includes(searchQuery.toLowerCase())
     )
   })
+  const totalPages = Math.max(1, Math.ceil(filteredRecords.length / ADMIN_PAGE_SIZE))
+  const currentPage = Math.min(page, totalPages)
+  const visibleRecords = filteredRecords.slice((currentPage - 1) * ADMIN_PAGE_SIZE, currentPage * ADMIN_PAGE_SIZE)
 
   if (isLoading) return null
 
@@ -78,7 +85,7 @@ export function RecordsTab({ records, users, doctors, isLoading, searchQuery, on
 
   return (
     <div className="space-y-3">
-      {filteredRecords.map((record) => {
+      {visibleRecords.map((record) => {
         const recordUser = users.find(u => u.id === record.user_id)
         return (
           <Card key={record.id} className="overflow-hidden">
@@ -172,6 +179,7 @@ export function RecordsTab({ records, users, doctors, isLoading, searchQuery, on
           </Card>
         )
       })}
+      <AdminPagination page={currentPage} totalItems={filteredRecords.length} onPageChange={setPage} />
     </div>
   )
 }

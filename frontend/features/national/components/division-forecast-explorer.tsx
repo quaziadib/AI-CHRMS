@@ -123,9 +123,6 @@ export function DivisionForecastExplorer({ divisions, scopeId, forecast, onScope
           </div>
 
           {series.every((region) => region.status === 'unavailable') ? <p className="text-sm text-muted-foreground">No division has enough unsuppressed annual history for this forecast scope.</p> : null}
-          <p className="text-sm text-muted-foreground">Urban/rural split unavailable: these records do not include a validated urban/rural classification.</p>
-          {result?.summary ? <p className="text-sm text-muted-foreground">{result.summary}</p> : null}
-          <p className="text-xs text-muted-foreground">Observed points come from annual scored submissions. {result?.minimum_cell_size ? `Years below ${result.minimum_cell_size} scored records are suppressed.` : 'Years below the configured threshold are suppressed.'} Projections are read from the saved forecast job; missing years remain blank.</p>
         </>
       )}
     </div>

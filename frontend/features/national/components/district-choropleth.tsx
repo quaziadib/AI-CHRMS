@@ -273,7 +273,6 @@ export function DistrictChoropleth({ data, selectedDivisionId, onSelectDivision,
         <Legend color="#e5e7eb" label="No mapped records" />
       </div>
 
-      <p className="text-xs text-muted-foreground">{data?.metric_basis}. Regions below {data?.minimum_cell_size ?? 'the configured threshold'} scored records are suppressed. No population denominator is available; exact record counts are intentionally omitted.</p>
       <p className="text-xs text-muted-foreground">{geometry?.metadata.attribution ?? data?.attribution}</p>
     </div>
   )

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import type { ElementType } from 'react'
 import {
   Users,
@@ -25,6 +25,7 @@ import {
 } from '@/components/ui/select'
 import { formatDate } from '@/lib/utils'
 import type { User } from '@/lib/api'
+import { AdminPagination, ADMIN_PAGE_SIZE } from './admin-pagination'
 
 const ROLE_CONFIG: Record<string, { label: string; icon: ElementType; cls: string }> = {
   admin: { label: 'Admin', icon: Shield, cls: 'bg-primary/10 text-primary' },
@@ -58,11 +59,17 @@ export function UsersTab({
   searchQuery,
 }: Props) {
   const [expandedUser, setExpandedUser] = useState<string | null>(null)
+  const [page, setPage] = useState(1)
+
+  useEffect(() => setPage(1), [searchQuery])
 
   const filteredUsers = users.filter(u =>
     u.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
     u.full_name.toLowerCase().includes(searchQuery.toLowerCase())
   )
+  const totalPages = Math.max(1, Math.ceil(filteredUsers.length / ADMIN_PAGE_SIZE))
+  const currentPage = Math.min(page, totalPages)
+  const visibleUsers = filteredUsers.slice((currentPage - 1) * ADMIN_PAGE_SIZE, currentPage * ADMIN_PAGE_SIZE)
 
   if (isLoading) return null
 
@@ -79,7 +86,7 @@ export function UsersTab({
 
   return (
     <div className="space-y-3">
-      {filteredUsers.map((u) => {
+      {visibleUsers.map((u) => {
         const primaryRole = getPrimaryRole(u.roles)
         const roleConf = ROLE_CONFIG[primaryRole]
         const RoleIcon = roleConf.icon
@@ -173,6 +180,7 @@ export function UsersTab({
           </Card>
         )
       })}
+      <AdminPagination page={currentPage} totalItems={filteredUsers.length} onPageChange={setPage} />
     </div>
   )
 }
