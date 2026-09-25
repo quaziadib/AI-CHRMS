@@ -20,6 +20,11 @@ RUN mkdir -p public
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV CI=true
 
+# Next.js rewrites() are evaluated at build time. Render passes service
+# env vars as Docker build-args; declare ARG so BACKEND_URL reaches `next build`.
+ARG BACKEND_URL=https://ai-chrms-backend.onrender.com
+ENV BACKEND_URL=$BACKEND_URL
+
 RUN ./node_modules/.bin/next build
 
 # Production image, copy all the files and run next
