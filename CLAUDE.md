@@ -144,3 +144,7 @@ Key routing rules:
 - Save progress → invoke /context-save
 - Resume context → invoke /context-restore
 - Author a backlog-ready spec/issue → invoke /spec
+
+## Testing
+
+Backend tests are in `backend/tests/`. Run them from the backend directory with `pytest`.

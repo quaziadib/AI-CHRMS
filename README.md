@@ -133,9 +133,10 @@ BACKEND_URL=http://localhost:8000 pnpm dev
 
 App: http://localhost:3000 — browser calls go to `/v1/*`, which Next.js proxies to the backend.
 
-## Vercel production deployment
+## Production deployment
 
-See [docs/deployment/vercel.md](docs/deployment/vercel.md) for the Vercel Services, FastAPI, Vercel Queues, and Supabase setup.
+- [Render + Supabase](docs/deployment/render-supabase.md): Next.js, FastAPI, Celery, and Redis on Render with Supabase Postgres.
+- [Vercel + Supabase](docs/deployment/vercel.md): Vercel Services, FastAPI, Vercel Queues, and Supabase Postgres.
 
 ---
 

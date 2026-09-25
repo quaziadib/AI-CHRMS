@@ -9,7 +9,10 @@ const nextConfig = {
   },
   async rewrites() {
     if (process.env.VERCEL === '1') return []
-    const backendUrl = process.env.BACKEND_URL || 'http://backend:8000'
+    const backendHost = process.env.BACKEND_URL || 'backend:8000'
+    const backendUrl = /^https?:\/\//.test(backendHost)
+      ? backendHost.replace(/\/$/, '')
+      : `http://${backendHost.replace(/\/$/, '')}`
     return [
       {
         source: '/v1/:path*',

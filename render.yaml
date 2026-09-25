@@ -1,12 +1,19 @@
 services:
-  # FastAPI Backend
+  # Free-plan API. Frontend rewrites reach this through its public Render URL,
+  # because free web services do not receive private-network traffic.
   - type: web
     name: ai-chrms-backend
     runtime: docker
+    region: singapore
+    plan: free
     dockerfilePath: ./backend/Dockerfile
     dockerContext: ./backend
     healthCheckPath: /health
     envVars:
+      - key: APP_ENV
+        value: production
+      - key: DEBUG
+        value: "false"
       - key: DATABASE_URL
         sync: false
       - key: JWT_SECRET_KEY
@@ -14,16 +21,48 @@ services:
       - key: JWT_ALGORITHM
         value: HS256
       - key: ACCESS_TOKEN_EXPIRE_MINUTES
-        value: 30
+        value: "15"
       - key: REFRESH_TOKEN_EXPIRE_DAYS
-        value: 7
-      - key: CORS_ORIGINS
-        value: '["https://ai-chrms.vercel.app"]'
+        value: "7"
+      - key: DB_POOL_SIZE
+        value: "3"
+      - key: DB_MAX_OVERFLOW
+        value: "0"
+      - key: DB_INIT_ON_STARTUP
+        value: "false"
+      - key: SEED_DEMO_USERS
+        value: "false"
+      - key: SEED_SYNTHETIC_DATA
+        value: "false"
+      # Render's free tier has no free background workers. Keep async features
+      # disabled so their API endpoints fail clearly instead of queuing forever.
+      - key: ENABLE_FORECASTING
+        value: "false"
+      - key: ENABLE_POPULATION_FORECASTING
+        value: "false"
       - key: ADMIN_EMAIL
         sync: false
       - key: ADMIN_PASSWORD
         sync: false
-      - key: DEMO_EMAIL
-        sync: false
-      - key: DEMO_PASSWORD
-        sync: false
+      - key: CORS_ORIGINS
+        value: "[]"
+      - key: ENABLE_CHATBOT
+        value: "false"
+      - key: ENABLE_RAG
+        value: "false"
+
+  - type: web
+    name: ai-chrms-frontend
+    runtime: docker
+    region: singapore
+    plan: free
+    dockerfilePath: ./frontend/Dockerfile
+    dockerContext: ./frontend
+    envVars:
+      - key: BACKEND_URL
+        fromService:
+          type: web
+          name: ai-chrms-backend
+          envVarKey: RENDER_EXTERNAL_URL
+      - key: NEXT_PUBLIC_DEMO_MODE
+        value: "false"

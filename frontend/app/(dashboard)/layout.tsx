@@ -18,12 +18,23 @@ import {
   MessageCircle,
 } from "lucide-react";
 import { useState } from "react";
+import useSWR from "swr";
 
 import { useAuth } from "@/components/auth/auth-provider";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { cn } from "@/lib/utils";
+import { messagingApi } from "@/lib/api";
+import type { PatientDoctorConversationSummary } from "@/lib/api";
 import { ChatWidget } from "@/features/chatbot/components/chat-widget";
+
+const MESSAGES_REFRESH_INTERVAL_MS = 15_000;
+
+async function loadMessageInbox() {
+  const result = await messagingApi.getInbox();
+  if (!result.data) throw new Error(result.error ?? "Could not load messages");
+  return result.data;
+}
 
 const NAV_PATIENT = [
   { name: "Dashboard", href: "/dashboard", icon: Heart },
@@ -88,6 +99,19 @@ export default function DashboardLayout({
   const router = useRouter();
   const { user, isLoading, isAuthenticated, logout } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const roles = user?.roles ?? [];
+  const canAccessMessages = (roles.includes("doctor") && !roles.some((role) => ["admin", "national_admin"].includes(role)))
+    || (roles.some((role) => ["user", "patient"].includes(role)) && !roles.some((role) => ["admin", "doctor", "national_admin"].includes(role)));
+  const { data: messageInbox = [] } = useSWR<PatientDoctorConversationSummary[]>(
+    isAuthenticated && canAccessMessages ? "patient-doctor-inbox" : null,
+    loadMessageInbox,
+    {
+      refreshInterval: MESSAGES_REFRESH_INTERVAL_MS,
+      isPaused: () => typeof document !== "undefined" && document.hidden,
+      revalidateOnFocus: true,
+    },
+  );
+  const unreadMessageCount = messageInbox.reduce((total, conversation) => total + conversation.unread_count, 0);
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -134,7 +158,6 @@ export default function DashboardLayout({
     return null;
   }
 
-  const roles = user?.roles ?? [];
   const navItems = getNavItems(roles);
 
   return (
@@ -177,6 +200,9 @@ export default function DashboardLayout({
                   href={item.href}
                   prefetch={false}
                   onClick={() => setSidebarOpen(false)}
+                  aria-label={item.href === "/messages" && unreadMessageCount > 0
+                    ? `Messages, ${unreadMessageCount} unread`
+                    : undefined}
                   className={cn(
                     "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
                     isActive
@@ -185,7 +211,15 @@ export default function DashboardLayout({
                   )}
                 >
                   <item.icon className="h-5 w-5" />
-                  {item.name}
+                  <span className="flex-1">{item.name}</span>
+                  {item.href === "/messages" && unreadMessageCount > 0 && (
+                    <span
+                      aria-hidden="true"
+                      className="inline-flex min-w-5 items-center justify-center rounded-full bg-destructive px-1.5 py-0.5 text-[11px] font-semibold leading-none text-destructive-foreground"
+                    >
+                      {unreadMessageCount > 99 ? "99+" : unreadMessageCount}
+                    </span>
+                  )}
                 </Link>
               );
             })}
