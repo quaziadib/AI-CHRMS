@@ -195,8 +195,26 @@ def get_doctor_profile(db: Session, doctor_id: str, patient_id: str) -> DoctorPa
     )
 
 
+def matches_doctor_list_filters(
+    latest: PatientRecord | None,
+    *,
+    risk_level: str | None = None,
+    district: str | None = None,
+) -> bool:
+    """Return whether a patient's latest record matches optional list filters."""
+    if risk_level and not (latest and latest.risk_level == risk_level):
+        return False
+    district_filter = district.strip() if district else None
+    if district_filter and not (latest and latest.district == district_filter):
+        return False
+    return True
+
+
 def list_doctor_profiles(
-    db: Session, doctor_id: str, risk_level: str | None = None
+    db: Session,
+    doctor_id: str,
+    risk_level: str | None = None,
+    district: str | None = None,
 ) -> list[DoctorPatientListItem]:
     grants = db.query(PatientDoctorGrant).filter(
         PatientDoctorGrant.doctor_id == doctor_id,
@@ -208,13 +226,16 @@ def list_doctor_profiles(
         latest = db.query(PatientRecord).filter(
             PatientRecord.user_id == grant.patient_id
         ).order_by(PatientRecord.created_at.desc()).first()
-        if patient and (not risk_level or (latest and latest.risk_level == risk_level)):
-            result.append(DoctorPatientListItem(
-                patient_id=grant.patient_id,
-                patient_name=patient.full_name,
-                latest_record=_enrich_record(db, latest, patient.full_name) if latest else None,
-            ))
-            _record_event(db, grant, doctor_id, "patient_summary_viewed")
+        if not patient:
+            continue
+        if not matches_doctor_list_filters(latest, risk_level=risk_level, district=district):
+            continue
+        result.append(DoctorPatientListItem(
+            patient_id=grant.patient_id,
+            patient_name=patient.full_name,
+            latest_record=_enrich_record(db, latest, patient.full_name) if latest else None,
+        ))
+        _record_event(db, grant, doctor_id, "patient_summary_viewed")
     db.commit()
     return result
 

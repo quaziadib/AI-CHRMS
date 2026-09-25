@@ -2,9 +2,10 @@ import { api } from './client'
 import type { DoctorInteraction, DoctorPatientListItem, DoctorPatientProfile, PatientGrant, PatientRecord } from './types'
 
 export const doctorApi = {
-  getPatients: (params?: { risk_level?: string }) => {
+  getPatients: (params?: { risk_level?: string; district?: string }) => {
     const searchParams = new URLSearchParams()
     if (params?.risk_level) searchParams.set('risk_level', params.risk_level)
+    if (params?.district) searchParams.set('district', params.district)
     const query = searchParams.toString()
     return api.get<DoctorPatientListItem[]>(`/doctor/patients${query ? `?${query}` : ''}`)
   },

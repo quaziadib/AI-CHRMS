@@ -15,9 +15,16 @@ const RISK_BADGE = {
 interface Props {
   patients: DoctorPatientListItem[]
   isLoading: boolean
+  emptyTitle?: string
+  emptyDescription?: string
 }
 
-export function PatientList({ patients, isLoading }: Props) {
+export function PatientList({
+  patients,
+  isLoading,
+  emptyTitle = 'No patients have shared access',
+  emptyDescription = 'Patients will appear here after they grant you access and you accept their request.',
+}: Props) {
   if (isLoading) return null
 
   if (patients.length === 0) {
@@ -25,9 +32,9 @@ export function PatientList({ patients, isLoading }: Props) {
       <Card>
         <CardContent className="flex flex-col items-center justify-center py-16">
           <Users className="h-12 w-12 text-muted-foreground mb-4" />
-          <p className="font-medium">No patients have shared access</p>
+          <p className="font-medium">{emptyTitle}</p>
           <p className="text-sm text-muted-foreground mt-1">
-            Patients will appear here after they grant you access and you accept their request.
+            {emptyDescription}
           </p>
         </CardContent>
       </Card>

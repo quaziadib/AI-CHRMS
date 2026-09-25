@@ -37,8 +37,11 @@ def list_assigned_patients(
     doctor: DoctorUser,
     db: DB,
     risk_level: Optional[str] = None,
+    district: Optional[str] = None,
 ):
-    return sharing_service.list_doctor_profiles(db, doctor.id, risk_level)
+    return sharing_service.list_doctor_profiles(
+        db, doctor.id, risk_level=risk_level, district=district
+    )
 
 
 @router.get("/patients/{patient_id}", response_model=DoctorPatientProfileResponse)
