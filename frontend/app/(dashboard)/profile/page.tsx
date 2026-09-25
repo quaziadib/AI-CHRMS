@@ -27,7 +27,6 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import type { User as UserType } from "@/lib/api";
-import { PatientSharingPanel } from "@/features/sharing/components/patient-sharing-panel";
 
 const ROLE_LABELS: Record<string, string> = {
   admin: "Admin",
@@ -305,8 +304,6 @@ function ProfileContent({
           </form>
         </CardContent>
       </Card>
-
-      {user.role === "user" && <PatientSharingPanel />}
     </div>
   );
 }

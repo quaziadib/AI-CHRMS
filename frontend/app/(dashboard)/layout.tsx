@@ -40,7 +40,7 @@ const ROLE_GUARDS: Array<{ prefix: string; allowedRoles: string[] }> = [
   { prefix: "/national", allowedRoles: ["national_admin", "admin"] },
 ];
 
-const PATIENT_ONLY_PREFIXES = ["/dashboard", "/health-form", "/records"];
+const PATIENT_ONLY_PREFIXES = ["/dashboard", "/health-form", "/records", "/doctor-access"];
 
 export default function DashboardLayout({
   children,
@@ -72,7 +72,9 @@ export default function DashboardLayout({
     }
     if (!isLoading && isAuthenticated && user) {
       for (const guard of ROLE_GUARDS) {
-        if (pathname.startsWith(guard.prefix) && !guard.allowedRoles.some((role) => user.roles.includes(role))) {
+        const onGuardedRoute =
+          pathname === guard.prefix || pathname.startsWith(`${guard.prefix}/`);
+        if (onGuardedRoute && !guard.allowedRoles.some((role) => user.roles.includes(role))) {
           router.replace(getRoleHome(user.roles));
           return;
         }

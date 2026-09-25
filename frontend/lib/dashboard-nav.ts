@@ -27,8 +27,9 @@ export const NAV_PATIENT: DashboardNavItem[] = [
   { name: "Dashboard", href: "/dashboard", icon: Heart },
   { name: "Health Form", href: "/health-form", icon: ClipboardList },
   { name: "My Records", href: "/records", icon: FileText },
-  { name: "Profile", href: "/profile", icon: User },
+  { name: "Doctor Access", href: "/doctor-access", icon: Stethoscope },
   { name: "Messages", href: "/messages", icon: MessageCircle },
+  { name: "Profile", href: "/profile", icon: User },
 ]
 
 /** Doctor clinical workspace — must not include patient health-form / records / patient dashboard. */
@@ -57,7 +58,7 @@ export const ROLE_HOMES: Record<string, string> = {
   user: "/dashboard",
 }
 
-const PATIENT_CLINICAL_HREFS = new Set(["/dashboard", "/health-form", "/records"])
+const PATIENT_CLINICAL_HREFS = new Set(["/dashboard", "/health-form", "/records", "/doctor-access"])
 const DOCTOR_CLINICAL_PREFIXES = ["/doctor"]
 
 function isDoctorClinicalHref(href: string): boolean {
