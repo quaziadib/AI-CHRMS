@@ -77,8 +77,9 @@ class ApiClient {
 
       const status = response.status
 
-      // Auto-refresh on 401, then retry the original request once
-      if (status === 401 && retry) {
+      // Auto-refresh on 401 only when we already had a session token.
+      // Login/register 401s ("Incorrect email or password") must surface to the form.
+      if (status === 401 && retry && this.accessToken) {
         const refreshed = await this.tryRefresh()
         if (refreshed) {
           return this.request<T>(endpoint, options, false, coldStartAttempt)

@@ -11,24 +11,28 @@ export LOG_DIR="${LOG_DIR:-/tmp/logs}"
 mkdir -p "${LOG_DIR}"
 UVICORN_LOG="${LOG_DIR}/uvicorn.log"
 
+echo "Starting Next.js on 0.0.0.0:${PORT}…"
+cd /app/frontend
+node server.js &
+NODE_PID=$!
+
 echo "Starting API on 127.0.0.1:${BACKEND_PORT}…"
 cd /app/backend
-# python -m is more reliable than a console_script PATH edge case
-PYTHONUNBUFFERED=1 python -m uvicorn app.main:app \
+# Keep uvicorn's real PID (do not pipe through tee).
+PYTHONUNBUFFERED=1 python3 -m uvicorn app.main:app \
   --host 127.0.0.1 \
   --port "${BACKEND_PORT}" \
   --log-level info \
   >"${UVICORN_LOG}" 2>&1 &
 UVICORN_PID=$!
 
-echo "Starting Next.js on 0.0.0.0:${PORT}…"
-cd /app/frontend
-node server.js &
-NODE_PID=$!
+# Mirror API logs into Render's log stream without changing the PID we track.
+( tail -n +1 -F "${UVICORN_LOG}" 2>/dev/null ) &
+TAIL_PID=$!
 
 cleanup() {
   echo "Shutting down…"
-  kill "${NODE_PID}" "${UVICORN_PID}" 2>/dev/null || true
+  kill "${TAIL_PID}" "${NODE_PID}" "${UVICORN_PID}" 2>/dev/null || true
   wait "${NODE_PID}" 2>/dev/null || true
   wait "${UVICORN_PID}" 2>/dev/null || true
 }
@@ -37,14 +41,13 @@ trap cleanup EXIT INT TERM
 dump_api_log() {
   echo "---- uvicorn log ----" >&2
   if [ -f "${UVICORN_LOG}" ]; then
-    tail -n 80 "${UVICORN_LOG}" >&2 || true
+    cat "${UVICORN_LOG}" >&2 || true
   else
     echo "(no uvicorn log file)" >&2
   fi
   echo "---- end uvicorn log ----" >&2
 }
 
-# Free instances can take a while to import LangChain / open TLS to Postgres.
 i=0
 until curl -fsS "http://127.0.0.1:${BACKEND_PORT}/health" >/dev/null 2>&1; do
   i=$((i + 1))
@@ -65,14 +68,11 @@ until curl -fsS "http://127.0.0.1:${BACKEND_PORT}/health" >/dev/null 2>&1; do
   fi
   if [ $((i % 10)) -eq 0 ]; then
     echo "Waiting for API health… (${i}s)"
-    # Stream recent API logs so Render deploy logs show import/config errors
-    tail -n 20 "${UVICORN_LOG}" 2>/dev/null || true
   fi
   sleep 1
 done
 
 echo "API healthy."
-# Keep the container alive while both children run; exit if either dies.
 while kill -0 "${NODE_PID}" 2>/dev/null && kill -0 "${UVICORN_PID}" 2>/dev/null; do
   sleep 5
 done

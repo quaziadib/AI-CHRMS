@@ -28,6 +28,7 @@ export default function LoginPage() {
   const { login, isAuthenticated, isLoading: authLoading, user } = useAuth()
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [formError, setFormError] = useState<string | null>(null)
 
   useEffect(() => {
     if (!authLoading && isAuthenticated) {
@@ -45,16 +46,21 @@ export default function LoginPage() {
 
   const onSubmit = async (data: LoginFormData) => {
     setIsLoading(true)
+    setFormError(null)
     try {
       const result = await login(data.email, data.password)
       if (result.success) {
         toast.success('Welcome back!')
         router.push(getRoleHome(result.user?.roles))
       } else {
-        toast.error(result.error || 'Login failed')
+        const message = result.error || 'Incorrect email or password'
+        setFormError(message)
+        toast.error(message)
       }
     } catch {
-      toast.error('An error occurred. Please try again.')
+      const message = 'An error occurred. Please try again.'
+      setFormError(message)
+      toast.error(message)
     } finally {
       setIsLoading(false)
     }
@@ -126,6 +132,14 @@ export default function LoginPage() {
               )}
             </div>
 
+            {formError && (
+              <p
+                role="alert"
+                className="rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive"
+              >
+                {formError}
+              </p>
+            )}
 
           </CardContent>
           <CardFooter className="flex flex-col gap-4">

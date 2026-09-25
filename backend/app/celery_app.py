@@ -20,4 +20,5 @@ celery_app.conf.update(
     task_track_started=True,
 )
 
-celery_app.autodiscover_tasks(["app.tasks"])
+# Do not autodiscover here — that imports heavy AI/forecast task modules and
+# slows or stalls the web process. The worker registers tasks in celery_worker.py.
