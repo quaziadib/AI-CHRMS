@@ -79,6 +79,8 @@ export interface User {
   is_verified: boolean
   roles: string[]
   role: string
+  requested_role?: string | null
+  role_request_status?: string | null
   created_at: string
   updated_at: string
 }

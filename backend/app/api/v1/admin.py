@@ -95,3 +95,24 @@ def update_settings(body: SystemSettingsUpdate, admin: AdminUser, db: DB):
         updated_at=row.updated_at,
         updated_by=row.updated_by,
     )
+
+
+@router.get("/role-requests", response_model=list[UserResponse])
+def get_role_requests(
+    admin: AdminUser,
+    db: DB,
+    status: str = "pending",
+    skip: int = 0,
+    limit: int = 100,
+):
+    return admin_service.list_role_requests(db, status=status, skip=skip, limit=limit)
+
+
+@router.post("/role-requests/{user_id}/approve", response_model=UserResponse)
+def approve_role_request(user_id: str, admin: AdminUser, db: DB):
+    return admin_service.approve_role_request(db, admin.id, user_id)
+
+
+@router.post("/role-requests/{user_id}/reject", response_model=UserResponse)
+def reject_role_request(user_id: str, admin: AdminUser, db: DB):
+    return admin_service.reject_role_request(db, admin.id, user_id)

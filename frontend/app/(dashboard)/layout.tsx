@@ -4,18 +4,10 @@ import { useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
-  Heart,
-  ClipboardList,
-  FileText,
-  User,
   Settings,
   LogOut,
-  Shield,
   Menu,
   X,
-  Stethoscope,
-  Globe,
-  MessageCircle,
 } from "lucide-react";
 import { useState } from "react";
 import useSWR from "swr";
@@ -27,6 +19,12 @@ import { cn } from "@/lib/utils";
 import { messagingApi } from "@/lib/api";
 import type { PatientDoctorConversationSummary } from "@/lib/api";
 import { ChatWidget } from "@/features/chatbot/components/chat-widget";
+import {
+  getNavItems,
+  getRoleHome,
+  getWorkspaceMeta,
+  isNavItemActive,
+} from "@/lib/dashboard-nav";
 
 const MESSAGES_REFRESH_INTERVAL_MS = 15_000;
 
@@ -34,52 +32,6 @@ async function loadMessageInbox() {
   const result = await messagingApi.getInbox();
   if (!result.data) throw new Error(result.error ?? "Could not load messages");
   return result.data;
-}
-
-const NAV_PATIENT = [
-  { name: "Dashboard", href: "/dashboard", icon: Heart },
-  { name: "Health Form", href: "/health-form", icon: ClipboardList },
-  { name: "My Records", href: "/records", icon: FileText },
-  { name: "Profile", href: "/profile", icon: User },
-  { name: "Messages", href: "/messages", icon: MessageCircle },
-];
-
-const NAV_DOCTOR = [
-  { name: "Doctor Dashboard", href: "/doctor", icon: Stethoscope },
-  { name: "Messages", href: "/messages", icon: MessageCircle },
-  { name: "Profile", href: "/profile", icon: User },
-];
-
-const NAV_NATIONAL = [
-  { name: "National Dashboard", href: "/national", icon: Globe },
-  { name: "Profile", href: "/profile", icon: User },
-];
-
-const NAV_ADMIN = [
-  { name: "Admin Dashboard", href: "/admin", icon: Shield },
-  { name: "National Overview", href: "/national", icon: Globe },
-  { name: "Profile", href: "/profile", icon: User },
-];
-
-const ROLE_HOMES: Record<string, string> = {
-  admin: "/admin",
-  doctor: "/doctor",
-  national_admin: "/national",
-  user: "/dashboard",
-};
-
-function getNavItems(roles: string[]) {
-  if (roles.includes("admin")) return NAV_ADMIN;
-  if (roles.includes("doctor")) return NAV_DOCTOR;
-  if (roles.includes("national_admin")) return NAV_NATIONAL;
-  return NAV_PATIENT;
-}
-
-function getRoleHome(roles: string[]): string {
-  for (const role of ["admin", "doctor", "national_admin"]) {
-    if (roles.includes(role)) return ROLE_HOMES[role];
-  }
-  return ROLE_HOMES.user;
 }
 
 const ROLE_GUARDS: Array<{ prefix: string; allowedRoles: string[] }> = [
@@ -159,6 +111,8 @@ export default function DashboardLayout({
   }
 
   const navItems = getNavItems(roles);
+  const workspace = getWorkspaceMeta(roles);
+  const WorkspaceIcon = workspace.icon;
 
   return (
     <div className="flex h-dvh overflow-hidden">
@@ -174,13 +128,17 @@ export default function DashboardLayout({
           "fixed inset-y-0 left-0 z-50 w-64 bg-card border-r transform transition-transform lg:translate-x-0",
           sidebarOpen ? "translate-x-0" : "-translate-x-full",
         )}
+        aria-label={`${workspace.label} workspace`}
       >
         <div className="flex h-full min-h-0 flex-col">
           <div className="flex h-16 items-center gap-2 px-6 border-b">
-            <Heart className="h-8 w-8 text-primary" />
-            <span className="text-lg font-semibold">Health Project</span>
+            <WorkspaceIcon className="h-8 w-8 shrink-0 text-primary" aria-hidden />
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-lg font-semibold leading-tight">Health Project</p>
+              <p className="truncate text-xs font-medium text-muted-foreground">{workspace.label}</p>
+            </div>
             <button
-              className="ml-auto lg:hidden"
+              className="lg:hidden"
               onClick={() => setSidebarOpen(false)}
             >
               <X className="h-5 w-5" />
@@ -189,11 +147,7 @@ export default function DashboardLayout({
 
           <nav className="min-h-0 flex-1 overflow-y-auto px-4 py-6 space-y-1">
             {navItems.map((item) => {
-              const isActive = item.href === "/admin"
-                ? pathname.startsWith(item.href)
-                : item.href === "/doctor"
-                  ? pathname.startsWith(item.href)
-                  : pathname === item.href;
+              const isActive = isNavItemActive(pathname, item.href);
               return (
                 <Link
                   key={item.name}

@@ -1,9 +1,12 @@
 from datetime import datetime
-from typing import Optional
+from typing import Literal, Optional
 
 from pydantic import BaseModel, EmailStr, Field, computed_field, field_validator
 
 from app.schemas.base import OrmSchema
+
+SignupRole = Literal["user", "doctor", "national_admin", "admin"]
+ELEVATED_SIGNUP_ROLES = frozenset({"doctor", "national_admin", "admin"})
 
 
 class UserCreate(BaseModel):
@@ -11,6 +14,7 @@ class UserCreate(BaseModel):
     password: str = Field(min_length=8, description="Minimum 8 characters")
     full_name: str = Field(min_length=2, max_length=255)
     phone: Optional[str] = None
+    role: SignupRole = "user"
 
     @field_validator("email", mode="before")
     @classmethod
@@ -36,6 +40,8 @@ class UserResponse(OrmSchema):
     is_active: bool
     is_verified: bool
     roles: list[str]
+    requested_role: Optional[str] = None
+    role_request_status: Optional[str] = None
     created_at: datetime
     updated_at: datetime
 
@@ -75,3 +81,11 @@ class TokenResponse(BaseModel):
 
 class RefreshTokenRequest(BaseModel):
     refresh_token: str
+
+
+def roles_for_approved_signup(requested: str) -> list[str]:
+    if requested == "admin":
+        return ["admin", "user"]
+    if requested in ELEVATED_SIGNUP_ROLES:
+        return [requested]
+    return ["user"]

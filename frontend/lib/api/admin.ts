@@ -50,4 +50,16 @@ export const adminApi = {
   getSettings: () => api.get<SystemSettings>('/admin/settings'),
   updateSettings: (data: { resubmit_interval_months: number }) =>
     api.patch<SystemSettings>('/admin/settings', data),
+  getRoleRequests: (params?: { status?: string; skip?: number; limit?: number }) => {
+    const searchParams = new URLSearchParams()
+    if (params?.status) searchParams.set('status', params.status)
+    if (params?.skip) searchParams.set('skip', String(params.skip))
+    if (params?.limit) searchParams.set('limit', String(params.limit))
+    const query = searchParams.toString()
+    return api.get<User[]>(`/admin/role-requests${query ? `?${query}` : ''}`)
+  },
+  approveRoleRequest: (userId: string) =>
+    api.post<User>(`/admin/role-requests/${userId}/approve`),
+  rejectRoleRequest: (userId: string) =>
+    api.post<User>(`/admin/role-requests/${userId}/reject`),
 }

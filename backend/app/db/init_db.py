@@ -91,6 +91,12 @@ def _run_migrations() -> None:
         conn.execute(text(
             "ALTER TABLE patient_records ADD COLUMN IF NOT EXISTS personalized_plan_at TIMESTAMPTZ"
         ))
+        conn.execute(text(
+            "ALTER TABLE users ADD COLUMN IF NOT EXISTS requested_role VARCHAR(32)"
+        ))
+        conn.execute(text(
+            "ALTER TABLE users ADD COLUMN IF NOT EXISTS role_request_status VARCHAR(32)"
+        ))
         conn.execute(text("""
             DO $$
             BEGIN

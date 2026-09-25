@@ -21,6 +21,8 @@ class User(TimestampMixin, Base):
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
     is_verified: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     roles: Mapped[list[str]] = mapped_column(ARRAY(String), default=list, nullable=False)
+    requested_role: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    role_request_status: Mapped[str | None] = mapped_column(String(32), nullable=True)
 
 
 class RefreshToken(Base):

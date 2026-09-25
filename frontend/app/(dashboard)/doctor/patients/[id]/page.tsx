@@ -68,12 +68,12 @@ export default function DoctorPatientPage({ params }: { params: Promise<{ id: st
   if (isLoading) return <div className="flex justify-center py-16"><Spinner size="lg" /></div>
 
   if (error || accessLost || !profile) {
-    return <div className="space-y-4"><Link href="/doctor"><Button variant="ghost" size="sm"><ArrowLeft className="mr-2 h-4 w-4" />Back to patients</Button></Link><p className="text-muted-foreground">Patient profile not found or access is no longer active.</p></div>
+    return <div className="space-y-4"><Link href="/doctor/patients"><Button variant="ghost" size="sm"><ArrowLeft className="mr-2 h-4 w-4" />Back to patients</Button></Link><p className="text-muted-foreground">Patient profile not found or access is no longer active.</p></div>
   }
 
   return (
     <div className="space-y-5">
-      <Link href="/doctor"><Button variant="ghost" size="sm"><ArrowLeft className="mr-2 h-4 w-4" />Back to patients</Button></Link>
+      <Link href="/doctor/patients"><Button variant="ghost" size="sm"><ArrowLeft className="mr-2 h-4 w-4" />Back to patients</Button></Link>
 
       <Card>
         <CardHeader>

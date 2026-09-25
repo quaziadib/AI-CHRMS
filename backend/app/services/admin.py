@@ -10,7 +10,7 @@ from app.models.record import PatientRecord
 from app.models.user import User
 from app.schemas.audit import AdminStatsResponse, AuditLogResponse
 from app.schemas.record import PatientRecordResponse
-from app.schemas.user import UserResponse
+from app.schemas.user import UserResponse, roles_for_approved_signup
 from app.services.audit import log_audit
 
 
@@ -129,3 +129,44 @@ def list_audit_logs(
         query = query.filter(AuditLog.action == action)
     logs = query.order_by(AuditLog.timestamp.desc()).offset(skip).limit(limit).all()
     return [AuditLogResponse.model_validate(log) for log in logs]
+
+
+def list_role_requests(
+    db: Session,
+    status: str = "pending",
+    skip: int = 0,
+    limit: int = 100,
+) -> list[UserResponse]:
+    query = db.query(User).filter(User.role_request_status == status)
+    users = query.order_by(User.created_at.desc()).offset(skip).limit(limit).all()
+    return [UserResponse.model_validate(u) for u in users]
+
+
+def approve_role_request(db: Session, admin_id: str, user_id: str) -> UserResponse:
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    if user.role_request_status != "pending" or not user.requested_role:
+        raise HTTPException(status_code=400, detail="No pending role request for this user")
+
+    user.roles = roles_for_approved_signup(user.requested_role)
+    user.role_request_status = "approved"
+    db.commit()
+    db.refresh(user)
+    log_audit(db, admin_id, "role_request_approved", "user", user_id)
+    return UserResponse.model_validate(user)
+
+
+def reject_role_request(db: Session, admin_id: str, user_id: str) -> UserResponse:
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    if user.role_request_status != "pending" or not user.requested_role:
+        raise HTTPException(status_code=400, detail="No pending role request for this user")
+
+    user.roles = ["user"]
+    user.role_request_status = "rejected"
+    db.commit()
+    db.refresh(user)
+    log_audit(db, admin_id, "role_request_rejected", "user", user_id)
+    return UserResponse.model_validate(user)

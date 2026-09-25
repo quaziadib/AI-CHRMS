@@ -72,6 +72,15 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6">
+      {user?.role_request_status === 'pending' && user.requested_role && (
+        <div
+          role="status"
+          className="rounded-lg border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-950"
+        >
+          Your <strong>{user.requested_role.replaceAll('_', ' ')}</strong> role request is pending
+          admin approval. You can use the app as a patient until it is approved.
+        </div>
+      )}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-foreground">My Health Dashboard</h1>

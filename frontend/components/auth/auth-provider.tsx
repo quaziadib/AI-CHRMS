@@ -20,6 +20,7 @@ interface AuthContextType {
     password: string
     full_name: string
     phone?: string
+    role?: 'user' | 'doctor' | 'national_admin' | 'admin'
   }) => Promise<{ success: boolean; error?: string; user?: User }>
   logout: () => Promise<void>
   refreshUser: () => Promise<void>
@@ -109,6 +110,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     password: string
     full_name: string
     phone?: string
+    role?: 'user' | 'doctor' | 'national_admin' | 'admin'
   }): Promise<{ success: boolean; error?: string; user?: User }> => {
     const { data, error } = await authApi.register(registerData)
 

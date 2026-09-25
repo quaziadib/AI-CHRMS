@@ -2,7 +2,13 @@ import { api } from './client'
 import type { User } from './types'
 
 export const authApi = {
-  register: (data: { email: string; password: string; full_name: string; phone?: string }) =>
+  register: (data: {
+    email: string
+    password: string
+    full_name: string
+    phone?: string
+    role?: 'user' | 'doctor' | 'national_admin' | 'admin'
+  }) =>
     api.post<{ access_token: string; refresh_token: string; user: User }>('/auth/register', data),
 
   login: (data: { email: string; password: string }) =>

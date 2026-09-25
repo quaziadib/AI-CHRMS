@@ -44,6 +44,17 @@ def register_user(db: Session, data: UserCreate) -> TokenResponse:
             detail="Email already registered",
         )
 
+    requested = data.role
+    if requested == "user":
+        roles = ["user"]
+        requested_role = None
+        role_request_status = None
+    else:
+        # Elevated roles stay pending; JWT uses patient roles until admin approves.
+        roles = ["user"]
+        requested_role = requested
+        role_request_status = "pending"
+
     user = User(
         email=data.email,
         password_hash=hash_password(data.password),
@@ -51,13 +62,16 @@ def register_user(db: Session, data: UserCreate) -> TokenResponse:
         phone=data.phone,
         is_active=True,
         is_verified=False,
-        roles=["user"],
+        roles=roles,
+        requested_role=requested_role,
+        role_request_status=role_request_status,
     )
     db.add(user)
     db.commit()
     db.refresh(user)
 
-    log_audit(db, user.id, "register", "user", user.id)
+    action = "register_role_pending" if role_request_status == "pending" else "register"
+    log_audit(db, user.id, action, "user", user.id)
     return _make_token_response(user, db)
 
 

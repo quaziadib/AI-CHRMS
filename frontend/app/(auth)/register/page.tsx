@@ -9,18 +9,26 @@ import { z } from 'zod'
 import { toast } from 'sonner'
 import { Heart, Eye, EyeOff } from 'lucide-react'
 
-import { useAuth } from '@/components/auth/auth-provider'
+import { getRoleHome, useAuth } from '@/components/auth/auth-provider'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { Spinner } from '@/components/ui/spinner'
 
 const registerSchema = z.object({
   full_name: z.string().min(2, 'Name must be at least 2 characters'),
   email: z.string().email('Please enter a valid email'),
   phone: z.string().optional(),
-  password: z.string().min(6, 'Password must be at least 6 characters'),
+  role: z.enum(['user', 'doctor', 'national_admin', 'admin']),
+  password: z.string().min(8, 'Password must be at least 8 characters'),
   confirm_password: z.string(),
 }).refine((data) => data.password === data.confirm_password, {
   message: "Passwords don't match",
@@ -28,6 +36,13 @@ const registerSchema = z.object({
 })
 
 type RegisterFormData = z.infer<typeof registerSchema>
+
+const ROLE_LABELS: Record<RegisterFormData['role'], string> = {
+  user: 'Patient',
+  doctor: 'Doctor',
+  national_admin: 'National Admin',
+  admin: 'Admin',
+}
 
 export default function RegisterPage() {
   const router = useRouter()
@@ -39,10 +54,15 @@ export default function RegisterPage() {
   const {
     register,
     handleSubmit,
+    setValue,
+    watch,
     formState: { errors },
   } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
+    defaultValues: { role: 'user' },
   })
+
+  const selectedRole = watch('role')
 
   const onSubmit = async (data: RegisterFormData) => {
     setIsLoading(true)
@@ -52,10 +72,18 @@ export default function RegisterPage() {
         password: data.password,
         full_name: data.full_name,
         phone: data.phone || undefined,
+        role: data.role,
       })
       if (result.success) {
-        toast.success('Account created successfully!')
-        router.push(result.user?.roles.includes('admin') ? '/admin' : '/records')
+        if (result.user?.role_request_status === 'pending') {
+          toast.success(
+            `${ROLE_LABELS[data.role]} access requested. An admin must approve before that role is active.`,
+          )
+          router.push('/dashboard')
+        } else {
+          toast.success('Account created successfully!')
+          router.push(getRoleHome(result.user?.roles))
+        }
       } else {
         toast.error(result.error || 'Registration failed')
       }
@@ -76,7 +104,7 @@ export default function RegisterPage() {
           </Link>
           <CardTitle className="text-2xl">Create an account</CardTitle>
           <CardDescription>
-            Get started with Health Project today
+            Choose your role. Doctor, National Admin, and Admin require admin approval.
           </CardDescription>
         </CardHeader>
         <form onSubmit={handleSubmit(onSubmit)}>
@@ -118,6 +146,33 @@ export default function RegisterPage() {
                 autoComplete="tel"
                 {...register('phone')}
               />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="role">Role</Label>
+              <Select
+                value={selectedRole}
+                onValueChange={(value) =>
+                  setValue('role', value as RegisterFormData['role'], { shouldValidate: true })
+                }
+              >
+                <SelectTrigger id="role" className="w-full">
+                  <SelectValue placeholder="Select a role" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="user">Patient</SelectItem>
+                  <SelectItem value="doctor">Doctor (needs approval)</SelectItem>
+                  <SelectItem value="national_admin">National Admin (needs approval)</SelectItem>
+                  <SelectItem value="admin">Admin (needs approval)</SelectItem>
+                </SelectContent>
+              </Select>
+              {selectedRole !== 'user' && (
+                <p className="text-xs text-muted-foreground">
+                  You can use the app as a patient until an admin approves this role.
+                </p>
+              )}
+              {errors.role && (
+                <p className="text-sm text-destructive">{errors.role.message}</p>
+              )}
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>

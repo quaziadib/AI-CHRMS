@@ -8,6 +8,7 @@ import type { User, PatientRecord } from '@/lib/api'
 export function useAdmin() {
   const [users, setUsers] = useState<User[]>([])
   const [doctors, setDoctors] = useState<User[]>([])
+  const [roleRequests, setRoleRequests] = useState<User[]>([])
   const [records, setRecords] = useState<PatientRecord[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
@@ -16,10 +17,12 @@ export function useAdmin() {
       adminApi.getUsers(),
       adminApi.getUsers({ role: 'doctor' }),
       adminApi.getAllRecords(),
-    ]).then(([usersRes, doctorsRes, recordsRes]) => {
+      adminApi.getRoleRequests({ status: 'pending' }),
+    ]).then(([usersRes, doctorsRes, recordsRes, requestsRes]) => {
       if (usersRes.data) setUsers(usersRes.data)
       if (doctorsRes.data) setDoctors(doctorsRes.data)
       if (recordsRes.data) setRecords(recordsRes.data)
+      if (requestsRes.data) setRoleRequests(requestsRes.data)
     }).catch(() => {
       toast.error('Failed to load admin data')
     }).finally(() => {
@@ -50,6 +53,34 @@ export function useAdmin() {
       toast.success(`User ${isActive ? 'activated' : 'deactivated'}`)
     } else {
       toast.error('Failed to update status')
+    }
+  }
+
+  const handleApproveRoleRequest = async (userId: string) => {
+    const { data, error } = await adminApi.approveRoleRequest(userId)
+    if (!error && data) {
+      setRoleRequests((prev) => prev.filter((u) => u.id !== userId))
+      setUsers((prev) => prev.map((u) => (u.id === userId ? data : u)))
+      if (data.roles.includes('doctor')) {
+        setDoctors((prev) => {
+          const without = prev.filter((u) => u.id !== userId)
+          return [...without, data]
+        })
+      }
+      toast.success('Role request approved — user should re-login for new access')
+    } else {
+      toast.error(error || 'Failed to approve request')
+    }
+  }
+
+  const handleRejectRoleRequest = async (userId: string) => {
+    const { data, error } = await adminApi.rejectRoleRequest(userId)
+    if (!error && data) {
+      setRoleRequests((prev) => prev.filter((u) => u.id !== userId))
+      setUsers((prev) => prev.map((u) => (u.id === userId ? data : u)))
+      toast.success('Role request rejected')
+    } else {
+      toast.error(error || 'Failed to reject request')
     }
   }
 
@@ -109,11 +140,14 @@ export function useAdmin() {
   return {
     users,
     doctors,
+    roleRequests,
     records,
     isLoading,
     stats,
     handleRoleChange,
     handleStatusChange,
+    handleApproveRoleRequest,
+    handleRejectRoleRequest,
     handleAssignDoctor,
     downloadCSV,
   }

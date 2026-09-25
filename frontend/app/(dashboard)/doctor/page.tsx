@@ -1,16 +1,13 @@
 'use client'
 
-import { useState } from 'react'
-import { Stethoscope } from 'lucide-react'
-import { Spinner } from '@/components/ui/spinner'
-import { RiskFilter } from '@/features/doctor/components/risk-filter'
-import { PatientList } from '@/features/doctor/components/patient-list'
-import { useDoctorPatients } from '@/features/doctor/hooks/use-doctor-patients'
+import Link from 'next/link'
+import { Stethoscope, Users } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 import { AccessRequests } from '@/features/doctor/components/access-requests'
+import { useDoctorPatients } from '@/features/doctor/hooks/use-doctor-patients'
 
 export default function DoctorDashboardPage() {
-  const [riskFilter, setRiskFilter] = useState('')
-  const { patients, isLoading } = useDoctorPatients(riskFilter || undefined)
+  const { patients, isLoading } = useDoctorPatients()
 
   return (
     <div className="space-y-6">
@@ -20,28 +17,29 @@ export default function DoctorDashboardPage() {
         </div>
         <div>
           <h1 className="text-2xl font-bold text-foreground">Doctor Dashboard</h1>
-          <p className="text-muted-foreground">Patients who have granted you access to their health records</p>
+          <p className="text-muted-foreground">
+            Review access requests, then browse your patient list from the Patients tab.
+          </p>
         </div>
       </div>
 
       <AccessRequests />
 
-      <div className="flex items-center justify-between">
-        <RiskFilter value={riskFilter} onChange={setRiskFilter} />
-        {!isLoading && (
-          <p className="text-sm text-muted-foreground">
-            {patients.length} patient{patients.length !== 1 ? 's' : ''}
-          </p>
-        )}
-      </div>
-
-      {isLoading ? (
-        <div className="flex items-center justify-center py-16">
-          <Spinner size="lg" />
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border bg-card px-4 py-3">
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <Users className="h-4 w-4" />
+          {isLoading ? (
+            <span>Loading patient count…</span>
+          ) : (
+            <span>
+              {patients.length} patient{patients.length !== 1 ? 's' : ''} with active access
+            </span>
+          )}
         </div>
-      ) : (
-        <PatientList patients={patients} isLoading={isLoading} />
-      )}
+        <Button asChild variant="outline" size="sm">
+          <Link href="/doctor/patients">View all patients</Link>
+        </Button>
+      </div>
     </div>
   )
 }

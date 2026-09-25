@@ -9,10 +9,11 @@ import { UsersTab } from '@/features/admin/components/users-tab'
 import { RecordsTab } from '@/features/admin/components/records-tab'
 import { SettingsTab } from '@/features/admin/components/settings-tab'
 import { AccessHistoryTab } from '@/features/admin/components/access-history-tab'
+import { RoleRequestsTab } from '@/features/admin/components/role-requests-tab'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Spinner } from '@/components/ui/spinner'
-import { Users, FileText, Search, Download, Settings } from 'lucide-react'
+import { Users, FileText, Search, Download, Settings, UserCheck } from 'lucide-react'
 import { toast } from 'sonner'
 import { adminApi } from '@/lib/api'
 import type { SystemSettings } from '@/lib/api'
@@ -20,7 +21,7 @@ import type { SystemSettings } from '@/lib/api'
 export default function AdminPage() {
   const { user, isLoading: authLoading } = useAuth()
   const router = useRouter()
-  const [activeTab, setActiveTab] = useState<'users' | 'records' | 'access' | 'settings'>('users')
+  const [activeTab, setActiveTab] = useState<'users' | 'requests' | 'records' | 'access' | 'settings'>('users')
   const [searchTerm, setSearchTerm] = useState('')
   const [systemSettings, setSystemSettings] = useState<SystemSettings | null>(null)
 
@@ -40,11 +41,14 @@ export default function AdminPage() {
   const {
     users,
     doctors,
+    roleRequests,
     records,
     isLoading,
     stats,
     handleRoleChange,
     handleStatusChange,
+    handleApproveRoleRequest,
+    handleRejectRoleRequest,
     handleAssignDoctor,
     downloadCSV,
   } = useAdmin()
@@ -84,6 +88,14 @@ export default function AdminPage() {
           Users ({users.length})
         </Button>
         <Button
+          variant={activeTab === 'requests' ? 'default' : 'ghost'}
+          onClick={() => setActiveTab('requests')}
+          className="rounded-b-none"
+        >
+          <UserCheck className="h-4 w-4 mr-2" />
+          Role requests ({roleRequests.length})
+        </Button>
+        <Button
           variant={activeTab === 'records' ? 'default' : 'ghost'}
           onClick={() => setActiveTab('records')}
           className="rounded-b-none"
@@ -108,7 +120,7 @@ export default function AdminPage() {
         </Button>
       </div>
 
-      {activeTab !== 'settings' && (
+      {activeTab !== 'settings' && activeTab !== 'requests' && (
       <div className="flex gap-3">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -132,6 +144,13 @@ export default function AdminPage() {
         <div className="flex items-center justify-center py-12"><Spinner size="lg" /></div>
       ) : activeTab === 'settings' ? (
         <SettingsTab settings={systemSettings} onUpdated={setSystemSettings} />
+      ) : activeTab === 'requests' ? (
+        <RoleRequestsTab
+          requests={roleRequests}
+          isLoading={isLoading}
+          onApprove={handleApproveRoleRequest}
+          onReject={handleRejectRoleRequest}
+        />
       ) : activeTab === 'users' ? (
         <UsersTab
           users={users}
