@@ -54,7 +54,8 @@ class ApiClient {
   private async request<T>(
     endpoint: string,
     options: RequestInit = {},
-    retry = true
+    retry = true,
+    coldStartAttempt = 0,
   ): Promise<ApiResponse<T>> {
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
@@ -64,6 +65,9 @@ class ApiClient {
     if (this.accessToken) {
       headers['Authorization'] = `Bearer ${this.accessToken}`
     }
+
+    // Render Free: backend may still be waking after the frontend is live.
+    const maxColdStartAttempts = 4
 
     try {
       const response = await fetch(`${API_BASE}${endpoint}`, {
@@ -77,7 +81,7 @@ class ApiClient {
       if (status === 401 && retry) {
         const refreshed = await this.tryRefresh()
         if (refreshed) {
-          return this.request<T>(endpoint, options, false)
+          return this.request<T>(endpoint, options, false, coldStartAttempt)
         }
         // Refresh failed — wipe session and send to login
         localStorage.removeItem(ACCESS_TOKEN_KEY)
@@ -85,6 +89,15 @@ class ApiClient {
         this.accessToken = null
         window.location.href = '/login'
         return { error: 'Session expired. Please log in again.', status: 401 }
+      }
+
+      // Gateway/upstream errors while the sibling free service is cold-starting
+      if (
+        (status === 502 || status === 503 || status === 504) &&
+        coldStartAttempt < maxColdStartAttempts
+      ) {
+        await new Promise((r) => setTimeout(r, 2000 * (coldStartAttempt + 1)))
+        return this.request<T>(endpoint, options, retry, coldStartAttempt + 1)
       }
 
       if (status === 204) {
@@ -112,6 +125,10 @@ class ApiClient {
 
       return { data: data as T, status }
     } catch (error) {
+      if (coldStartAttempt < maxColdStartAttempts) {
+        await new Promise((r) => setTimeout(r, 2000 * (coldStartAttempt + 1)))
+        return this.request<T>(endpoint, options, retry, coldStartAttempt + 1)
+      }
       return {
         error: error instanceof Error ? error.message : 'Network error',
         status: 0,

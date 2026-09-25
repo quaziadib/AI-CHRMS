@@ -4,7 +4,8 @@ The root `render.yaml` is configured for a low-traffic demo on free tiers: a Nex
 
 ## Free-tier limits
 
-- Render free web services sleep after 15 minutes without traffic and can take about a minute to wake up. Free instance hours are shared across the workspace, so sustained traffic can exhaust the monthly allowance.
+- Render free web services sleep after 15 minutes without traffic and can take about a minute to wake up. The frontend and backend sleep **independently**, so the UI can be up while the API is still cold.
+- Mitigations in this repo: the frontend calls `/backend-health` on load to wake the API, the API client retries on 502/503/504, and `.github/workflows/keep-render-awake.yml` pings both services every 12 minutes. Free instance hours are shared across the workspace — disable that workflow if you hit the monthly cap or move to paid always-on plans.
 - This profile disables forecasting because forecast jobs require a background worker. It is not a production configuration.
 - Supabase Free projects can pause after a period of low database activity. See [Supabase's project pausing policy](https://supabase.com/docs/guides/platform/free-project-pausing).
 
