@@ -15,15 +15,18 @@ from app.db.bootstrap import bootstrap_database
 
 _LOG_HANDLERS = [logging.StreamHandler()]
 if not os.environ.get("VERCEL"):
-    _LOG_DIR = os.environ.get("LOG_DIR", "/app/logs")
-    os.makedirs(_LOG_DIR, exist_ok=True)
-    _LOG_HANDLERS.append(
-        RotatingFileHandler(
-            os.path.join(_LOG_DIR, "backend.log"),
-            maxBytes=10 * 1024 * 1024,
-            backupCount=5,
+    _LOG_DIR = os.environ.get("LOG_DIR", "/tmp/logs")
+    try:
+        os.makedirs(_LOG_DIR, exist_ok=True)
+        _LOG_HANDLERS.append(
+            RotatingFileHandler(
+                os.path.join(_LOG_DIR, "backend.log"),
+                maxBytes=10 * 1024 * 1024,
+                backupCount=5,
+            )
         )
-    )
+    except OSError:
+        pass  # stdout-only if the log directory is not writable
 
 logging.basicConfig(
     level=logging.INFO,
