@@ -52,6 +52,12 @@ class BodySizeLimitMiddleware(BaseHTTPMiddleware):
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     logger.info("Starting up Health Project API...")
+    # Always apply idempotent schema migrations (ADD COLUMN IF NOT EXISTS, etc.).
+    # Seeding stays behind DB_INIT_ON_STARTUP so production does not re-seed on every boot.
+    from app.db.init_db import create_tables
+
+    create_tables()
+    logger.info("Startup schema verification complete")
     if settings.DB_INIT_ON_STARTUP:
         bootstrap_database()
         logger.info("Startup database initialization complete")
