@@ -331,3 +331,82 @@ export interface HealthTrendPoint {
 export interface HealthTrends {
   submissions: HealthTrendPoint[]
 }
+
+export type PrescriptionStatus = 'draft' | 'published' | 'revoked'
+export type PrescriptionSection = 'symptoms_diagnosis' | 'lab_tests' | 'general_advice'
+
+export interface PrescriptionItemData {
+  content: string
+  order?: number
+}
+
+export interface PrescriptionMedicationData {
+  medicine_name: string
+  dosage_morning: number
+  dosage_afternoon: number
+  dosage_night: number
+  duration_days: number
+  instructions?: string
+  order?: number
+}
+
+export interface PrescriptionCreate {
+  status?: 'draft' | 'published'
+  symptoms_diagnosis?: PrescriptionItemData[]
+  lab_tests?: PrescriptionItemData[]
+  general_advice?: PrescriptionItemData[]
+  medications?: PrescriptionMedicationData[]
+}
+
+export interface PrescriptionUpdate {
+  status?: 'draft' | 'published' | 'revoked'
+  symptoms_diagnosis?: PrescriptionItemData[]
+  lab_tests?: PrescriptionItemData[]
+  general_advice?: PrescriptionItemData[]
+  medications?: PrescriptionMedicationData[]
+}
+
+export interface PrescriptionItemResponse {
+  id: string
+  section: string
+  content: string
+  order: number
+}
+
+export interface PrescriptionMedicationResponse {
+  id: string
+  medicine_name: string
+  dosage_morning: number
+  dosage_afternoon: number
+  dosage_night: number
+  duration_days: number
+  instructions?: string
+  order: number
+}
+
+export interface PrescriptionResponse {
+  id: string
+  doctor_id: string
+  patient_id: string
+  grant_id?: string
+  status: PrescriptionStatus
+  created_at: string
+  updated_at: string
+  doctor_name?: string
+  patient_name?: string
+  symptoms_diagnosis: PrescriptionItemResponse[]
+  lab_tests: PrescriptionItemResponse[]
+  general_advice: PrescriptionItemResponse[]
+  medications: PrescriptionMedicationResponse[]
+}
+
+export interface PrescriptionListItem {
+  id: string
+  doctor_id: string
+  patient_id: string
+  status: PrescriptionStatus
+  created_at: string
+  updated_at: string
+  doctor_name?: string
+  patient_name?: string
+}

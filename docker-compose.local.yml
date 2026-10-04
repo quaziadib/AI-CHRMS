@@ -1,0 +1,103 @@
+# Local development stack (hot reload, no nginx, no fixed container names).
+#
+#   docker compose -f docker-compose.local.yml up --build
+#   docker compose -f docker-compose.local.yml down        # keep data
+#   docker compose -f docker-compose.local.yml down -v     # wipe db (needed if you change POSTGRES_* creds)
+#
+# Reads optional overrides from .env in the repo root (ports, LLM keys).
+# Dev-only credentials below — never reuse them outside local.
+
+name: chrms-local   # isolates containers/network/volumes per compose project
+
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_USER: healthadmin
+      POSTGRES_PASSWORD: healthpass123
+      POSTGRES_DB: healthdb
+    volumes:
+      - pg_local:/var/lib/postgresql/data
+    ports:
+      - "${LOCAL_DB_PORT:-5433}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U healthadmin -d healthdb"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "${LOCAL_REDIS_PORT:-6379}:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    # Override image CMD: --reload watches the bind-mounted source.
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    environment: &backend_env
+      # Service name `db`, container port 5432 (not localhost:5433 — that is the host view).
+      DATABASE_URL: postgresql://healthadmin:healthpass123@db:5432/healthdb
+      REDIS_URL: redis://redis:6379/0
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY:-local-dev-only-secret-change-me-0123456789}
+      JWT_ALGORITHM: HS256
+      LLM_PROVIDER: ${LLM_PROVIDER:-anthropic}
+      LLM_MODEL: ${LLM_MODEL:-}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      GOOGLE_API_KEY: ${GOOGLE_API_KEY:-}
+      GROQ_API_KEY: ${GROQ_API_KEY:-}
+      SEED_SYNTHETIC_DATA: ${SEED_SYNTHETIC_DATA:-true}
+    volumes:
+      - ./backend/app:/app/app
+    ports:
+      - "${LOCAL_BACKEND_PORT:-8000}:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  celery_worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    command: celery -A app.celery_app worker --loglevel=info
+    environment: *backend_env
+    volumes:
+      - ./backend/app:/app/app
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  frontend:
+    image: node:22-alpine
+    working_dir: /app
+    # corepack gives pnpm (repo lockfile is pnpm-lock.yaml); next dev gives HMR.
+    command: sh -c "corepack enable pnpm && pnpm install --frozen-lockfile --ignore-scripts && pnpm dev --hostname 0.0.0.0 --port 3000"
+    environment:
+      BACKEND_URL: http://backend:8000   # read by next.config.mjs rewrites (/v1/* -> backend)
+      NEXT_TELEMETRY_DISABLED: "1"
+      WATCHPACK_POLLING: "true"          # reliable file watching on Docker Desktop for Mac
+    volumes:
+      - ./frontend:/app
+      - fe_node_modules:/app/node_modules  # keep container deps off the host (arch mismatch)
+      - fe_next_cache:/app/.next
+    ports:
+      - "${LOCAL_FRONTEND_PORT:-3000}:3000"
+    depends_on:
+      - backend
+
+volumes:
+  pg_local:
+  fe_node_modules:
+  fe_next_cache:

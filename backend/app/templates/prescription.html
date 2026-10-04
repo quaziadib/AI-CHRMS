@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<style>
+  @page {
+    size: A4;
+    margin: 20mm 18mm 20mm 18mm;
+  }
+  body {
+    font-family: DejaVu Sans, Arial, sans-serif;
+    font-size: 11pt;
+    color: #1a1a1a;
+    line-height: 1.5;
+  }
+  .header {
+    border-bottom: 2px solid #1a5276;
+    padding-bottom: 10px;
+    margin-bottom: 16px;
+  }
+  .clinic-name {
+    font-size: 16pt;
+    font-weight: bold;
+    color: #1a5276;
+  }
+  .clinic-sub {
+    font-size: 9pt;
+    color: #555;
+  }
+  .rx-symbol {
+    font-size: 24pt;
+    color: #1a5276;
+    float: right;
+    margin-top: -8px;
+  }
+  .meta-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 14px;
+    font-size: 10pt;
+  }
+  .meta-table td {
+    padding: 3px 6px;
+  }
+  .meta-table .label {
+    color: #555;
+    width: 120px;
+  }
+  .status-badge {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 4px;
+    font-size: 9pt;
+    font-weight: bold;
+  }
+  .status-published { background: #d5f5e3; color: #1e8449; }
+  .status-revoked   { background: #fadbd8; color: #922b21; }
+  .status-draft     { background: #fdebd0; color: #784212; }
+  .revocation-notice {
+    background: #fadbd8;
+    border-left: 4px solid #922b21;
+    padding: 8px 12px;
+    margin-bottom: 14px;
+    font-size: 10pt;
+    color: #922b21;
+  }
+  .section {
+    margin-bottom: 14px;
+  }
+  .section-title {
+    font-size: 11pt;
+    font-weight: bold;
+    color: #1a5276;
+    border-bottom: 1px solid #aed6f1;
+    padding-bottom: 3px;
+    margin-bottom: 6px;
+  }
+  ul.item-list {
+    margin: 0 0 0 18px;
+    padding: 0;
+  }
+  ul.item-list li {
+    margin-bottom: 3px;
+  }
+  .med-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 10pt;
+  }
+  .med-table th {
+    background: #eaf4fb;
+    text-align: left;
+    padding: 5px 7px;
+    border: 1px solid #d0e8f5;
+    font-weight: bold;
+    color: #1a5276;
+  }
+  .med-table td {
+    padding: 5px 7px;
+    border: 1px solid #e8e8e8;
+    vertical-align: top;
+  }
+  .med-table tr:nth-child(even) td {
+    background: #f8fbfd;
+  }
+  .dosage {
+    font-family: monospace;
+    font-size: 10pt;
+  }
+  .footer {
+    margin-top: 30px;
+    border-top: 1px solid #ccc;
+    padding-top: 10px;
+    font-size: 9pt;
+    color: #777;
+    text-align: center;
+  }
+  .empty { color: #aaa; font-style: italic; font-size: 10pt; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <span class="rx-symbol">&#8478;</span>
+  <div class="clinic-name">AI-CHRMS Health Centre</div>
+  <div class="clinic-sub">AI-Powered Chronic Disease Management &mdash; Bangladesh</div>
+</div>
+
+<table class="meta-table">
+  <tr>
+    <td class="label">Patient</td>
+    <td><strong>{{ prescription.patient_name or prescription.patient_id }}</strong></td>
+    <td class="label">Date Issued</td>
+    <td>{{ prescription.created_at.strftime('%d %B %Y, %H:%M') if prescription.created_at else '' }}</td>
+  </tr>
+  <tr>
+    <td class="label">Physician</td>
+    <td>{{ prescription.doctor_name or prescription.doctor_id }}</td>
+    <td class="label">Status</td>
+    <td>
+      <span class="status-badge status-{{ prescription.status }}">
+        {{ prescription.status | upper }}
+      </span>
+    </td>
+  </tr>
+  <tr>
+    <td class="label">Reference No.</td>
+    <td colspan="3" style="font-size:9pt; color:#888;">{{ prescription.id }}</td>
+  </tr>
+</table>
+
+{% if prescription.status == 'revoked' %}
+<div class="revocation-notice">
+  &#9888; This prescription has been revoked by the issuing physician. It is retained for record purposes only and should not be acted upon.
+</div>
+{% endif %}
+
+{% if prescription.symptoms_diagnosis %}
+<div class="section">
+  <div class="section-title">1. Symptoms &amp; Diagnosis</div>
+  <ul class="item-list">
+    {% for item in prescription.symptoms_diagnosis %}
+    <li>{{ item.content }}</li>
+    {% endfor %}
+  </ul>
+</div>
+{% endif %}
+
+{% if prescription.medications %}
+<div class="section">
+  <div class="section-title">2. Medications</div>
+  <table class="med-table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Medicine</th>
+        <th>Dosage (M+A+N)</th>
+        <th>Duration</th>
+        <th>Instructions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for med in prescription.medications %}
+      <tr>
+        <td>{{ loop.index }}</td>
+        <td><strong>{{ med.medicine_name }}</strong></td>
+        <td class="dosage">{{ med.dosage_morning }}+{{ med.dosage_afternoon }}+{{ med.dosage_night }}</td>
+        <td>{{ med.duration_days }} day{% if med.duration_days != 1 %}s{% endif %}</td>
+        <td>{{ med.instructions or '—' }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <p style="font-size:9pt;color:#555;margin-top:4px;">M = Morning &nbsp;|&nbsp; A = Afternoon &nbsp;|&nbsp; N = Night</p>
+</div>
+{% endif %}
+
+{% if prescription.lab_tests %}
+<div class="section">
+  <div class="section-title">3. Lab Tests</div>
+  <ul class="item-list">
+    {% for item in prescription.lab_tests %}
+    <li>{{ item.content }}</li>
+    {% endfor %}
+  </ul>
+</div>
+{% endif %}
+
+{% if prescription.general_advice %}
+<div class="section">
+  <div class="section-title">4. General Advice</div>
+  <ul class="item-list">
+    {% for item in prescription.general_advice %}
+    <li>{{ item.content }}</li>
+    {% endfor %}
+  </ul>
+</div>
+{% endif %}
+
+{% if not prescription.symptoms_diagnosis and not prescription.medications and not prescription.lab_tests and not prescription.general_advice %}
+<p class="empty">No clinical content recorded.</p>
+{% endif %}
+
+<div class="footer">
+  AI-CHRMS &mdash; Generated {{ prescription.updated_at.strftime('%d %B %Y') if prescription.updated_at else '' }} &mdash; This document is computer-generated. Verify with the issuing physician.
+</div>
+
+</body>
+</html>

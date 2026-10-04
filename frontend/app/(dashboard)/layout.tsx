@@ -40,7 +40,7 @@ const ROLE_GUARDS: Array<{ prefix: string; allowedRoles: string[] }> = [
   { prefix: "/national", allowedRoles: ["national_admin", "admin"] },
 ];
 
-const PATIENT_ONLY_PREFIXES = ["/dashboard", "/health-form", "/records", "/doctor-access"];
+const PATIENT_ONLY_PREFIXES = ["/dashboard", "/health-form", "/records", "/doctor-access", "/prescriptions"];
 
 export default function DashboardLayout({
   children,

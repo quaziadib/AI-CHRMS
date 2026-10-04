@@ -9,6 +9,7 @@ import {
   Globe,
   MessageCircle,
   Users,
+  ClipboardPlus,
 } from "lucide-react"
 
 export type DashboardNavItem = {
@@ -28,6 +29,7 @@ export const NAV_PATIENT: DashboardNavItem[] = [
   { name: "Health Form", href: "/health-form", icon: ClipboardList },
   { name: "My Records", href: "/records", icon: FileText },
   { name: "Doctor Access", href: "/doctor-access", icon: Stethoscope },
+  { name: "Advices & Prescriptions", href: "/prescriptions", icon: ClipboardPlus },
   { name: "Messages", href: "/messages", icon: MessageCircle },
   { name: "Profile", href: "/profile", icon: User },
 ]
@@ -36,6 +38,7 @@ export const NAV_PATIENT: DashboardNavItem[] = [
 export const NAV_DOCTOR: DashboardNavItem[] = [
   { name: "Doctor Dashboard", href: "/doctor", icon: Stethoscope },
   { name: "Patients", href: "/doctor/patients", icon: Users },
+  { name: "Advices & Prescriptions", href: "/doctor/prescriptions", icon: ClipboardPlus },
   { name: "Messages", href: "/messages", icon: MessageCircle },
   { name: "Profile", href: "/profile", icon: User },
 ]
@@ -58,7 +61,7 @@ export const ROLE_HOMES: Record<string, string> = {
   user: "/dashboard",
 }
 
-const PATIENT_CLINICAL_HREFS = new Set(["/dashboard", "/health-form", "/records", "/doctor-access"])
+const PATIENT_CLINICAL_HREFS = new Set(["/dashboard", "/health-form", "/records", "/doctor-access", "/prescriptions"])
 const DOCTOR_CLINICAL_PREFIXES = ["/doctor"]
 
 function isDoctorClinicalHref(href: string): boolean {
@@ -87,10 +90,20 @@ export function isNavItemActive(pathname: string, href: string): boolean {
   if (href === "/doctor/patients") {
     return pathname === "/doctor/patients" || pathname.startsWith("/doctor/patients/")
   }
+  if (href === "/doctor/prescriptions") {
+    return pathname === "/doctor/prescriptions" || pathname.startsWith("/doctor/prescriptions/")
+  }
   if (href === "/doctor") {
-    return pathname === "/doctor" || (pathname.startsWith("/doctor/") && !pathname.startsWith("/doctor/patients"))
+    return pathname === "/doctor" || (
+      pathname.startsWith("/doctor/") &&
+      !pathname.startsWith("/doctor/patients") &&
+      !pathname.startsWith("/doctor/prescriptions")
+    )
   }
   if (href === "/national") return pathname.startsWith("/national")
+  if (href === "/prescriptions") {
+    return pathname === "/prescriptions" || pathname.startsWith("/prescriptions/")
+  }
   return pathname === href
 }
 

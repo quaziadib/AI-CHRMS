@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from app.api.v1 import auth, users, records, admin, doctor, chat, national, sharing, messages
+from app.api.v1 import auth, users, records, admin, doctor, chat, national, sharing, messages, prescriptions
 
 router = APIRouter(prefix="/v1")
 router.include_router(auth.router, prefix="/auth", tags=["Authentication"])
@@ -12,3 +12,4 @@ router.include_router(chat.router, prefix="/chat", tags=["Chat"])
 router.include_router(national.router, prefix="/national", tags=["National"])
 router.include_router(sharing.router, prefix="/sharing", tags=["Patient Sharing"])
 router.include_router(messages.router, prefix="/messages", tags=["Patient-Doctor Messaging"])
+router.include_router(prescriptions.router, prefix="/prescriptions", tags=["Prescriptions"])
