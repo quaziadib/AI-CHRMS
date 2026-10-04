@@ -5,14 +5,23 @@ from datetime import datetime, timedelta, timezone
 
 from jose import JWTError, jwt
 from passlib.context import CryptContext
+from passlib.exc import UnknownHashError
 
 from app.core.config import settings
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
+# Stored for accounts that must never authenticate (e.g. ingested datasets).
+# Not a valid bcrypt hash, so verify_password always rejects it.
+UNUSABLE_PASSWORD_HASH = "!"
+
+
 def verify_password(plain: str, hashed: str) -> bool:
-    return pwd_context.verify(plain, hashed)
+    try:
+        return pwd_context.verify(plain, hashed)
+    except (UnknownHashError, ValueError):
+        return False
 
 
 def hash_password(password: str) -> str:

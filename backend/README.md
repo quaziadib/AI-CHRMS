@@ -125,6 +125,39 @@ SQLAlchemy ORM (app/models/*.py)
 PostgreSQL
 ```
 
+## Dataset ingestion & export
+
+The bundled synthetic datasets live in `app/data/seed/` (`doctors_100.csv`, `patients_1000.csv`). They are loaded by a CLI that targets whatever database `DATABASE_URL` points to, and does not depend on the `SEED_*` flags (which stay `false` in production).
+
+```bash
+cd backend
+python -m app.scripts.ingest_datasets --dry-run   # validate + report, writes nothing
+python -m app.scripts.ingest_datasets             # real run
+```
+
+- Prints the target `host/port/db` (never credentials) first. Check it before a real run.
+- Idempotent: matched by doctor `id` / patient `pid`. Re-runs update in place, never delete, and never touch an existing record's assigned doctor, risk scores, EHR summary or plan.
+- Rejected rows are listed with line number and reason; valid rows still load. Each file is one transaction.
+- Ingested accounts (doctors and one stub patient account per `user_id`) cannot sign in.
+- Exit codes: `0` ok, `1` database error, `2` missing/invalid file (including bundled-file row-count mismatch).
+- Local: `docker compose up db`, then `DATABASE_URL=postgresql://healthadmin:healthpass123@localhost:5433/healthdb python -m app.scripts.ingest_datasets`.
+- Production (Render): open the service Shell (it already has the production `DATABASE_URL`), `cd /app/backend`, run `--dry-run`, confirm the host, then run without it.
+
+Rollback (ingestion only adds rows; patient pids all start with `BD-SYN-`):
+
+```sql
+DELETE FROM patient_records WHERE pid LIKE 'BD-SYN-%';
+DELETE FROM users WHERE email LIKE '%@patient.example.bd';  -- stub patient accounts
+DELETE FROM users WHERE email LIKE '%@doctor.example.bd';   -- doctors; profiles cascade
+```
+
+Admin-only CSV exports (same columns as the import files; no password hashes; audited; `Cache-Control: no-store`):
+
+- `GET /v1/admin/export/doctors.csv`
+- `GET /v1/admin/export/patients.csv`
+
+Text cells starting with `= + - @` are prefixed with `'` so spreadsheets don't execute them (this includes phone numbers beginning with `+`); the importer strips that prefix again.
+
 ## Extending the App
 
 ### Add a new database model
