@@ -3,7 +3,7 @@ from datetime import datetime
 
 from sqlalchemy import Boolean, DateTime, String, Text
 from sqlalchemy.dialects.postgresql import ARRAY, UUID
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base, TimestampMixin, _now
 
@@ -23,6 +23,14 @@ class User(TimestampMixin, Base):
     roles: Mapped[list[str]] = mapped_column(ARRAY(String), default=list, nullable=False)
     requested_role: Mapped[str | None] = mapped_column(String(32), nullable=True)
     role_request_status: Mapped[str | None] = mapped_column(String(32), nullable=True)
+
+    doctor_profile = relationship(
+        "DoctorProfile",
+        back_populates="user",
+        uselist=False,
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )
 
 
 class RefreshToken(Base):

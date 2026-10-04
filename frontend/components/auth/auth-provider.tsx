@@ -8,7 +8,7 @@ import {
   useCallback,
   type ReactNode,
 } from 'react'
-import { api, authApi, type User } from '@/lib/api'
+import { api, authApi, type DoctorProfileInput, type User } from '@/lib/api'
 
 interface AuthContextType {
   user: User | null
@@ -21,6 +21,7 @@ interface AuthContextType {
     full_name: string
     phone?: string
     role?: 'user' | 'doctor' | 'national_admin' | 'admin'
+    doctor_profile?: DoctorProfileInput
   }) => Promise<{ success: boolean; error?: string; user?: User }>
   logout: () => Promise<void>
   refreshUser: () => Promise<void>
@@ -111,6 +112,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     full_name: string
     phone?: string
     role?: 'user' | 'doctor' | 'national_admin' | 'admin'
+    doctor_profile?: DoctorProfileInput
   }): Promise<{ success: boolean; error?: string; user?: User }> => {
     const { data, error } = await authApi.register(registerData)
 

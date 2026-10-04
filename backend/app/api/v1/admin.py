@@ -6,7 +6,7 @@ from app.api.deps import AdminUser, DB
 from app.schemas.audit import AdminStatsResponse, AuditLogResponse
 from app.schemas.record import AssignDoctorRequest, PatientRecordResponse
 from app.schemas.patient_sharing import AccessEventResponse
-from app.schemas.user import AdminUserUpdate, UserResponse
+from app.schemas.user import AdminUserUpdate, RoleRequestResponse, UserResponse
 from app.schemas.resubmit import SystemSettingsResponse, SystemSettingsUpdate
 from app.services import admin as admin_service
 from app.services import patient_sharing as sharing_service
@@ -97,7 +97,7 @@ def update_settings(body: SystemSettingsUpdate, admin: AdminUser, db: DB):
     )
 
 
-@router.get("/role-requests", response_model=list[UserResponse])
+@router.get("/role-requests", response_model=list[RoleRequestResponse])
 def get_role_requests(
     admin: AdminUser,
     db: DB,

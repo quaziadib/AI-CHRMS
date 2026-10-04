@@ -6,19 +6,19 @@ import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Spinner } from '@/components/ui/spinner'
+import { DoctorPicker } from '@/features/sharing/components/doctor-picker'
 import { sharingApi } from '@/lib/api'
 import type { PatientGrant } from '@/lib/api'
 
 export function PatientSharingPanel() {
   const { data, isLoading, mutate } = useSWR('patient-sharing-profile', async () => {
-    const [doctorsRes, grantsRes] = await Promise.all([sharingApi.getDoctors(), sharingApi.getGrants()])
-    if (!doctorsRes.data || !grantsRes.data) {
-      throw new Error(doctorsRes.error ?? grantsRes.error ?? 'Could not load doctor access')
+    const grantsRes = await sharingApi.getGrants()
+    if (!grantsRes.data) {
+      throw new Error(grantsRes.error ?? 'Could not load doctor access')
     }
-    return { doctors: doctorsRes.data, grants: grantsRes.data }
+    return { grants: grantsRes.data }
   })
   const [doctorId, setDoctorId] = useState('')
-  const doctors = data?.doctors ?? []
   const grants = data?.grants ?? []
 
   const grantAccess = async () => {
@@ -53,13 +53,8 @@ export function PatientSharingPanel() {
           <CardDescription>Only doctors you choose who accept your request can see your health profile. You can revoke access at any time.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="flex flex-col gap-2 sm:flex-row">
-            <select className="h-10 flex-1 rounded-md border bg-background px-3 text-sm" value={doctorId} onChange={(event) => setDoctorId(event.target.value)}>
-              <option value="">Select a doctor</option>
-              {doctors.map((doctor) => <option key={doctor.id} value={doctor.id}>{doctor.full_name} · {doctor.email}</option>)}
-            </select>
-            <Button onClick={grantAccess} disabled={!doctorId}>Grant access</Button>
-          </div>
+          <DoctorPicker selectedId={doctorId} onSelect={setDoctorId} />
+          <Button onClick={grantAccess} disabled={!doctorId}>Grant access</Button>
           {grants.length === 0 ? <p className="text-sm text-muted-foreground">You have no doctor access requests.</p> : (
             <div className="divide-y rounded-md border">
               {grants.map((grant) => (

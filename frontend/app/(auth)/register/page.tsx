@@ -22,6 +22,9 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Spinner } from '@/components/ui/spinner'
+import { BD_DIVISIONS } from '@/lib/bd-divisions'
+
+const ID_PIC_MAX_BYTES = 1_000_000
 
 const registerSchema = z.object({
   full_name: z.string().min(2, 'Name must be at least 2 characters'),
@@ -30,6 +33,20 @@ const registerSchema = z.object({
   role: z.enum(['user', 'doctor', 'national_admin', 'admin']),
   password: z.string().min(8, 'Password must be at least 8 characters'),
   confirm_password: z.string(),
+  specialization: z.string().optional(),
+  affiliations: z.string().optional(),
+  division: z.string().optional(),
+  district: z.string().optional(),
+  location: z.string().optional(),
+  id_pic: z.string().optional(),
+}).superRefine((data, ctx) => {
+  if (data.role !== 'doctor') return
+  const required = ['specialization', 'division', 'district', 'location'] as const
+  for (const field of required) {
+    if (!data[field]?.trim() || data[field]!.trim().length < 2) {
+      ctx.addIssue({ code: 'custom', path: [field], message: 'Required for doctors' })
+    }
+  }
 }).refine((data) => data.password === data.confirm_password, {
   message: "Passwords don't match",
   path: ['confirm_password'],
@@ -50,6 +67,7 @@ export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [idPicName, setIdPicName] = useState('')
 
   const {
     register,
@@ -63,6 +81,27 @@ export default function RegisterPage() {
   })
 
   const selectedRole = watch('role')
+  const selectedDivision = watch('division')
+
+  const onIdPicChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (!file) {
+      setValue('id_pic', undefined)
+      setIdPicName('')
+      return
+    }
+    if (!file.type.startsWith('image/') || file.size > ID_PIC_MAX_BYTES) {
+      toast.error('ID picture must be an image under 1 MB')
+      event.target.value = ''
+      return
+    }
+    const reader = new FileReader()
+    reader.onload = () => {
+      setValue('id_pic', String(reader.result))
+      setIdPicName(file.name)
+    }
+    reader.readAsDataURL(file)
+  }
 
   const onSubmit = async (data: RegisterFormData) => {
     setIsLoading(true)
@@ -73,6 +112,16 @@ export default function RegisterPage() {
         full_name: data.full_name,
         phone: data.phone || undefined,
         role: data.role,
+        doctor_profile: data.role === 'doctor'
+          ? {
+              specialization: data.specialization!.trim(),
+              affiliations: (data.affiliations ?? '').split(',').map((a) => a.trim()).filter(Boolean),
+              division: data.division!.trim(),
+              district: data.district!.trim(),
+              location: data.location!.trim(),
+              id_pic: data.id_pic || null,
+            }
+          : undefined,
       })
       if (result.success) {
         if (result.user?.role_request_status === 'pending') {
@@ -174,6 +223,51 @@ export default function RegisterPage() {
                 <p className="text-sm text-destructive">{errors.role.message}</p>
               )}
             </div>
+            {selectedRole === 'doctor' && (
+              <fieldset className="space-y-4 rounded-md border p-4">
+                <legend className="px-1 text-sm font-medium">Doctor details</legend>
+                <div className="space-y-2">
+                  <Label htmlFor="specialization">Specialization</Label>
+                  <Input id="specialization" placeholder="e.g. Endocrinology" {...register('specialization')} aria-invalid={!!errors.specialization} />
+                  {errors.specialization && <p className="text-sm text-destructive">{errors.specialization.message}</p>}
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="affiliations">Affiliations (Optional)</Label>
+                  <Input id="affiliations" placeholder="Comma-separated hospitals / clinics" {...register('affiliations')} />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="division">Division</Label>
+                  <Select
+                    value={selectedDivision ?? ''}
+                    onValueChange={(value) => setValue('division', value, { shouldValidate: true })}
+                  >
+                    <SelectTrigger id="division" className="w-full" aria-invalid={!!errors.division}>
+                      <SelectValue placeholder="Select a division" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {BD_DIVISIONS.map((d) => <SelectItem key={d} value={d}>{d}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                  {errors.division && <p className="text-sm text-destructive">{errors.division.message}</p>}
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="district">District</Label>
+                  <Input id="district" placeholder="e.g. Dhaka" {...register('district')} aria-invalid={!!errors.district} />
+                  {errors.district && <p className="text-sm text-destructive">{errors.district.message}</p>}
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="location">Practice location</Label>
+                  <Input id="location" placeholder="Chamber / hospital address" {...register('location')} aria-invalid={!!errors.location} />
+                  {errors.location && <p className="text-sm text-destructive">{errors.location.message}</p>}
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="id_pic">ID picture (Optional)</Label>
+                  <Input id="id_pic" type="file" accept="image/*" onChange={onIdPicChange} />
+                  {idPicName && <p className="text-xs text-muted-foreground">{idPicName}</p>}
+                  <p className="text-xs text-muted-foreground">Shown only to admins reviewing your request. Max 1 MB.</p>
+                </div>
+              </fieldset>
+            )}
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
               <div className="relative">

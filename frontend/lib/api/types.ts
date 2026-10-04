@@ -152,6 +152,47 @@ export interface DoctorOption {
   id: string
   full_name: string
   email: string
+  specialization?: string | null
+  affiliations: string[]
+  division?: string | null
+  district?: string | null
+  location?: string | null
+}
+
+export type DoctorSearchBy = 'all' | 'name' | 'email' | 'specialization' | 'affiliation' | 'location'
+
+export interface DoctorSearchParams {
+  q?: string
+  search_by?: DoctorSearchBy
+  specialization?: string
+  division?: string
+  district?: string
+  limit?: number
+  offset?: number
+}
+
+export interface DoctorSearchResponse {
+  items: DoctorOption[]
+  total: number
+}
+
+export interface DoctorFilterOptions {
+  specializations: string[]
+  divisions: string[]
+  districts: string[]
+}
+
+export interface DoctorProfileInput {
+  specialization: string
+  affiliations: string[]
+  division: string
+  district: string
+  location: string
+  id_pic?: string | null
+}
+
+export interface RoleRequest extends User {
+  doctor_profile?: DoctorProfileInput | null
 }
 
 export interface PatientGrant {

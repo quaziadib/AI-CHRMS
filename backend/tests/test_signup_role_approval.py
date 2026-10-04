@@ -27,7 +27,7 @@ def test_user_create_defaults_to_patient():
 
 
 def test_user_create_accepts_elevated_roles():
-    for role in ("doctor", "national_admin", "admin"):
+    for role in ("national_admin", "admin"):
         data = UserCreate(
             email=f"{role}@example.com",
             password="password1",
@@ -35,6 +35,42 @@ def test_user_create_accepts_elevated_roles():
             role=role,  # type: ignore[arg-type]
         )
         assert data.role == role
+
+
+_DOCTOR_PROFILE = {
+    "specialization": "Endocrinology",
+    "division": "Dhaka Division",
+    "district": "Dhaka",
+    "location": "Shahbag, Dhaka",
+}
+
+
+def test_doctor_signup_requires_profile():
+    with pytest.raises(ValidationError):
+        UserCreate(email="d@example.com", password="password1", full_name="Dr D", role="doctor")
+    data = UserCreate(
+        email="d@example.com", password="password1", full_name="Dr D", role="doctor",
+        doctor_profile=_DOCTOR_PROFILE,  # type: ignore[arg-type]
+    )
+    assert data.doctor_profile and data.doctor_profile.affiliations == []
+
+
+def test_doctor_signup_rejects_missing_profile_field():
+    incomplete = {k: v for k, v in _DOCTOR_PROFILE.items() if k != "district"}
+    with pytest.raises(ValidationError):
+        UserCreate(
+            email="d@example.com", password="password1", full_name="Dr D", role="doctor",
+            doctor_profile=incomplete,  # type: ignore[arg-type]
+        )
+
+
+@pytest.mark.parametrize("role", ["user", "national_admin", "admin"])
+def test_non_doctor_signup_rejects_profile(role):
+    with pytest.raises(ValidationError):
+        UserCreate(
+            email="x@example.com", password="password1", full_name="Name", role=role,  # type: ignore[arg-type]
+            doctor_profile=_DOCTOR_PROFILE,  # type: ignore[arg-type]
+        )
 
 
 def test_user_create_rejects_invalid_role():
