@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { Plus, X, ChevronDown, ChevronUp } from "lucide-react"
 import { toast } from "sonner"
@@ -39,6 +39,12 @@ interface Props {
     general_advice?: string[]
     medications?: MedicationRow[]
   }
+  /** Embedded mode: called after a successful save instead of navigating to the list page. */
+  onSaved?: () => void
+  /** Embedded mode: renders a Cancel button. */
+  onCancel?: () => void
+  /** Embedded mode: reports whether the form has unsaved edits. */
+  onDirtyChange?: (dirty: boolean) => void
 }
 
 function SuggestionTagInput({
@@ -232,7 +238,7 @@ function MedicationsSection({
   )
 }
 
-export function DoctorComposeForm({ patientId, existingPrescriptionId, currentStatus, defaultValues }: Props) {
+export function DoctorComposeForm({ patientId, existingPrescriptionId, currentStatus, defaultValues, onSaved, onCancel, onDirtyChange }: Props) {
   const router = useRouter()
   const [symptoms, setSymptoms] = useState<string[]>(defaultValues?.symptoms_diagnosis ?? [])
   const [labTests, setLabTests] = useState<string[]>(defaultValues?.lab_tests ?? [])
@@ -241,6 +247,10 @@ export function DoctorComposeForm({ patientId, existingPrescriptionId, currentSt
     defaultValues?.medications ?? []
   )
   const [isSaving, setIsSaving] = useState(false)
+
+  useEffect(() => {
+    onDirtyChange?.(symptoms.length + labTests.length + advice.length + medications.length > 0)
+  }, [symptoms, labTests, advice, medications, onDirtyChange])
 
   function removeItem(list: string[], setList: (v: string[]) => void, idx: number) {
     setList(list.filter((_, i) => i !== idx))
@@ -278,7 +288,9 @@ export function DoctorComposeForm({ patientId, existingPrescriptionId, currentSt
     toast.success(
       action === "draft" ? "Draft saved" : action === "published" ? "Prescription published" : "Prescription updated",
     )
-    router.push(`/doctor/prescriptions/${patientId}`)
+    onDirtyChange?.(false)
+    if (onSaved) onSaved()
+    else router.push(`/doctor/prescriptions/${patientId}`)
   }
 
   return (
@@ -310,6 +322,11 @@ export function DoctorComposeForm({ patientId, existingPrescriptionId, currentSt
       />
 
       <div className="flex gap-3 justify-end pt-2">
+        {onCancel && (
+          <Button type="button" variant="ghost" disabled={isSaving} onClick={onCancel}>
+            Cancel
+          </Button>
+        )}
         {currentStatus === "published" ? (
           <Button
             type="button"

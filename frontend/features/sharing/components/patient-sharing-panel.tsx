@@ -12,17 +12,14 @@ import type { PatientGrant } from '@/lib/api'
 
 export function PatientSharingPanel() {
   const { data, isLoading, mutate } = useSWR('patient-sharing-profile', async () => {
-    const [grantsRes, interactionRes] = await Promise.all([
-      sharingApi.getGrants(), sharingApi.getInteractions(),
-    ])
-    if (!grantsRes.data || !interactionRes.data) {
-      throw new Error(grantsRes.error ?? interactionRes.error ?? 'Could not load patient profile history')
+    const grantsRes = await sharingApi.getGrants()
+    if (!grantsRes.data) {
+      throw new Error(grantsRes.error ?? 'Could not load doctor access')
     }
-    return { grants: grantsRes.data, interactions: interactionRes.data }
+    return { grants: grantsRes.data }
   })
   const [doctorId, setDoctorId] = useState('')
   const grants = data?.grants ?? []
-  const interactions = data?.interactions ?? []
 
   const grantAccess = async () => {
     if (!doctorId) return
@@ -70,15 +67,6 @@ export function PatientSharingPanel() {
                 </div>
               ))}
             </div>
-          )}
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader><CardTitle>Doctor interactions</CardTitle><CardDescription>Clinical interactions recorded by your doctors.</CardDescription></CardHeader>
-        <CardContent>
-          {interactions.length === 0 ? <p className="text-sm text-muted-foreground">No doctor interactions recorded yet.</p> : (
-            <div className="space-y-3">{interactions.map((item) => <article key={item.id} className="rounded-md border p-3"><p className="text-sm font-medium">{item.doctor_name ?? 'Doctor'} · {new Date(item.interaction_at).toLocaleString()}</p><p className="mt-2 whitespace-pre-wrap text-sm">{item.note}</p></article>)}</div>
           )}
         </CardContent>
       </Card>

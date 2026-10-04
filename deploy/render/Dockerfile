@@ -23,12 +23,20 @@ RUN ./node_modules/.bin/next build
 # ---------- final image ----------
 FROM python:3.12-slim-bookworm
 
+# libpango/cairo/gdk-pixbuf/fonts: required by weasyprint for prescription PDFs
+
 RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc \
     libpq-dev \
     curl \
     ca-certificates \
     gnupg \
+    libpango-1.0-0 \
+    libpangoft2-1.0-0 \
+    libcairo2 \
+    libgdk-pixbuf-2.0-0 \
+    libffi-dev \
+    fonts-dejavu-core \
   && curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
   && apt-get install -y --no-install-recommends nodejs \
   && rm -rf /var/lib/apt/lists/*
