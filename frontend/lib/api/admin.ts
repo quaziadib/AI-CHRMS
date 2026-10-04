@@ -1,5 +1,5 @@
 import { api } from './client'
-import type { User, PatientRecord, AuditLog, AdminStats, SystemSettings, PatientAccessEvent } from './types'
+import type { User, RoleRequest, PatientRecord, AuditLog, AdminStats, SystemSettings, PatientAccessEvent } from './types'
 
 export const adminApi = {
   getUsers: (params?: { skip?: number; limit?: number; search?: string; role?: string }) => {
@@ -56,7 +56,7 @@ export const adminApi = {
     if (params?.skip) searchParams.set('skip', String(params.skip))
     if (params?.limit) searchParams.set('limit', String(params.limit))
     const query = searchParams.toString()
-    return api.get<User[]>(`/admin/role-requests${query ? `?${query}` : ''}`)
+    return api.get<RoleRequest[]>(`/admin/role-requests${query ? `?${query}` : ''}`)
   },
   approveRoleRequest: (userId: string) =>
     api.post<User>(`/admin/role-requests/${userId}/approve`),

@@ -3,12 +3,12 @@
 import { useState, useEffect } from 'react'
 import { toast } from 'sonner'
 import { adminApi } from '@/lib/api'
-import type { User, PatientRecord } from '@/lib/api'
+import type { User, PatientRecord, RoleRequest } from '@/lib/api'
 
 export function useAdmin() {
   const [users, setUsers] = useState<User[]>([])
   const [doctors, setDoctors] = useState<User[]>([])
-  const [roleRequests, setRoleRequests] = useState<User[]>([])
+  const [roleRequests, setRoleRequests] = useState<RoleRequest[]>([])
   const [records, setRecords] = useState<PatientRecord[]>([])
   const [isLoading, setIsLoading] = useState(true)
 

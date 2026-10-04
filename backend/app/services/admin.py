@@ -3,14 +3,14 @@ from typing import Optional
 
 from fastapi import HTTPException
 from sqlalchemy import func
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from app.models.audit import AuditLog
 from app.models.record import PatientRecord
 from app.models.user import User
 from app.schemas.audit import AdminStatsResponse, AuditLogResponse
 from app.schemas.record import PatientRecordResponse
-from app.schemas.user import UserResponse, roles_for_approved_signup
+from app.schemas.user import RoleRequestResponse, UserResponse, roles_for_approved_signup
 from app.services.audit import log_audit
 
 
@@ -136,10 +136,14 @@ def list_role_requests(
     status: str = "pending",
     skip: int = 0,
     limit: int = 100,
-) -> list[UserResponse]:
-    query = db.query(User).filter(User.role_request_status == status)
+) -> list[RoleRequestResponse]:
+    query = (
+        db.query(User)
+        .options(joinedload(User.doctor_profile))
+        .filter(User.role_request_status == status)
+    )
     users = query.order_by(User.created_at.desc()).offset(skip).limit(limit).all()
-    return [UserResponse.model_validate(u) for u in users]
+    return [RoleRequestResponse.model_validate(u) for u in users]
 
 
 def approve_role_request(db: Session, admin_id: str, user_id: str) -> UserResponse:

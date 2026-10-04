@@ -1,5 +1,5 @@
 import { api } from './client'
-import type { User } from './types'
+import type { DoctorProfileInput, User } from './types'
 
 export const authApi = {
   register: (data: {
@@ -8,6 +8,7 @@ export const authApi = {
     full_name: string
     phone?: string
     role?: 'user' | 'doctor' | 'national_admin' | 'admin'
+    doctor_profile?: DoctorProfileInput
   }) =>
     api.post<{ access_token: string; refresh_token: string; user: User }>('/auth/register', data),
 

@@ -7,10 +7,31 @@ from app.schemas.base import OrmSchema
 from app.schemas.record import PatientRecordResponse
 
 
+SearchBy = Literal["all", "name", "email", "specialization", "affiliation", "location"]
+
+
 class DoctorOption(BaseModel):
+    """Patient-facing doctor summary. Never includes the ID picture."""
+
     id: str
     full_name: str
     email: str
+    specialization: str | None = None
+    affiliations: list[str] = Field(default_factory=list)
+    division: str | None = None
+    district: str | None = None
+    location: str | None = None
+
+
+class DoctorSearchResponse(BaseModel):
+    items: list[DoctorOption]
+    total: int
+
+
+class DoctorFilterOptions(BaseModel):
+    specializations: list[str]
+    divisions: list[str]
+    districts: list[str]
 
 
 class GrantCreate(BaseModel):

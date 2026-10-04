@@ -1,8 +1,12 @@
-from fastapi import APIRouter, Response, status
+from typing import Annotated
+
+from fastapi import APIRouter, Query, Response, status
 
 from app.api.deps import DB, PatientUser
 from app.schemas.patient_sharing import (
-    DoctorOption,
+    DoctorFilterOptions,
+    DoctorSearchResponse,
+    SearchBy,
     GrantCreate,
     InteractionResponse,
     MedicationCreate,
@@ -14,9 +18,27 @@ from app.services import patient_sharing as sharing_service
 router = APIRouter()
 
 
-@router.get("/doctors", response_model=list[DoctorOption])
-def get_doctors(_patient: PatientUser, db: DB):
-    return sharing_service.list_doctors(db)
+@router.get("/doctors", response_model=DoctorSearchResponse)
+def get_doctors(
+    _patient: PatientUser,
+    db: DB,
+    q: Annotated[str | None, Query(max_length=100)] = None,
+    search_by: SearchBy = "all",
+    specialization: Annotated[str | None, Query(max_length=255)] = None,
+    division: Annotated[str | None, Query(max_length=100)] = None,
+    district: Annotated[str | None, Query(max_length=100)] = None,
+    limit: Annotated[int, Query(ge=1, le=100)] = 20,
+    offset: Annotated[int, Query(ge=0)] = 0,
+):
+    return sharing_service.search_doctors(
+        db, q=q, search_by=search_by, specialization=specialization,
+        division=division, district=district, limit=limit, offset=offset,
+    )
+
+
+@router.get("/doctors/filters", response_model=DoctorFilterOptions)
+def get_doctor_filters(_patient: PatientUser, db: DB):
+    return sharing_service.doctor_filter_options(db)
 
 
 @router.get("/grants", response_model=list[PatientGrantResponse])

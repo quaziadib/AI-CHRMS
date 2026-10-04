@@ -1,6 +1,7 @@
 from datetime import datetime, timezone
 
 from fastapi import HTTPException, status
+from sqlalchemy import exists, func, or_, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
@@ -10,11 +11,14 @@ from app.models.patient_sharing import (
     PatientDoctorGrant,
     PatientMedication,
 )
+from app.models.doctor_profile import DoctorProfile
 from app.models.record import PatientRecord
 from app.models.user import User
 from app.schemas.patient_sharing import (
     AccessEventResponse,
+    DoctorFilterOptions,
     DoctorOption,
+    DoctorSearchResponse,
     DoctorPatientListItem,
     DoctorPatientProfileResponse,
     InteractionCreate,
@@ -57,10 +61,95 @@ def _grant_response(db: Session, grant: PatientDoctorGrant) -> PatientGrantRespo
     )
 
 
-def list_doctors(db: Session) -> list[DoctorOption]:
-    doctors = db.query(User).filter(User.roles.contains(["doctor"]), User.is_active.is_(True))
-    return [DoctorOption(id=d.id, full_name=d.full_name, email=d.email)
-            for d in doctors.order_by(User.full_name.asc()).all()]
+def _escape_like(value: str) -> str:
+    return value.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
+
+
+def _searchable_doctors():
+    """Active, approved doctors (outer-joined so doctors without a profile still list)."""
+    return (
+        select(User, DoctorProfile)
+        .outerjoin(DoctorProfile, DoctorProfile.user_id == User.id)
+        .where(User.roles.contains(["doctor"]), User.is_active.is_(True))
+    )
+
+
+def search_doctors(
+    db: Session,
+    *,
+    q: str | None = None,
+    search_by: str = "all",
+    specialization: str | None = None,
+    division: str | None = None,
+    district: str | None = None,
+    limit: int = 20,
+    offset: int = 0,
+) -> DoctorSearchResponse:
+    stmt = _searchable_doctors()
+
+    for column, value in (
+        (DoctorProfile.specialization, specialization),
+        (DoctorProfile.division, division),
+        (DoctorProfile.district, district),
+    ):
+        if value and value.strip():
+            stmt = stmt.where(func.lower(column) == value.strip().lower())
+
+    term = q.strip() if q else ""
+    if term:
+        pattern = f"%{_escape_like(term)}%"
+        aff = func.unnest(DoctorProfile.affiliations).column_valued("aff")
+        affiliation_match = exists(select(1).where(aff.ilike(pattern, escape="\\")))
+        matchers = {
+            "name": User.full_name.ilike(pattern, escape="\\"),
+            "email": User.email.ilike(pattern, escape="\\"),
+            "specialization": DoctorProfile.specialization.ilike(pattern, escape="\\"),
+            "affiliation": affiliation_match,
+            "location": or_(
+                DoctorProfile.location.ilike(pattern, escape="\\"),
+                DoctorProfile.district.ilike(pattern, escape="\\"),
+                DoctorProfile.division.ilike(pattern, escape="\\"),
+            ),
+        }
+        stmt = stmt.where(or_(*matchers.values()) if search_by == "all" else matchers[search_by])
+
+    total = db.scalar(select(func.count()).select_from(stmt.subquery())) or 0
+    rows = db.execute(
+        stmt.order_by(User.full_name.asc(), User.id.asc()).limit(limit).offset(offset)
+    ).all()
+    items = [
+        DoctorOption(
+            id=user.id,
+            full_name=user.full_name,
+            email=user.email,
+            specialization=profile.specialization if profile else None,
+            affiliations=list(profile.affiliations or []) if profile else [],
+            division=profile.division if profile else None,
+            district=profile.district if profile else None,
+            location=profile.location if profile else None,
+        )
+        for user, profile in rows
+    ]
+    return DoctorSearchResponse(items=items, total=total)
+
+
+def doctor_filter_options(db: Session) -> DoctorFilterOptions:
+    def distinct_values(col) -> list[str]:
+        stmt = (
+            select(col)
+            .select_from(User)
+            .join(DoctorProfile, DoctorProfile.user_id == User.id)
+            .where(User.roles.contains(["doctor"]), User.is_active.is_(True))
+            .distinct()
+            .order_by(col)
+        )
+        return list(db.execute(stmt).scalars())
+
+    return DoctorFilterOptions(
+        specializations=distinct_values(DoctorProfile.specialization),
+        divisions=distinct_values(DoctorProfile.division),
+        districts=distinct_values(DoctorProfile.district),
+    )
 
 
 def create_grant(db: Session, patient_id: str, doctor_id: str) -> PatientGrantResponse:

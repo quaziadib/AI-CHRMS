@@ -11,6 +11,7 @@ from app.core.security import (
     hash_password,
     decode_token,
 )
+from app.models.doctor_profile import DoctorProfile
 from app.models.user import User, RefreshToken
 from app.schemas.user import UserCreate, TokenResponse, UserResponse
 from app.services.audit import log_audit
@@ -66,6 +67,8 @@ def register_user(db: Session, data: UserCreate) -> TokenResponse:
         requested_role=requested_role,
         role_request_status=role_request_status,
     )
+    if requested == "doctor" and data.doctor_profile:
+        user.doctor_profile = DoctorProfile(**data.doctor_profile.model_dump())
     db.add(user)
     db.commit()
     db.refresh(user)

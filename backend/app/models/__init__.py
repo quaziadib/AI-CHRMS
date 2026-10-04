@@ -1,4 +1,5 @@
 from app.models.user import User, RefreshToken
+from app.models.doctor_profile import DoctorProfile
 from app.models.record import PatientRecord
 from app.models.audit import AuditLog
 from app.models.embedding import RecordEmbedding
@@ -17,7 +18,7 @@ from app.models.patient_messaging import PatientDoctorConversation, PatientDocto
 from app.models.prescription import Prescription, PrescriptionItem, PrescriptionMedication
 
 __all__ = [
-    "User", "RefreshToken", "PatientRecord", "AuditLog",
+    "User", "RefreshToken", "DoctorProfile", "PatientRecord", "AuditLog",
     "RecordEmbedding", "ConversationMessage", "HealthSnapshot", "ForecastJob",
     "SystemSetting", "PopulationForecastJob",
     "PatientDoctorGrant", "PatientMedication", "DoctorInteraction", "PatientAccessEvent",

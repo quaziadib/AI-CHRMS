@@ -19,6 +19,42 @@ def _ensure_pgvector() -> None:
     logger.info("pgvector extension verified")
 
 
+def _backfill_doctor_profiles(conn) -> None:
+    """Idempotent: placeholder profiles for doctors (and pending requests) lacking one."""
+    conn.execute(text("""
+        INSERT INTO doctor_profiles (
+            user_id, specialization, affiliations, division, district, location,
+            created_at, updated_at
+        )
+        SELECT
+            u.id,
+            (ARRAY['Endocrinology', 'General Medicine', 'Cardiology', 'Nephrology',
+                   'Ophthalmology', 'Family Medicine'])[1 + floor(random() * 6)::int],
+            ARRAY[(ARRAY['Dhaka Medical College Hospital', 'BIRDEM General Hospital',
+                         'Chittagong Medical College Hospital', 'Square Hospitals',
+                         'Khulna Medical College Hospital'])[1 + floor(random() * 5)::int]],
+            d.division,
+            d.district,
+            'Placeholder: ' || d.district || ' Sadar',
+            now(), now()
+        FROM users u
+        CROSS JOIN LATERAL (
+            SELECT * FROM (VALUES
+                ('Dhaka Division', 'Dhaka'), ('Chittagong Division', 'Chattogram'),
+                ('Rajshahi Division', 'Rajshahi'), ('Khulna Division', 'Khulna'),
+                ('Sylhet Division', 'Sylhet'), ('Barisal Division', 'Barishal'),
+                ('Rangpur Division', 'Rangpur'), ('Mymensingh Division', 'Mymensingh')
+            ) AS v(division, district)
+            WHERE u.id IS NOT NULL
+            ORDER BY random() LIMIT 1
+        ) d
+        WHERE ('doctor' = ANY(u.roles)
+               OR (u.requested_role = 'doctor' AND u.role_request_status = 'pending'))
+          AND NOT EXISTS (SELECT 1 FROM doctor_profiles dp WHERE dp.user_id = u.id)
+        ON CONFLICT (user_id) DO NOTHING
+    """))
+
+
 def _run_migrations() -> None:
     with engine.connect() as conn:
         # Ensure doctor_id column exists as UUID (convert VARCHAR→UUID if needed)
@@ -97,6 +133,7 @@ def _run_migrations() -> None:
         conn.execute(text(
             "ALTER TABLE users ADD COLUMN IF NOT EXISTS role_request_status VARCHAR(32)"
         ))
+        _backfill_doctor_profiles(conn)
         conn.execute(text("""
             DO $$
             BEGIN
@@ -200,6 +237,9 @@ def seed_default_users(db: Session) -> None:
         logger.info("Seeded user: %s", email)
 
     db.commit()
+    with engine.connect() as conn:
+        _backfill_doctor_profiles(conn)
+        conn.commit()
 
 
 def seed_national_demo_records(db: Session) -> None:
