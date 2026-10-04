@@ -16,8 +16,15 @@ from app.schemas.patient_sharing import (
     InteractionResponse,
     PatientGrantResponse,
 )
+from app.schemas.prescription import (
+    PrescriptionCreate,
+    PrescriptionListItem,
+    PrescriptionResponse,
+    PrescriptionUpdate,
+)
 from app.schemas.record import PatientRecordResponse
 from app.services import patient_sharing as sharing_service
+from app.services import prescription as prescription_service
 from app.services.audit import log_audit
 
 logger = logging.getLogger(__name__)
@@ -102,3 +109,27 @@ def respond_to_access_request(grant_id: str, body: GrantDecision, doctor: Doctor
 )
 def add_patient_interaction(patient_id: str, body: InteractionCreate, doctor: DoctorUser, db: DB):
     return sharing_service.add_interaction(db, doctor.id, patient_id, body)
+
+
+@router.post(
+    "/patients/{patient_id}/prescriptions",
+    response_model=PrescriptionResponse,
+    status_code=status.HTTP_201_CREATED,
+)
+def create_prescription(patient_id: str, body: PrescriptionCreate, doctor: DoctorUser, db: DB):
+    return prescription_service.create_prescription(db, doctor.id, patient_id, body)
+
+
+@router.get("/patients/{patient_id}/prescriptions", response_model=list[PrescriptionListItem])
+def list_prescriptions(patient_id: str, doctor: DoctorUser, db: DB):
+    return prescription_service.list_doctor_prescriptions(db, doctor.id, patient_id)
+
+
+@router.get("/patients/{patient_id}/prescriptions/{prescription_id}", response_model=PrescriptionResponse)
+def get_prescription(patient_id: str, prescription_id: str, doctor: DoctorUser, db: DB):
+    return prescription_service.get_prescription_for_doctor(db, doctor.id, prescription_id)
+
+
+@router.patch("/patients/{patient_id}/prescriptions/{prescription_id}", response_model=PrescriptionResponse)
+def update_prescription(patient_id: str, prescription_id: str, body: PrescriptionUpdate, doctor: DoctorUser, db: DB):
+    return prescription_service.update_prescription(db, doctor.id, prescription_id, body)

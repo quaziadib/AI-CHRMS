@@ -14,6 +14,7 @@ from app.models.patient_sharing import (
     PatientAccessEvent,
 )
 from app.models.patient_messaging import PatientDoctorConversation, PatientDoctorMessage
+from app.models.prescription import Prescription, PrescriptionItem, PrescriptionMedication
 
 __all__ = [
     "User", "RefreshToken", "PatientRecord", "AuditLog",
@@ -21,4 +22,5 @@ __all__ = [
     "SystemSetting", "PopulationForecastJob",
     "PatientDoctorGrant", "PatientMedication", "DoctorInteraction", "PatientAccessEvent",
     "PatientDoctorConversation", "PatientDoctorMessage",
+    "Prescription", "PrescriptionItem", "PrescriptionMedication",
 ]
