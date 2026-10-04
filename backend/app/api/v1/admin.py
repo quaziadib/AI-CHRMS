@@ -1,6 +1,9 @@
 from typing import Optional
 
+from datetime import date
+
 from fastapi import APIRouter
+from fastapi.responses import StreamingResponse
 
 from app.api.deps import AdminUser, DB
 from app.schemas.audit import AdminStatsResponse, AuditLogResponse
@@ -9,6 +12,8 @@ from app.schemas.patient_sharing import AccessEventResponse
 from app.schemas.user import AdminUserUpdate, RoleRequestResponse, UserResponse
 from app.schemas.resubmit import SystemSettingsResponse, SystemSettingsUpdate
 from app.services import admin as admin_service
+from app.services import dataset_export
+from app.services.audit import log_audit
 from app.services import patient_sharing as sharing_service
 from app.services.settings import get_or_create_settings, update_resubmit_interval_months
 
@@ -116,3 +121,26 @@ def approve_role_request(user_id: str, admin: AdminUser, db: DB):
 @router.post("/role-requests/{user_id}/reject", response_model=UserResponse)
 def reject_role_request(user_id: str, admin: AdminUser, db: DB):
     return admin_service.reject_role_request(db, admin.id, user_id)
+
+
+def _csv_download(chunks, dataset: str) -> StreamingResponse:
+    return StreamingResponse(
+        chunks,
+        media_type="text/csv; charset=utf-8",
+        headers={
+            "Content-Disposition": f'attachment; filename="{dataset}-{date.today().isoformat()}.csv"',
+            "Cache-Control": "no-store",
+        },
+    )
+
+
+@router.get("/export/doctors.csv")
+def export_doctors(admin: AdminUser, db: DB):
+    log_audit(db, admin.id, "export_doctors", "doctor_dataset")
+    return _csv_download(dataset_export.stream_doctors_csv(), "doctors")
+
+
+@router.get("/export/patients.csv")
+def export_patients(admin: AdminUser, db: DB):
+    log_audit(db, admin.id, "export_patients", "patient_dataset")
+    return _csv_download(dataset_export.stream_patients_csv(), "patient-records")
