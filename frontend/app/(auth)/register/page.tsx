@@ -7,24 +7,18 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { toast } from 'sonner'
-import { Heart, Eye, EyeOff } from 'lucide-react'
+import { Heart } from 'lucide-react'
 
 import { getRoleHome, useAuth } from '@/components/auth/auth-provider'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+import { FieldWrapper, describedBy } from '@/components/ui/form-field'
 import { Spinner } from '@/components/ui/spinner'
-import { BD_DIVISIONS } from '@/lib/bd-divisions'
-
-const ID_PIC_MAX_BYTES = 1_000_000
+import { DoctorDetailsSection } from '@/features/auth/doctor-details-section'
+import { PasswordInput } from '@/features/auth/password-input'
+import { RoleSelector } from '@/features/auth/role-selector'
+import { cn } from '@/lib/utils'
 
 const registerSchema = z.object({
   full_name: z.string().min(2, 'Name must be at least 2 characters'),
@@ -52,6 +46,8 @@ const registerSchema = z.object({
   path: ['confirm_password'],
 })
 
+const PASSWORD_HINT = 'At least 8 characters.'
+
 type RegisterFormData = z.infer<typeof registerSchema>
 
 const ROLE_LABELS: Record<RegisterFormData['role'], string> = {
@@ -64,8 +60,6 @@ const ROLE_LABELS: Record<RegisterFormData['role'], string> = {
 export default function RegisterPage() {
   const router = useRouter()
   const { register: registerUser } = useAuth()
-  const [showPassword, setShowPassword] = useState(false)
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [idPicName, setIdPicName] = useState('')
 
@@ -83,24 +77,17 @@ export default function RegisterPage() {
   const selectedRole = watch('role')
   const selectedDivision = watch('division')
 
-  const onIdPicChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
-    if (!file) {
+  const onRoleChange = (role: RegisterFormData['role']) => {
+    setValue('role', role, { shouldValidate: true })
+    if (role !== 'doctor') {
       setValue('id_pic', undefined)
       setIdPicName('')
-      return
     }
-    if (!file.type.startsWith('image/') || file.size > ID_PIC_MAX_BYTES) {
-      toast.error('ID picture must be an image under 1 MB')
-      event.target.value = ''
-      return
-    }
-    const reader = new FileReader()
-    reader.onload = () => {
-      setValue('id_pic', String(reader.result))
-      setIdPicName(file.name)
-    }
-    reader.readAsDataURL(file)
+  }
+
+  const onIdPicChange = (value: { dataUrl: string; name: string } | null) => {
+    setValue('id_pic', value?.dataUrl)
+    setIdPicName(value?.name ?? '')
   }
 
   const onSubmit = async (data: RegisterFormData) => {
@@ -143,189 +130,125 @@ export default function RegisterPage() {
     }
   }
 
+  const isDoctor = selectedRole === 'doctor'
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-muted/30 px-4 py-12">
-      <Card className="w-full max-w-md">
+    <div className="min-h-screen flex items-start justify-center bg-muted/30 px-4 py-10 md:items-center md:py-12">
+      <Card
+        className={cn(
+          'w-full transition-[max-width] duration-300 motion-reduce:transition-none',
+          isDoctor ? 'max-w-3xl' : 'max-w-2xl',
+        )}
+      >
         <CardHeader className="text-center">
           <Link href="/" className="mx-auto flex items-center gap-2 mb-4">
-            <Heart className="h-8 w-8 text-primary" />
+            <Heart className="h-8 w-8 text-primary" aria-hidden="true" />
             <span className="text-xl font-semibold">Health Project</span>
           </Link>
           <CardTitle className="text-2xl">Create an account</CardTitle>
           <CardDescription>
-            Choose your role. Doctor, National Admin, and Admin require admin approval.
+            Start as a patient, or request a professional role. Professional roles are reviewed by an admin.
           </CardDescription>
         </CardHeader>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="full_name">Full Name</Label>
-              <Input
-                id="full_name"
-                type="text"
-                placeholder="John Doe"
-                autoComplete="name"
-                {...register('full_name')}
-                aria-invalid={!!errors.full_name}
-              />
-              {errors.full_name && (
-                <p className="text-sm text-destructive">{errors.full_name.message}</p>
-              )}
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="you@example.com"
-                autoComplete="email"
-                {...register('email')}
-                aria-invalid={!!errors.email}
-              />
-              {errors.email && (
-                <p className="text-sm text-destructive">{errors.email.message}</p>
-              )}
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="phone">Phone (Optional)</Label>
-              <Input
-                id="phone"
-                type="tel"
-                placeholder="+1234567890"
-                autoComplete="tel"
-                {...register('phone')}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="role">Role</Label>
-              <Select
-                value={selectedRole}
-                onValueChange={(value) =>
-                  setValue('role', value as RegisterFormData['role'], { shouldValidate: true })
-                }
-              >
-                <SelectTrigger id="role" className="w-full">
-                  <SelectValue placeholder="Select a role" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="user">Patient</SelectItem>
-                  <SelectItem value="doctor">Doctor (needs approval)</SelectItem>
-                  <SelectItem value="national_admin">National Admin (needs approval)</SelectItem>
-                  <SelectItem value="admin">Admin (needs approval)</SelectItem>
-                </SelectContent>
-              </Select>
-              {selectedRole !== 'user' && (
-                <p className="text-xs text-muted-foreground">
-                  You can use the app as a patient until an admin approves this role.
-                </p>
-              )}
-              {errors.role && (
-                <p className="text-sm text-destructive">{errors.role.message}</p>
-              )}
-            </div>
-            {selectedRole === 'doctor' && (
-              <fieldset className="space-y-4 rounded-md border p-4">
-                <legend className="px-1 text-sm font-medium">Doctor details</legend>
-                <div className="space-y-2">
-                  <Label htmlFor="specialization">Specialization</Label>
-                  <Input id="specialization" placeholder="e.g. Endocrinology" {...register('specialization')} aria-invalid={!!errors.specialization} />
-                  {errors.specialization && <p className="text-sm text-destructive">{errors.specialization.message}</p>}
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="affiliations">Affiliations (Optional)</Label>
-                  <Input id="affiliations" placeholder="Comma-separated hospitals / clinics" {...register('affiliations')} />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="division">Division</Label>
-                  <Select
-                    value={selectedDivision ?? ''}
-                    onValueChange={(value) => setValue('division', value, { shouldValidate: true })}
-                  >
-                    <SelectTrigger id="division" className="w-full" aria-invalid={!!errors.division}>
-                      <SelectValue placeholder="Select a division" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {BD_DIVISIONS.map((d) => <SelectItem key={d} value={d}>{d}</SelectItem>)}
-                    </SelectContent>
-                  </Select>
-                  {errors.division && <p className="text-sm text-destructive">{errors.division.message}</p>}
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="district">District</Label>
-                  <Input id="district" placeholder="e.g. Dhaka" {...register('district')} aria-invalid={!!errors.district} />
-                  {errors.district && <p className="text-sm text-destructive">{errors.district.message}</p>}
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="location">Practice location</Label>
-                  <Input id="location" placeholder="Chamber / hospital address" {...register('location')} aria-invalid={!!errors.location} />
-                  {errors.location && <p className="text-sm text-destructive">{errors.location.message}</p>}
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="id_pic">ID picture (Optional)</Label>
-                  <Input id="id_pic" type="file" accept="image/*" onChange={onIdPicChange} />
-                  {idPicName && <p className="text-xs text-muted-foreground">{idPicName}</p>}
-                  <p className="text-xs text-muted-foreground">Shown only to admins reviewing your request. Max 1 MB.</p>
-                </div>
-              </fieldset>
+        <form onSubmit={handleSubmit(onSubmit)} noValidate>
+          <CardContent className="space-y-8">
+            <fieldset className="space-y-3">
+              <legend className="mb-3 text-base font-semibold">I am signing up as</legend>
+              <RoleSelector value={selectedRole} onChange={onRoleChange} />
+              {errors.role && <p className="text-sm text-destructive">{errors.role.message}</p>}
+            </fieldset>
+
+            <fieldset className="space-y-4">
+              <legend className="mb-3 text-base font-semibold">Your account</legend>
+              <div className="grid gap-4 md:grid-cols-2">
+                <FieldWrapper label="Full Name" htmlFor="full_name" error={errors.full_name?.message}>
+                  <Input
+                    id="full_name"
+                    type="text"
+                    placeholder="John Doe"
+                    autoComplete="name"
+                    {...register('full_name')}
+                    aria-invalid={!!errors.full_name}
+                    aria-describedby={describedBy('full_name', { error: errors.full_name?.message })}
+                  />
+                </FieldWrapper>
+                <FieldWrapper label="Phone (Optional)" htmlFor="phone">
+                  <Input
+                    id="phone"
+                    type="tel"
+                    inputMode="tel"
+                    placeholder="+8801XXXXXXXXX"
+                    autoComplete="tel"
+                    {...register('phone')}
+                  />
+                </FieldWrapper>
+                <FieldWrapper
+                  label="Email"
+                  htmlFor="email"
+                  error={errors.email?.message}
+                  className="md:col-span-2"
+                >
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="you@example.com"
+                    autoComplete="email"
+                    {...register('email')}
+                    aria-invalid={!!errors.email}
+                    aria-describedby={describedBy('email', { error: errors.email?.message })}
+                  />
+                </FieldWrapper>
+                <FieldWrapper
+                  label="Password"
+                  htmlFor="password"
+                  hint={PASSWORD_HINT}
+                  error={errors.password?.message}
+                >
+                  <PasswordInput
+                    id="password"
+                    placeholder="Create a password"
+                    autoComplete="new-password"
+                    {...register('password')}
+                    aria-invalid={!!errors.password}
+                    aria-describedby={describedBy('password', {
+                      hint: PASSWORD_HINT,
+                      error: errors.password?.message,
+                    })}
+                  />
+                </FieldWrapper>
+                <FieldWrapper
+                  label="Confirm Password"
+                  htmlFor="confirm_password"
+                  error={errors.confirm_password?.message}
+                >
+                  <PasswordInput
+                    id="confirm_password"
+                    placeholder="Confirm your password"
+                    autoComplete="new-password"
+                    {...register('confirm_password')}
+                    aria-invalid={!!errors.confirm_password}
+                    aria-describedby={describedBy('confirm_password', {
+                      error: errors.confirm_password?.message,
+                    })}
+                  />
+                </FieldWrapper>
+              </div>
+            </fieldset>
+
+            {isDoctor && (
+              <div className="animate-in fade-in slide-in-from-top-2 duration-300 motion-reduce:animate-none">
+                <DoctorDetailsSection
+                  register={register}
+                  errors={errors}
+                  division={selectedDivision}
+                  onDivisionChange={(value) => setValue('division', value, { shouldValidate: true })}
+                  idPicName={idPicName}
+                  onIdPicChange={onIdPicChange}
+                />
+              </div>
             )}
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <div className="relative">
-                <Input
-                  id="password"
-                  type={showPassword ? 'text' : 'password'}
-                  placeholder="Create a password"
-                  autoComplete="new-password"
-                  {...register('password')}
-                  aria-invalid={!!errors.password}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                  aria-label={showPassword ? 'Hide password' : 'Show password'}
-                >
-                  {showPassword ? (
-                    <EyeOff className="h-4 w-4" />
-                  ) : (
-                    <Eye className="h-4 w-4" />
-                  )}
-                </button>
-              </div>
-              {errors.password && (
-                <p className="text-sm text-destructive">{errors.password.message}</p>
-              )}
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="confirm_password">Confirm Password</Label>
-              <div className="relative">
-                <Input
-                  id="confirm_password"
-                  type={showConfirmPassword ? 'text' : 'password'}
-                  placeholder="Confirm your password"
-                  autoComplete="new-password"
-                  {...register('confirm_password')}
-                  aria-invalid={!!errors.confirm_password}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                  aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
-                >
-                  {showConfirmPassword ? (
-                    <EyeOff className="h-4 w-4" />
-                  ) : (
-                    <Eye className="h-4 w-4" />
-                  )}
-                </button>
-              </div>
-              {errors.confirm_password && (
-                <p className="text-sm text-destructive">{errors.confirm_password.message}</p>
-              )}
-            </div>
           </CardContent>
-          <CardFooter className="flex flex-col gap-4">
+          <CardFooter className="flex flex-col gap-4 pt-6">
             <Button type="submit" className="w-full" disabled={isLoading}>
               {isLoading ? (
                 <>

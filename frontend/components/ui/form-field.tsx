@@ -1,5 +1,6 @@
 import { type ReactNode } from 'react'
 import { Label } from '@/components/ui/label'
+import { cn } from '@/lib/utils'
 import {
   Select,
   SelectContent,
@@ -12,15 +13,35 @@ interface FieldWrapperProps {
   label: string
   htmlFor?: string
   error?: string
+  hint?: string
+  className?: string
   children: ReactNode
 }
 
-export function FieldWrapper({ label, htmlFor, error, children }: FieldWrapperProps) {
+/**
+ * Value for the input's `aria-describedby`, matching the ids FieldWrapper
+ * renders for its hint and error text (requires `htmlFor` to equal the input id).
+ */
+export function describedBy(id: string, { error, hint }: { error?: string; hint?: string }) {
+  const ids = [hint && `${id}-hint`, error && `${id}-error`].filter(Boolean)
+  return ids.length ? ids.join(' ') : undefined
+}
+
+export function FieldWrapper({ label, htmlFor, error, hint, className, children }: FieldWrapperProps) {
   return (
-    <div className="space-y-2">
+    <div className={cn('space-y-2', className)}>
       <Label htmlFor={htmlFor}>{label}</Label>
       {children}
-      {error && <p className="text-sm text-destructive">{error}</p>}
+      {hint && (
+        <p id={htmlFor && `${htmlFor}-hint`} className="text-xs text-muted-foreground">
+          {hint}
+        </p>
+      )}
+      {error && (
+        <p id={htmlFor && `${htmlFor}-error`} className="text-sm text-destructive">
+          {error}
+        </p>
+      )}
     </div>
   )
 }
