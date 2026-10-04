@@ -7,6 +7,7 @@ export { doctorApi } from './doctor'
 export { sharingApi } from './sharing'
 export { messagingApi } from './messaging'
 export { nationalApi } from './national'
+export { prescriptionsApi } from './prescriptions'
 export type {
   User, PatientRecord, PatientRecordCreate, AuditLog, AdminStats, ApiResponse,
   RecommendationsOutput, RecommendationCategories, ResubmitStatus, HealthTrends,
@@ -14,4 +15,6 @@ export type {
   DoctorOption, PatientGrant, PatientGrantStatus, PatientMedication, DoctorInteraction,
   PatientAccessEvent, DoctorPatientProfile, DoctorPatientListItem,
   PatientDoctorMessage, PatientDoctorConversationSummary, PatientDoctorConversation, MessagingGrantStatus,
+  PrescriptionCreate, PrescriptionUpdate, PrescriptionResponse, PrescriptionListItem,
+  PrescriptionItemResponse, PrescriptionMedicationResponse, PrescriptionStatus,
 } from './types'
