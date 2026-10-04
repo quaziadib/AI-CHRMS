@@ -11,18 +11,15 @@ import type { PatientGrant } from '@/lib/api'
 
 export function PatientSharingPanel() {
   const { data, isLoading, mutate } = useSWR('patient-sharing-profile', async () => {
-    const [doctorsRes, grantsRes, interactionRes] = await Promise.all([
-      sharingApi.getDoctors(), sharingApi.getGrants(), sharingApi.getInteractions(),
-    ])
-    if (!doctorsRes.data || !grantsRes.data || !interactionRes.data) {
-      throw new Error(doctorsRes.error ?? grantsRes.error ?? interactionRes.error ?? 'Could not load patient profile history')
+    const [doctorsRes, grantsRes] = await Promise.all([sharingApi.getDoctors(), sharingApi.getGrants()])
+    if (!doctorsRes.data || !grantsRes.data) {
+      throw new Error(doctorsRes.error ?? grantsRes.error ?? 'Could not load doctor access')
     }
-    return { doctors: doctorsRes.data, grants: grantsRes.data, interactions: interactionRes.data }
+    return { doctors: doctorsRes.data, grants: grantsRes.data }
   })
   const [doctorId, setDoctorId] = useState('')
   const doctors = data?.doctors ?? []
   const grants = data?.grants ?? []
-  const interactions = data?.interactions ?? []
 
   const grantAccess = async () => {
     if (!doctorId) return
@@ -75,15 +72,6 @@ export function PatientSharingPanel() {
                 </div>
               ))}
             </div>
-          )}
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader><CardTitle>Doctor interactions</CardTitle><CardDescription>Clinical interactions recorded by your doctors.</CardDescription></CardHeader>
-        <CardContent>
-          {interactions.length === 0 ? <p className="text-sm text-muted-foreground">No doctor interactions recorded yet.</p> : (
-            <div className="space-y-3">{interactions.map((item) => <article key={item.id} className="rounded-md border p-3"><p className="text-sm font-medium">{item.doctor_name ?? 'Doctor'} · {new Date(item.interaction_at).toLocaleString()}</p><p className="mt-2 whitespace-pre-wrap text-sm">{item.note}</p></article>)}</div>
           )}
         </CardContent>
       </Card>

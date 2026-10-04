@@ -1,4 +1,5 @@
 import io
+import logging
 import os
 from datetime import datetime, timezone
 
@@ -18,6 +19,8 @@ from app.schemas.prescription import (
 )
 from app.services.audit import log_audit
 from app.services.patient_sharing import require_active_grant
+
+logger = logging.getLogger(__name__)
 
 
 def _item_section(items: list[PrescriptionItem], section: str) -> list[PrescriptionItemResponse]:
@@ -238,9 +241,15 @@ def get_prescription_for_patient(db: Session, patient_id: str, prescription_id: 
 
 def generate_prescription_pdf(prescription: PrescriptionResponse) -> bytes:
     templates_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "templates")
-    env = Environment(loader=FileSystemLoader(templates_dir), autoescape=True)
-    template = env.get_template("prescription.html")
-    html = template.render(prescription=prescription)
+    try:
+        env = Environment(loader=FileSystemLoader(templates_dir), autoescape=True)
+        html = env.get_template("prescription.html").render(prescription=prescription)
 
-    from weasyprint import HTML
-    return HTML(string=html).write_pdf()
+        from weasyprint import HTML
+        return HTML(string=html).write_pdf()
+    except Exception:
+        logger.exception("Prescription PDF generation failed (prescription_id=%s)", prescription.id)
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="PDF generation is temporarily unavailable. Please try again later.",
+        )

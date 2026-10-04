@@ -250,3 +250,25 @@ class TestPdfEndpoint:
         assert result == fake_pdf
         html = fake_weasyprint.HTML.call_args.kwargs["string"]
         assert "<html" in html.lower()
+
+
+    def test_generate_pdf_failure_returns_503(self):
+        from app.schemas.prescription import PrescriptionResponse
+        p = PrescriptionResponse(
+            id="rx-1",
+            doctor_id="doc-1",
+            patient_id="pat-1",
+            status="published",
+            created_at="2025-01-01T00:00:00",
+            updated_at="2025-01-01T00:00:00",
+            symptoms_diagnosis=[],
+            lab_tests=[],
+            general_advice=[],
+            medications=[],
+        )
+        fake_weasyprint = MagicMock()
+        fake_weasyprint.HTML.return_value.write_pdf.side_effect = OSError("cannot load library 'libpango-1.0-0'")
+        with patch.dict("sys.modules", {"weasyprint": fake_weasyprint}):
+            with pytest.raises(HTTPException) as exc:
+                svc.generate_prescription_pdf(p)
+        assert exc.value.status_code == 503

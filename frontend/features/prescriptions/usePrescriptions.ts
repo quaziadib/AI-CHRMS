@@ -39,3 +39,14 @@ export function usePatientPrescription(id: string | null) {
     () => fetchPrescription(id!),
   )
 }
+
+export function useDoctorPrescription(patientId: string | null, id: string | null) {
+  return useSWR<PrescriptionResponse>(
+    patientId && id ? `doctor-prescription-${patientId}-${id}` : null,
+    async () => {
+      const res = await prescriptionsApi.doctorGet(patientId!, id!)
+      if (!res.data) throw new Error(res.error ?? 'Prescription not found')
+      return res.data
+    },
+  )
+}
