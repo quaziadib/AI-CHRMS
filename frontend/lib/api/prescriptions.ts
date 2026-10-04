@@ -33,7 +33,10 @@ export const prescriptionsApi = {
     const headers: Record<string, string> = {}
     if (token) headers['Authorization'] = `Bearer ${token}`
     const res = await fetch(`/v1/prescriptions/${prescriptionId}/pdf`, { headers })
-    if (!res.ok) throw new Error('Failed to download PDF')
+    if (!res.ok) {
+      const body = await res.json().catch(() => null)
+      throw new Error(body?.detail ?? 'Failed to download PDF')
+    }
     const blob = await res.blob()
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')

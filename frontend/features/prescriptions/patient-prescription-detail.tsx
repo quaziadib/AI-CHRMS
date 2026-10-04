@@ -32,8 +32,8 @@ export function PatientPrescriptionDetail({ prescription }: { prescription: Pres
     setDownloading(true)
     try {
       await prescriptionsApi.patientDownloadPdf(prescription.id)
-    } catch {
-      toast.error("Failed to download PDF")
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to download PDF")
     } finally {
       setDownloading(false)
     }
