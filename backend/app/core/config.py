@@ -18,6 +18,8 @@ class Settings(BaseSettings):
     APP_VERSION: str = "1.0.0"
     APP_ENV: str = "development"
     DEBUG: bool = False
+    # When true, serve Swagger/ReDoc even if APP_ENV=production (DEBUG stays false).
+    ENABLE_API_DOCS: bool = False
 
     # Database
     DATABASE_URL: str = "postgresql://healthadmin:healthpass123@localhost:5432/healthdb"
@@ -71,6 +73,13 @@ class Settings(BaseSettings):
     SEED_SYNTHETIC_DATA: bool = False
 
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
+
+    @property
+    def api_docs_enabled(self) -> bool:
+        """Interactive docs for non-production, DEBUG, or explicit ENABLE_API_DOCS."""
+        if self.ENABLE_API_DOCS or self.DEBUG:
+            return True
+        return self.APP_ENV.lower() != "production"
 
     @field_validator("JWT_SECRET_KEY")
     @classmethod
