@@ -18,6 +18,23 @@ const nextConfig = {
         source: '/v1/:path*',
         destination: `${backendUrl}/v1/:path*`,
       },
+      // FastAPI Swagger / ReDoc (Render combined container; API is loopback-only)
+      {
+        source: '/docs',
+        destination: `${backendUrl}/docs`,
+      },
+      {
+        source: '/docs/:path*',
+        destination: `${backendUrl}/docs/:path*`,
+      },
+      {
+        source: '/redoc',
+        destination: `${backendUrl}/redoc`,
+      },
+      {
+        source: '/openapi.json',
+        destination: `${backendUrl}/openapi.json`,
+      },
     ]
   },
 }

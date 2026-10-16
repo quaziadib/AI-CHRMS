@@ -65,12 +65,15 @@ async def lifespan(app: FastAPI):
     logger.info("Shutting down")
 
 
+_docs = settings.api_docs_enabled
+
 app = FastAPI(
     title=settings.APP_NAME,
     version=settings.APP_VERSION,
     description="Health Data Collection and Management API",
-    docs_url="/docs" if settings.DEBUG else None,
-    redoc_url="/redoc" if settings.DEBUG else None,
+    docs_url="/docs" if _docs else None,
+    redoc_url="/redoc" if _docs else None,
+    openapi_url="/openapi.json" if _docs else None,
     lifespan=lifespan,
 )
 

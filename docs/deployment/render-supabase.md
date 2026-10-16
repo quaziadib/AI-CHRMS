@@ -76,6 +76,8 @@ On the Render service, keep `SEED_DEMO_USERS=false` and `DB_INIT_ON_STARTUP=fals
 
 Wait for `ai-chrms` to become healthy, open the service URL, and sign in (e.g. `demo@health.local` / `demo123` after seeding). Health: `https://<service>.onrender.com/health`.
 
+Swagger UI: `https://<service>.onrender.com/docs` (ReDoc at `/redoc`). Enabled via `ENABLE_API_DOCS=true` in `render.yaml` — set that to `false` if you want docs off in production.
+
 Optional: `.github/workflows/keep-render-awake.yml` pings the service every 12 minutes to reduce cold starts (uses free hours).
 
 For forecasting, chatbot/RAG, and always-on, use paid Render plans rather than this free profile.
