@@ -5,13 +5,45 @@ from fastapi import HTTPException
 from sqlalchemy import func
 from sqlalchemy.orm import Session, joinedload
 
+from app.core.security import hash_password
 from app.models.audit import AuditLog
+from app.models.doctor_profile import DoctorProfile
 from app.models.record import PatientRecord
 from app.models.user import User
 from app.schemas.audit import AdminStatsResponse, AuditLogResponse
 from app.schemas.record import PatientRecordResponse
-from app.schemas.user import RoleRequestResponse, UserResponse, roles_for_approved_signup
+from app.schemas.user import (
+    AdminUserCreate,
+    RoleRequestResponse,
+    UserResponse,
+    roles_for_approved_signup,
+)
 from app.services.audit import log_audit
+
+
+def create_user(db: Session, admin_id: str, data: AdminUserCreate) -> UserResponse:
+    """Admin provisions an account whose role is active immediately (no approval)."""
+    if db.query(User).filter(User.email == data.email).first():
+        raise HTTPException(status_code=400, detail="Email already registered")
+
+    user = User(
+        email=data.email,
+        password_hash=hash_password(data.password),
+        full_name=data.full_name,
+        phone=data.phone,
+        is_active=True,
+        is_verified=True,
+        roles=roles_for_approved_signup(data.role),
+        requested_role=None,
+        role_request_status=None,
+    )
+    if data.role == "doctor" and data.doctor_profile:
+        user.doctor_profile = DoctorProfile(**data.doctor_profile.model_dump())
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+    log_audit(db, admin_id, f"admin_user_created:{data.role}", "user", user.id)
+    return UserResponse.model_validate(user)
 
 
 def get_stats(db: Session) -> AdminStatsResponse:

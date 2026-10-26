@@ -1,12 +1,14 @@
 'use client'
 
-import { Heart, ShieldCheck, Stethoscope, Globe2 } from 'lucide-react'
+import { Heart, Stethoscope } from 'lucide-react'
 
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Label } from '@/components/ui/label'
 import { cn } from '@/lib/utils'
 
-export type SignupRole = 'user' | 'doctor' | 'national_admin' | 'admin'
+// Only patient and doctor are self-service. National admin and admin accounts are
+// created by an existing admin from the admin dashboard.
+export type SignupRole = 'user' | 'doctor'
 
 interface RoleOption {
   value: SignupRole
@@ -24,29 +26,13 @@ const PATIENT: RoleOption = {
   needsApproval: false,
 }
 
-const PROFESSIONAL: RoleOption[] = [
-  {
-    value: 'doctor',
-    title: 'Doctor',
-    description: 'Review patients you are given access to and write prescriptions.',
-    icon: Stethoscope,
-    needsApproval: true,
-  },
-  {
-    value: 'national_admin',
-    title: 'National Admin',
-    description: 'View population-level analytics and resource planning.',
-    icon: Globe2,
-    needsApproval: true,
-  },
-  {
-    value: 'admin',
-    title: 'Admin',
-    description: 'Manage users, role requests and platform records.',
-    icon: ShieldCheck,
-    needsApproval: true,
-  },
-]
+const DOCTOR: RoleOption = {
+  value: 'doctor',
+  title: 'Doctor',
+  description: 'Review patients you are given access to and write prescriptions.',
+  icon: Stethoscope,
+  needsApproval: true,
+}
 
 function RoleCard({ option, selected }: { option: RoleOption; selected: boolean }) {
   const Icon = option.icon
@@ -94,18 +80,14 @@ export function RoleSelector({ value, onChange }: RoleSelectorProps) {
       >
         <RoleCard option={PATIENT} selected={value === PATIENT.value} />
         <p className="pt-1 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-          Or request a professional role
+          Or request a doctor account
         </p>
-        <div className="grid gap-3 md:grid-cols-3">
-          {PROFESSIONAL.map((o) => (
-            <RoleCard key={o.value} option={o} selected={value === o.value} />
-          ))}
-        </div>
+        <RoleCard option={DOCTOR} selected={value === DOCTOR.value} />
       </RadioGroup>
       <p id="role-help" className="text-xs text-muted-foreground" aria-live="polite">
         {value === 'user'
           ? 'Patient accounts are active immediately.'
-          : 'This role needs admin approval. You can use the app as a patient until it is approved.'}
+          : 'Doctor accounts are reviewed by an admin. You can use the app as a patient until it is approved.'}
       </p>
     </div>
   )

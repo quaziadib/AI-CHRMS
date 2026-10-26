@@ -11,8 +11,11 @@ RUN apt-get update && apt-get install -y \
     libcairo2 \
     libgdk-pixbuf-2.0-0 \
     libffi-dev \
+    fontconfig \
+    libharfbuzz-subset0 \
     fonts-dejavu-core \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+    && fc-cache -f
 
 # Install Python dependencies
 COPY pyproject.toml ./

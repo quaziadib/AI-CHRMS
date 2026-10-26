@@ -1,5 +1,5 @@
 import { api } from './client'
-import type { User, RoleRequest, PatientRecord, AuditLog, AdminStats, SystemSettings, PatientAccessEvent } from './types'
+import type { User, RoleRequest, PatientRecord, AuditLog, AdminStats, SystemSettings, PatientAccessEvent, AdminUserCreate } from './types'
 
 export const adminApi = {
   getUsers: (params?: { skip?: number; limit?: number; search?: string; role?: string }) => {
@@ -12,6 +12,7 @@ export const adminApi = {
     return api.get<User[]>(`/admin/users${query ? `?${query}` : ''}`)
   },
   getUser: (id: string) => api.get<User>(`/admin/users/${id}`),
+  createUser: (data: AdminUserCreate) => api.post<User>('/admin/users', data),
   updateUser: (id: string, data: Partial<User>) =>
     api.patch<User>(`/admin/users/${id}`, data),
   getAllRecords: (params?: { skip?: number; limit?: number; user_id?: string }) => {

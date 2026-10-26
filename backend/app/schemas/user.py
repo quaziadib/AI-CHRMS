@@ -6,6 +6,10 @@ from pydantic import BaseModel, EmailStr, Field, computed_field, field_validator
 from app.schemas.base import OrmSchema
 
 SignupRole = Literal["user", "doctor", "national_admin", "admin"]
+# Roles a visitor may request on the public signup page. national_admin and admin
+# are provisioned by an existing admin (see AdminUserCreate) or approved from a
+# legacy pending request; they are never self-service.
+PublicSignupRole = Literal["user", "doctor"]
 ELEVATED_SIGNUP_ROLES = frozenset({"doctor", "national_admin", "admin"})
 
 
@@ -50,7 +54,7 @@ class UserCreate(BaseModel):
     password: str = Field(min_length=8, description="Minimum 8 characters")
     full_name: str = Field(min_length=2, max_length=255)
     phone: Optional[str] = None
-    role: SignupRole = "user"
+    role: PublicSignupRole = "user"
     doctor_profile: Optional[DoctorProfileCreate] = None
 
     @field_validator("email", mode="before")
@@ -60,11 +64,39 @@ class UserCreate(BaseModel):
 
     @model_validator(mode="after")
     def check_doctor_profile(self) -> "UserCreate":
-        if self.role == "doctor" and self.doctor_profile is None:
-            raise ValueError("doctor_profile is required when registering as a doctor")
-        if self.role != "doctor" and self.doctor_profile is not None:
-            raise ValueError("doctor_profile is only allowed when registering as a doctor")
+        _check_doctor_profile(self.role, self.doctor_profile)
         return self
+
+
+class AdminUserCreate(BaseModel):
+    """Payload for an admin creating an account on someone's behalf.
+
+    Unlike public signup, any role may be granted and it takes effect immediately.
+    """
+
+    email: EmailStr
+    password: str = Field(min_length=8, description="Minimum 8 characters")
+    full_name: str = Field(min_length=2, max_length=255)
+    phone: Optional[str] = None
+    role: SignupRole = "user"
+    doctor_profile: Optional[DoctorProfileCreate] = None
+
+    @field_validator("email", mode="before")
+    @classmethod
+    def normalise_email(cls, v: str) -> str:
+        return v.strip().lower()
+
+    @model_validator(mode="after")
+    def check_doctor_profile(self) -> "AdminUserCreate":
+        _check_doctor_profile(self.role, self.doctor_profile)
+        return self
+
+
+def _check_doctor_profile(role: str, doctor_profile: Optional[DoctorProfileCreate]) -> None:
+    if role == "doctor" and doctor_profile is None:
+        raise ValueError("doctor_profile is required when registering as a doctor")
+    if role != "doctor" and doctor_profile is not None:
+        raise ValueError("doctor_profile is only allowed when registering as a doctor")
 
 
 class UserLogin(BaseModel):

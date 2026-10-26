@@ -7,7 +7,7 @@ export const authApi = {
     password: string
     full_name: string
     phone?: string
-    role?: 'user' | 'doctor' | 'national_admin' | 'admin'
+    role?: 'user' | 'doctor'
     doctor_profile?: DoctorProfileInput
   }) =>
     api.post<{ access_token: string; refresh_token: string; user: User }>('/auth/register', data),

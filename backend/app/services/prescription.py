@@ -1,6 +1,9 @@
 import io
 import logging
 import os
+import threading
+import time
+from collections import OrderedDict
 from datetime import datetime, timezone
 
 from fastapi import HTTPException, status
@@ -21,6 +24,81 @@ from app.services.audit import log_audit
 from app.services.patient_sharing import require_active_grant
 
 logger = logging.getLogger(__name__)
+
+# WeasyPrint and fontTools log every font-subsetting step at INFO. On a 0.1-CPU instance
+# that chatter is measurable work and floods Render logs, so keep them at WARNING.
+for _noisy in ("fontTools", "fontTools.subset", "weasyprint"):
+    logging.getLogger(_noisy).setLevel(logging.WARNING)
+
+_TEMPLATES_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "templates")
+# Built once: the Environment parses/caches templates, so per-request creation was pure overhead.
+_jinja_env = Environment(loader=FileSystemLoader(_TEMPLATES_DIR), autoescape=True)
+
+# Rendered PDFs keyed by (prescription_id, updated_at). Per process, bounded. A doctor edit changes
+# updated_at, so stale bytes are never served; a new key simply re-renders.
+_PDF_CACHE_MAX = 64
+_pdf_cache: "OrderedDict[tuple[str, str], bytes]" = OrderedDict()
+_pdf_cache_lock = threading.Lock()
+
+
+def _pdf_cache_key(prescription: PrescriptionResponse) -> tuple[str, str]:
+    updated = prescription.updated_at
+    return (prescription.id, updated.isoformat() if isinstance(updated, datetime) else str(updated))
+
+
+def _pdf_cache_get(key: tuple[str, str]) -> bytes | None:
+    with _pdf_cache_lock:
+        data = _pdf_cache.get(key)
+        if data is not None:
+            _pdf_cache.move_to_end(key)
+        return data
+
+
+def _pdf_cache_put(key: tuple[str, str], data: bytes) -> None:
+    with _pdf_cache_lock:
+        _pdf_cache[key] = data
+        _pdf_cache.move_to_end(key)
+        while len(_pdf_cache) > _PDF_CACHE_MAX:
+            _pdf_cache.popitem(last=False)
+
+
+def clear_pdf_cache() -> None:
+    with _pdf_cache_lock:
+        _pdf_cache.clear()
+
+
+def _render_pdf(html: str) -> bytes:
+    """Import WeasyPrint lazily (heavy native deps) and render HTML to PDF bytes."""
+    t0 = time.perf_counter()
+    from weasyprint import HTML  # noqa: WPS433 - deliberate lazy import
+
+    import_ms = (time.perf_counter() - t0) * 1000
+    t1 = time.perf_counter()
+    pdf = HTML(string=html).write_pdf()
+    render_ms = (time.perf_counter() - t1) * 1000
+    logger.info("pdf render import_ms=%.0f render_ms=%.0f bytes=%d", import_ms, render_ms, len(pdf))
+    return pdf
+
+
+def warm_pdf_renderer() -> None:
+    """Load the PDF engine and fonts once so the first real download does not pay for it.
+
+    Safe to call from a background thread at startup; failures are logged and ignored so
+    they never affect API readiness. On Render's small instances the import + fontconfig
+    scan is the dominant cost of the first download.
+    """
+    t0 = time.perf_counter()
+    try:
+        _render_pdf("<html><body><p>warm-up</p></body></html>")
+        logger.info("pdf renderer warm-up done in %.0f ms", (time.perf_counter() - t0) * 1000)
+    except Exception:
+        logger.exception("pdf renderer warm-up failed; downloads will render cold")
+
+
+def start_pdf_warmup_thread() -> threading.Thread:
+    thread = threading.Thread(target=warm_pdf_renderer, name="pdf-warmup", daemon=True)
+    thread.start()
+    return thread
 
 
 def _item_section(items: list[PrescriptionItem], section: str) -> list[PrescriptionItemResponse]:
@@ -240,13 +318,17 @@ def get_prescription_for_patient(db: Session, patient_id: str, prescription_id: 
 
 
 def generate_prescription_pdf(prescription: PrescriptionResponse) -> bytes:
-    templates_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "templates")
+    key = _pdf_cache_key(prescription)
+    cached = _pdf_cache_get(key)
+    if cached is not None:
+        logger.info("pdf cache hit prescription_id=%s bytes=%d", prescription.id, len(cached))
+        return cached
     try:
-        env = Environment(loader=FileSystemLoader(templates_dir), autoescape=True)
-        html = env.get_template("prescription.html").render(prescription=prescription)
-
-        from weasyprint import HTML
-        return HTML(string=html).write_pdf()
+        html = _jinja_env.get_template("prescription.html").render(prescription=prescription)
+        pdf = _render_pdf(html)
+        _pdf_cache_put(key, pdf)
+        logger.info("pdf cache miss prescription_id=%s", prescription.id)
+        return pdf
     except Exception:
         logger.exception("Prescription PDF generation failed (prescription_id=%s)", prescription.id)
         raise HTTPException(

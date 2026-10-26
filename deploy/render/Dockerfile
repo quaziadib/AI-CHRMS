@@ -36,10 +36,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libcairo2 \
     libgdk-pixbuf-2.0-0 \
     libffi-dev \
+    fontconfig \
+    libharfbuzz-subset0 \
     fonts-dejavu-core \
   && curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
   && apt-get install -y --no-install-recommends nodejs \
-  && rm -rf /var/lib/apt/lists/*
+  && rm -rf /var/lib/apt/lists/* \
+  && fc-cache -f
 
 WORKDIR /app
 

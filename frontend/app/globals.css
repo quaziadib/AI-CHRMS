@@ -79,6 +79,21 @@
 }
 
 @theme inline {
+  /* Type scale: one step larger than Tailwind defaults for readability
+     (xs 13px, sm 15px, base 17px, lg 19px, xl 21px, 2xl 26px). Root font-size
+     stays 16px so rem-based spacing and widths do not grow with the text. */
+  --text-xs: 0.8125rem;
+  --text-xs--line-height: 1.5;
+  --text-sm: 0.9375rem;
+  --text-sm--line-height: 1.5;
+  --text-base: 1.0625rem;
+  --text-base--line-height: 1.5;
+  --text-lg: 1.1875rem;
+  --text-lg--line-height: 1.4;
+  --text-xl: 1.3125rem;
+  --text-xl--line-height: 1.4;
+  --text-2xl: 1.625rem;
+  --text-2xl--line-height: 1.3;
   /* System stacks — no network fetch at build time (Docker-friendly) */
   --font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;

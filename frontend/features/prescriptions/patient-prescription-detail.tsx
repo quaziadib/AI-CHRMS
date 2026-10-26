@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useRef, useState } from "react"
 import { Download, AlertTriangle, Stethoscope } from "lucide-react"
 import { toast } from "sonner"
 
@@ -27,14 +27,19 @@ function StatusBadge({ status }: { status: PrescriptionStatus }) {
 
 export function PatientPrescriptionDetail({ prescription }: { prescription: PrescriptionResponse }) {
   const [downloading, setDownloading] = useState(false)
+  // Ref guard: state updates are async, so a double-click could fire two requests.
+  const inFlight = useRef(false)
 
   async function handleDownload() {
+    if (inFlight.current) return
+    inFlight.current = true
     setDownloading(true)
     try {
       await prescriptionsApi.patientDownloadPdf(prescription.id)
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Failed to download PDF")
     } finally {
+      inFlight.current = false
       setDownloading(false)
     }
   }
@@ -77,13 +82,19 @@ export function PatientPrescriptionDetail({ prescription }: { prescription: Pres
               size="sm"
               onClick={handleDownload}
               disabled={downloading}
+              aria-busy={downloading}
             >
               {downloading ? (
-                <Spinner className="h-3.5 w-3.5 mr-1.5" />
+                <>
+                  <Spinner className="h-3.5 w-3.5 mr-1.5" />
+                  Preparing PDF…
+                </>
               ) : (
-                <Download className="h-3.5 w-3.5 mr-1.5" />
+                <>
+                  <Download className="h-3.5 w-3.5 mr-1.5" />
+                  Download PDF
+                </>
               )}
-              Download PDF
             </Button>
           </div>
         </CardContent>

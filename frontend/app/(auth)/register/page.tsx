@@ -24,7 +24,7 @@ const registerSchema = z.object({
   full_name: z.string().min(2, 'Name must be at least 2 characters'),
   email: z.string().email('Please enter a valid email'),
   phone: z.string().optional(),
-  role: z.enum(['user', 'doctor', 'national_admin', 'admin']),
+  role: z.enum(['user', 'doctor']),
   password: z.string().min(8, 'Password must be at least 8 characters'),
   confirm_password: z.string(),
   specialization: z.string().optional(),
@@ -53,8 +53,6 @@ type RegisterFormData = z.infer<typeof registerSchema>
 const ROLE_LABELS: Record<RegisterFormData['role'], string> = {
   user: 'Patient',
   doctor: 'Doctor',
-  national_admin: 'National Admin',
-  admin: 'Admin',
 }
 
 export default function RegisterPage() {
@@ -147,7 +145,7 @@ export default function RegisterPage() {
           </Link>
           <CardTitle className="text-2xl">Create an account</CardTitle>
           <CardDescription>
-            Start as a patient, or request a professional role. Professional roles are reviewed by an admin.
+            Start as a patient, or request a doctor account. Doctor accounts are reviewed by an admin.
           </CardDescription>
         </CardHeader>
         <form onSubmit={handleSubmit(onSubmit)} noValidate>

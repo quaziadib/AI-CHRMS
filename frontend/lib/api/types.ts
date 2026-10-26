@@ -182,6 +182,18 @@ export interface DoctorFilterOptions {
   districts: string[]
 }
 
+export type AssignableRole = 'user' | 'doctor' | 'national_admin' | 'admin'
+
+/** Admin creates an account on someone's behalf; the role is active immediately. */
+export interface AdminUserCreate {
+  email: string
+  password: string
+  full_name: string
+  phone?: string
+  role: AssignableRole
+  doctor_profile?: DoctorProfileInput
+}
+
 export interface DoctorProfileInput {
   specialization: string
   affiliations: string[]

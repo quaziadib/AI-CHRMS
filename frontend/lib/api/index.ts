@@ -13,7 +13,7 @@ export type {
   RecommendationsOutput, RecommendationCategories, ResubmitStatus, HealthTrends,
   SystemSettings, PersonalizedPlan, ForecastJob, ForecastPoint, ForecastResult,
   DoctorOption, DoctorSearchBy, DoctorSearchParams, DoctorSearchResponse, DoctorFilterOptions,
-  DoctorProfileInput, RoleRequest, PatientGrant, PatientGrantStatus, PatientMedication, DoctorInteraction,
+  DoctorProfileInput, AdminUserCreate, AssignableRole, RoleRequest, PatientGrant, PatientGrantStatus, PatientMedication, DoctorInteraction,
   PatientAccessEvent, DoctorPatientProfile, DoctorPatientListItem,
   PatientDoctorMessage, PatientDoctorConversationSummary, PatientDoctorConversation, MessagingGrantStatus,
   PrescriptionCreate, PrescriptionUpdate, PrescriptionResponse, PrescriptionListItem,
