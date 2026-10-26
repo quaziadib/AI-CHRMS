@@ -9,7 +9,7 @@ from app.api.deps import AdminUser, DB
 from app.schemas.audit import AdminStatsResponse, AuditLogResponse
 from app.schemas.record import AssignDoctorRequest, PatientRecordResponse
 from app.schemas.patient_sharing import AccessEventResponse
-from app.schemas.user import AdminUserUpdate, RoleRequestResponse, UserResponse
+from app.schemas.user import AdminUserCreate, AdminUserUpdate, RoleRequestResponse, UserResponse
 from app.schemas.resubmit import SystemSettingsResponse, SystemSettingsUpdate
 from app.services import admin as admin_service
 from app.services import dataset_export
@@ -35,6 +35,12 @@ def get_all_users(
     role: Optional[str] = None,
 ):
     return admin_service.list_users(db, skip=skip, limit=limit, search=search, role=role)
+
+
+@router.post("/users", response_model=UserResponse, status_code=201)
+def create_user(data: AdminUserCreate, admin: AdminUser, db: DB):
+    """Create an account on someone's behalf; the chosen role is active immediately."""
+    return admin_service.create_user(db, admin.id, data)
 
 
 @router.get("/users/{user_id}", response_model=UserResponse)

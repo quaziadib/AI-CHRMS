@@ -7,7 +7,15 @@ from fastapi import HTTPException
 from pydantic import ValidationError
 
 from app.api.deps import get_admin_user, get_doctor_user
-from app.schemas.user import UserCreate, roles_for_approved_signup
+from app.schemas.user import AdminUserCreate, UserCreate, roles_for_approved_signup
+
+
+_DOCTOR_PROFILE = {
+    "specialization": "Endocrinology",
+    "division": "Dhaka Division",
+    "district": "Dhaka",
+    "location": "Shahbag, Dhaka",
+}
 
 
 class _User:
@@ -26,23 +34,43 @@ def test_user_create_defaults_to_patient():
     assert data.role == "user"
 
 
-def test_user_create_accepts_elevated_roles():
-    for role in ("national_admin", "admin"):
-        data = UserCreate(
-            email=f"{role}@example.com",
-            password="password1",
-            full_name="Name",
+def test_user_create_accepts_doctor_as_only_elevated_role():
+    data = UserCreate(
+        email="doc@example.com", password="password1", full_name="Name", role="doctor",
+        doctor_profile=_DOCTOR_PROFILE,  # type: ignore[arg-type]
+    )
+    assert data.role == "doctor"
+
+
+@pytest.mark.parametrize("role", ["national_admin", "admin"])
+def test_public_signup_rejects_staff_roles(role):
+    with pytest.raises(ValidationError):
+        UserCreate(
+            email=f"{role}@example.com", password="password1", full_name="Name",
             role=role,  # type: ignore[arg-type]
         )
-        assert data.role == role
 
 
-_DOCTOR_PROFILE = {
-    "specialization": "Endocrinology",
-    "division": "Dhaka Division",
-    "district": "Dhaka",
-    "location": "Shahbag, Dhaka",
-}
+@pytest.mark.parametrize("role", ["user", "doctor", "national_admin", "admin"])
+def test_admin_user_create_accepts_all_roles(role):
+    kwargs = {"doctor_profile": _DOCTOR_PROFILE} if role == "doctor" else {}
+    data = AdminUserCreate(
+        email=f" {role.upper()}@Example.com ", password="password1", full_name="Name",
+        role=role, **kwargs,  # type: ignore[arg-type]
+    )
+    assert data.role == role and data.email == f"{role}@example.com"
+
+
+def test_admin_user_create_doctor_profile_rules():
+    with pytest.raises(ValidationError):
+        AdminUserCreate(email="d@example.com", password="password1", full_name="Dr", role="doctor")
+    with pytest.raises(ValidationError):
+        AdminUserCreate(
+            email="p@example.com", password="password1", full_name="P", role="user",
+            doctor_profile=_DOCTOR_PROFILE,  # type: ignore[arg-type]
+        )
+    with pytest.raises(ValidationError):
+        AdminUserCreate(email="w@example.com", password="short", full_name="W", role="admin")
 
 
 def test_doctor_signup_requires_profile():
@@ -64,7 +92,7 @@ def test_doctor_signup_rejects_missing_profile_field():
         )
 
 
-@pytest.mark.parametrize("role", ["user", "national_admin", "admin"])
+@pytest.mark.parametrize("role", ["user"])
 def test_non_doctor_signup_rejects_profile(role):
     with pytest.raises(ValidationError):
         UserCreate(
