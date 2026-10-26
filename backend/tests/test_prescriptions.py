@@ -226,7 +226,24 @@ class TestGetPrescriptionForPatient:
 # PDF endpoint smoke test
 # ---------------------------------------------------------------------------
 
+def _rx(**kw):
+    from app.schemas.prescription import PrescriptionResponse
+    base = dict(
+        id="rx-1", doctor_id="doc-1", patient_id="pat-1", status="published",
+        created_at="2025-01-01T00:00:00", updated_at="2025-01-01T00:00:00",
+        symptoms_diagnosis=[], lab_tests=[], general_advice=[], medications=[],
+    )
+    base.update(kw)
+    return PrescriptionResponse(**base)
+
+
 class TestPdfEndpoint:
+    @pytest.fixture(autouse=True)
+    def _fresh_cache(self):
+        svc.clear_pdf_cache()
+        yield
+        svc.clear_pdf_cache()
+
     def test_generate_pdf_returns_bytes(self):
         fake_pdf = b"%PDF-1.4 fake"
         from app.schemas.prescription import PrescriptionResponse
@@ -272,3 +289,62 @@ class TestPdfEndpoint:
             with pytest.raises(HTTPException) as exc:
                 svc.generate_prescription_pdf(p)
         assert exc.value.status_code == 503
+
+    def test_repeat_download_uses_cache_and_update_rerenders(self):
+        fake_weasyprint = MagicMock()
+        fake_weasyprint.HTML.return_value.write_pdf.side_effect = [b"%PDF-a", b"%PDF-b"]
+        with patch.dict("sys.modules", {"weasyprint": fake_weasyprint}):
+            first = svc.generate_prescription_pdf(_rx())
+            again = svc.generate_prescription_pdf(_rx())
+            assert first == again == b"%PDF-a"
+            assert fake_weasyprint.HTML.return_value.write_pdf.call_count == 1
+            edited = svc.generate_prescription_pdf(_rx(updated_at="2025-02-01T00:00:00"))
+        assert edited == b"%PDF-b"
+        assert fake_weasyprint.HTML.return_value.write_pdf.call_count == 2
+
+    def test_cache_is_bounded(self):
+        fake_weasyprint = MagicMock()
+        fake_weasyprint.HTML.return_value.write_pdf.return_value = b"%PDF"
+        with patch.dict("sys.modules", {"weasyprint": fake_weasyprint}):
+            for i in range(svc._PDF_CACHE_MAX + 5):
+                svc.generate_prescription_pdf(_rx(id=f"rx-{i}"))
+        assert len(svc._pdf_cache) == svc._PDF_CACHE_MAX
+        assert ("rx-0", "2025-01-01T00:00:00") not in svc._pdf_cache
+
+    def test_warm_pdf_renderer_never_raises(self):
+        with patch.dict("sys.modules", {"weasyprint": None}):  # import fails
+            svc.warm_pdf_renderer()
+        fake_weasyprint = MagicMock()
+        fake_weasyprint.HTML.return_value.write_pdf.return_value = b"%PDF"
+        with patch.dict("sys.modules", {"weasyprint": fake_weasyprint}):
+            svc.warm_pdf_renderer()
+        assert fake_weasyprint.HTML.return_value.write_pdf.call_count == 1
+        assert len(svc._pdf_cache) == 0  # warm-up must not pollute the cache
+
+    def test_pdf_route_sets_length_and_audits_on_cache_hit(self):
+        from fastapi.testclient import TestClient
+
+        from app.api.deps import get_current_user, get_db
+        from app.main import app
+
+        patient = SimpleNamespace(id="pat-1", roles=["user"], is_active=True)
+        db = MagicMock()
+        rx = SimpleNamespace(id="rx-1", patient_id="pat-1", status="published")
+        db.query.return_value.filter.return_value.first.return_value = rx
+        app.dependency_overrides[get_current_user] = lambda: patient
+        app.dependency_overrides[get_db] = lambda: db
+        try:
+            with patch.object(svc, "_build_response", return_value=_rx()), \
+                 patch.object(svc, "log_audit") as audit, \
+                 patch.object(svc, "_render_pdf", return_value=b"%PDF-route") as render:
+                client = TestClient(app)
+                r1 = client.get("/v1/prescriptions/rx-1/pdf")
+                r2 = client.get("/v1/prescriptions/rx-1/pdf")
+        finally:
+            app.dependency_overrides.clear()
+        assert r1.status_code == r2.status_code == 200
+        assert r1.headers["content-length"] == str(len(b"%PDF-route"))
+        assert r1.headers["content-disposition"] == 'attachment; filename="prescription-rx-1.pdf"'
+        assert r1.content == r2.content == b"%PDF-route"
+        assert render.call_count == 1
+        assert audit.call_count == 2

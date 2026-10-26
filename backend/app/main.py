@@ -61,6 +61,10 @@ async def lifespan(app: FastAPI):
     if settings.DB_INIT_ON_STARTUP:
         bootstrap_database()
         logger.info("Startup database initialization complete")
+    # Warm the PDF engine off the request path; /health is not gated on it.
+    from app.services.prescription import start_pdf_warmup_thread
+
+    start_pdf_warmup_thread()
     yield
     logger.info("Shutting down")
 

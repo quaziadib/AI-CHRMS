@@ -1,5 +1,4 @@
-from fastapi import APIRouter
-from fastapi.responses import StreamingResponse
+from fastapi import APIRouter, Response
 
 from app.api.deps import DB, PatientUser
 from app.schemas.prescription import PrescriptionListItem, PrescriptionResponse
@@ -22,13 +21,14 @@ def get_my_prescription(prescription_id: str, patient: PatientUser, db: DB):
 def download_prescription_pdf(prescription_id: str, patient: PatientUser, db: DB):
     data = prescription_service.get_prescription_for_patient(db, patient.id, prescription_id)
     pdf_bytes = prescription_service.generate_prescription_pdf(data)
-
-    def iter_pdf():
-        yield pdf_bytes
-
     filename = f"prescription-{prescription_id[:8]}.pdf"
-    return StreamingResponse(
-        iter_pdf(),
+    # Plain Response (not streaming) so Content-Length is set and the browser shows progress.
+    return Response(
+        content=pdf_bytes,
         media_type="application/pdf",
-        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+        headers={
+            "Content-Disposition": f'attachment; filename="{filename}"',
+            "Content-Length": str(len(pdf_bytes)),
+            "Cache-Control": "private, no-store",
+        },
     )
