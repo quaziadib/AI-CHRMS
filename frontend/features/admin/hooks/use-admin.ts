@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { toast } from 'sonner'
 import { adminApi } from '@/lib/api'
-import type { User, PatientRecord, RoleRequest } from '@/lib/api'
+import type { User, PatientRecord, RoleRequest, AdminUserCreate } from '@/lib/api'
 
 export function useAdmin() {
   const [users, setUsers] = useState<User[]>([])
@@ -44,6 +44,16 @@ export function useAdmin() {
     } else {
       toast.error('Failed to update role')
     }
+  }
+
+  /** Admin provisions an account; returns the server error message (if any) so the form can show it. */
+  const createUser = async (payload: AdminUserCreate): Promise<{ user?: User; error?: string }> => {
+    const { data, error } = await adminApi.createUser(payload)
+    if (error || !data) return { error: error || 'Failed to create user' }
+    setUsers((prev) => [data, ...prev])
+    if (data.roles.includes('doctor')) setDoctors((prev) => [data, ...prev])
+    toast.success(`Account created for ${data.full_name}`)
+    return { user: data }
   }
 
   const handleStatusChange = async (userId: string, isActive: boolean) => {
@@ -146,6 +156,7 @@ export function useAdmin() {
     stats,
     handleRoleChange,
     handleStatusChange,
+    createUser,
     handleApproveRoleRequest,
     handleRejectRoleRequest,
     handleAssignDoctor,

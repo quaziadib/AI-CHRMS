@@ -10,6 +10,7 @@ import { RecordsTab } from '@/features/admin/components/records-tab'
 import { SettingsTab } from '@/features/admin/components/settings-tab'
 import { AccessHistoryTab } from '@/features/admin/components/access-history-tab'
 import { RoleRequestsTab } from '@/features/admin/components/role-requests-tab'
+import { CreateUserDialog } from '@/features/admin/components/create-user-dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Spinner } from '@/components/ui/spinner'
@@ -47,6 +48,7 @@ export default function AdminPage() {
     stats,
     handleRoleChange,
     handleStatusChange,
+    createUser,
     handleApproveRoleRequest,
     handleRejectRoleRequest,
     handleAssignDoctor,
@@ -131,6 +133,7 @@ export default function AdminPage() {
             className="pl-10"
           />
         </div>
+        {activeTab === 'users' && <CreateUserDialog onCreate={createUser} />}
         {activeTab === 'records' && records.length > 0 && (
           <Button variant="outline" onClick={downloadCSV} className="gap-2 shrink-0">
             <Download className="h-4 w-4" />
